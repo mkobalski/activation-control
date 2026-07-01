@@ -1,0 +1,135 @@
+# =============================================================================
+# Layer-targeting study, DEEP band: can the model concentrate "thinking" at a
+# specific late layer when the prompt names it?
+#
+# prompt_layers: every individual layer in the top ~15% of depth. For gemma3-27b
+#   (62 layers) that is [55..61] per the request ("55 and above, every layer").
+#   (Strictly 85% of 62 = layer ~53, so widen to 53 if you want >=85% exactly.)
+# analysis_layers: record at EVERY targeted layer (55..61) so we can detect
+#   per-layer concentration, plus 40 and 49 as below-band reference points.
+#
+# Conditions are trimmed to just what the layer-targeting analysis needs
+# (plot7 = think_at_layer - think_about; plot8 = ctrl_*_at_layer - ctrl/baseline)
+# plus baselines. The strength/intensity ramps and persistence variants are
+# dropped here (no layer-targeted analogs) to keep the trial count manageable.
+# =============================================================================
+
+experiment:
+  name: "write_introspection_layer_target_deep"
+  seed: 42
+  temperature: 0.0
+  max_new_tokens: 64
+  num_repetitions: 1
+  token_buffer: 10
+  batch_size: 8
+
+model:
+  name: "gemma3_27b"
+  config_path: "configs/models/gemma3_27b.yaml"
+  dtype: "bfloat16"
+  quantization: null
+  device: "cuda"
+
+# Record at every targeted layer (55..61) + two below-band references (40, 49).
+analysis_layers:
+  fractions: []
+  layers: [40, 49, 55, 56, 57, 58, 59, 60, 61]
+
+# Target each individual layer in the top band. For another model, recompute
+# these integers (there is no "every layer >= fraction" shorthand).
+prompt_layers:
+  fractions: []
+  layers: [55, 56, 57, 58, 59, 60, 61]
+
+concept_vectors:
+  method: "baseline"
+  template: "Tell me about {word}"
+  token_idx: -1
+  normalize: false
+  n_baseline_words: 100
+  cache_dir: "results/vector_cache"
+
+concepts:
+  - "Denim"
+  - "Lightning"
+  - "Volcanoes"
+  - "Bread"
+  - "Trees"
+  - "Cameras"
+  - "Vegetables"
+  - "Milk"
+  - "Dynasties"
+  - "Deserts"
+
+sentences:
+  - "The old photograph brought back forgotten memories."
+  - "A bright kite drifted slowly across the empty park."
+  - "The library closed early because of the heavy snowfall."
+  - "She arranged the glass bottles along the windowsill carefully."
+  - "The train arrived at the station just before midnight."
+  - "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello"
+  - "The cat watched the bird through the window by the door near the garden."
+  - "A cat watched a bird through a window by a door near a garden."
+  - "A cat watched a bird. It was through a window by a door. The door led to a garden."
+  - "She bought milk, bread, eggs, butter, jam, cheese, sugar, flour, and rice."
+  - "She likes apples and pears and plums and peaches and grapes and lemons."
+  - "She ran. He walked. They stopped. The dog barked. The bird sang. The day ended."
+
+prompt_conditions:
+  # ---- Non-layer analogs (needed for the plot7 deltas) ----
+  - id: "think_about"
+    template: 'Write "{sentence}" exactly. Think about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensely"
+    template: 'Write "{sentence}" exactly. Think intensely about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+
+  # ---- Layer-targeted positives (the core conditions of this study) ----
+  - id: "think_at_layer"
+    template: 'Write "{sentence}" exactly. Think about {concept} at layer {layer} of your neural network while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: true
+  - id: "think_intensely_at_layer"
+    template: 'Write "{sentence}" exactly. Think intensely about {concept} at layer {layer} of your neural network while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: true
+
+  # ---- Negative baseline ----
+  - id: "dont_think_about"
+    template: 'Write "{sentence}" exactly. Do not think about {concept} while you write. Don''t write anything else.'
+    kind: "negative"
+    has_layer: false
+
+  # ---- Concept-less controls (plain + layer-targeted, for plot8) ----
+  - id: "ctrl_think_intensely"
+    template: 'Write "{sentence}" exactly. Think intensely while you write. Don''t write anything else.'
+    kind: "control"
+    has_layer: false
+  - id: "ctrl_think_intensely_at_layer"
+    template: 'Write "{sentence}" exactly. Think intensely at layer {layer} of your neural network while you write. Don''t write anything else.'
+    kind: "control"
+    has_layer: true
+  - id: "ctrl_think_at_layer"
+    template: 'Write "{sentence}" exactly. Think at layer {layer} of your neural network while you write. Don''t write anything else.'
+    kind: "control"
+    has_layer: true
+
+  # ---- No-concept neutral baseline ----
+  - id: "no_instruction"
+    template: 'Write "{sentence}" exactly. Don''t write anything else.'
+    kind: "baseline"
+    has_layer: false
+
+compliance:
+  method: "normalized_levenshtein"
+  threshold: 0.85
+
+wandb:
+  project: "write-introspection-main"
+  entity: null
+  tags: ["write-introspection", "gemma3", "layer_target_deep"]
+
+output:
+  base_dir: "results"

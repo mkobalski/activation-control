@@ -1,0 +1,12 @@
+s0: The old photograph brought back forgotten memories.
+s1: A bright kite drifted slowly across the empty park.
+s2: The library closed early because of the heavy snowfall.
+s3: She arranged the glass bottles along the windowsill carefully.
+s4: The train arrived at the station just before midnight.
+s5: hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello
+s6: The cat watched the bird through the window by the door near the garden.
+s7: A cat watched a bird through a window by a door near a garden.
+s8: A cat watched a bird. It was through a window by a door. The door led to a garden.
+s9: She bought milk, bread, eggs, butter, jam, cheese, sugar, flour, and rice.
+s10: She likes apples and pears and plums and peaches and grapes and lemons.
+s11: She ran. He walked. They stopped. The dog barked. The bird sang. The day ended.

@@ -1,0 +1,133 @@
+# =============================================================================
+# Dataset config: gemma3-27b on a GRANULAR depth sweep.
+#
+# Same as experiment_layers.yaml except analysis_layers records every 5% of
+# depth (0.05, 0.10, ..., 1.00 -> 20 layers). On gemma3-27b (62 layers) these
+# resolve to [3,6,9,12,15,18,21,24,27,31,34,37,40,43,46,49,52,55,58,61].
+# Plotting/analysis scripts auto-detect layers from the data.
+#
+# NOTE: recording 20 layers stores ~6-7x more activation data than the 3-layer
+# run -> results.pkl is ~20 GB for the full 12-sentence set. Trim `sentences`
+# (e.g. to the one you plot) if disk is tight.
+# =============================================================================
+
+experiment:
+  name: "write_introspection_main_layers_granular"
+  seed: 42
+  temperature: 0.0
+  max_new_tokens: 64
+  num_repetitions: 1
+  token_buffer: 10
+  batch_size: 8
+
+model:
+  name: "gemma3_27b"
+  config_path: "configs/models/gemma3_27b.yaml"
+  dtype: "bfloat16"
+  quantization: null
+  device: "cuda"
+
+# Record every 5% of depth, from 5% to 100%.
+analysis_layers:
+  fractions: [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50,
+              0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00]
+  layers: []
+
+prompt_layers:
+  fractions: []
+  layers: []
+
+concept_vectors:
+  method: "baseline"
+  template: "Tell me about {word}"
+  token_idx: -1
+  normalize: false
+  n_baseline_words: 100
+  cache_dir: "results/vector_cache"
+
+concepts:
+  - "Denim"
+  - "Lightning"
+  - "Volcanoes"
+  - "Bread"
+  - "Trees"
+  - "Cameras"
+  - "Vegetables"
+  - "Milk"
+  - "Dynasties"
+  - "Deserts"
+
+sentences:
+  - "The old photograph brought back forgotten memories."
+  - "A bright kite drifted slowly across the empty park."
+  - "The library closed early because of the heavy snowfall."
+  - "She arranged the glass bottles along the windowsill carefully."
+  - "The train arrived at the station just before midnight."
+  - "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello"
+  - "The cat watched the bird through the window by the door near the garden."
+  - "A cat watched a bird through a window by a door near a garden."
+  - "A cat watched a bird. It was through a window by a door. The door led to a garden."
+  - "She bought milk, bread, eggs, butter, jam, cheese, sugar, flour, and rice."
+  - "She likes apples and pears and plums and peaches and grapes and lemons."
+  - "She ran. He walked. They stopped. The dog barked. The bird sang. The day ended."
+
+prompt_conditions:
+  # ---- Positives: verb ladder + intensity ramp ----
+  - id: "think_about"
+    template: 'Write "{sentence}" exactly. Think about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_hard"
+    template: 'Write "{sentence}" exactly. Think hard about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensely"
+    template: 'Write "{sentence}" exactly. Think intensely about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensity_1_of_4"
+    template: 'Write "{sentence}" exactly. Think at intensity 1 out of 4 about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensity_2_of_4"
+    template: 'Write "{sentence}" exactly. Think at intensity 2 out of 4 about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensity_3_of_4"
+    template: 'Write "{sentence}" exactly. Think at intensity 3 out of 4 about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensity_4_of_4"
+    template: 'Write "{sentence}" exactly. Think at intensity 4 out of 4 about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+
+  # ---- Negative (active suppression) ----
+  - id: "dont_think_about"
+    template: 'Write "{sentence}" exactly. Do not think about {concept} while you write. Don''t write anything else.'
+    kind: "negative"
+    has_layer: false
+
+  # ---- Concept-less control ----
+  - id: "ctrl_think_intensely"
+    template: 'Write "{sentence}" exactly. Think intensely while you write. Don''t write anything else.'
+    kind: "control"
+    has_layer: false
+
+  # ---- Neutral baseline (engagement/suppression anchor) ----
+  - id: "no_instruction"
+    template: 'Write "{sentence}" exactly. Don''t write anything else.'
+    kind: "baseline"
+    has_layer: false
+
+compliance:
+  method: "normalized_levenshtein"
+  threshold: 0.85
+
+wandb:
+  project: "write-introspection-main"
+  entity: null
+  tags: ["write-introspection", "gemma3", "layers_granular"]
+
+output:
+  base_dir: "results"

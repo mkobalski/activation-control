@@ -1,0 +1,20 @@
+# ---- Core: required to run experiments + analysis ----
+torch>=2.6.0
+transformers>=4.55.0
+accelerate>=1.4.0        # needed by transformers for device_map="auto" loading
+numpy>=1.26.0
+pandas>=2.0.0            # run_analysis.py (cosine_summary.csv); not used elsewhere
+matplotlib>=3.5.0        # all plotting (plot_results.py, controllability_heatmap.py)
+tqdm>=4.60.0
+pyyaml>=6.0
+python-dotenv>=1.0.0     # loads .env (HF_TOKEN / optional WANDB_API_KEY)
+
+# ---- Optional ----
+wandb>=0.19.0            # experiment logging; src/utils/wandb_utils.py is fail-open
+                         # (runs continue if wandb is absent). Pass --no-wandb to skip.
+bitsandbytes>=0.46.0     # ONLY for 8-bit/4-bit quantization. The provided configs
+                         # set quantization: null, so this is not needed for them.
+
+# NOTE: scipy is intentionally NOT a dependency. The rank statistics used by the
+# controllability analysis (rankdata / AUROC / Spearman / BH-FDR) are implemented
+# in-repo so the CPU-only analysis has no scipy/sklearn requirement.

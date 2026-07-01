@@ -1,0 +1,4 @@
+model_id: "google/gemma-3-27b-it"
+torch_dtype: "bfloat16"
+device_map: "auto"
+quantization: null

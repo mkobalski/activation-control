@@ -1,0 +1,175 @@
+# =============================================================================
+# write-introspection — main experiment config (gemma3-27b, fractional depths).
+#
+# For each (concept, sentence, condition, repetition) the runner:
+#   1. Builds a prompt: "Write '<sentence>' exactly. <think-instruction>.
+#      Don't write anything else."  — optionally naming a concept and/or a layer.
+#   2. Generates the transcription token-by-token, recording the residual stream
+#      at every `analysis_layers` layer for the sentence tokens.
+#   3. Computes per-token cosine similarity between each layer's residual and the
+#      concept vector at that layer (see scripts/run_experiment.py).
+#
+# Every value here can be overridden from the CLI, e.g.:
+#   python scripts/run_experiment.py --config configs/experiment.yaml \
+#       --set experiment.num_repetitions=3 --set analysis_layers.fractions="[0.5]"
+# =============================================================================
+
+experiment:
+  name: "write_introspection_main"
+  seed: 42                 # shuffles the trial order (reproducible)
+  temperature: 0.0         # 0.0 = greedy decoding
+  max_new_tokens: 64
+  num_repetitions: 1
+  token_buffer: 10         # record n_sentence_tokens + this many extra tokens
+  batch_size: 8            # trials per forward pass; raise on bigger GPUs
+
+model:
+  name: "gemma3_27b"       # short name -> HF id in src/models/registry.py
+  config_path: "configs/models/gemma3_27b.yaml"
+  dtype: "bfloat16"
+  quantization: null       # null | "8bit" | "4bit"
+  device: "cuda"
+
+# ---- Layers ----------------------------------------------------------------
+# Both accept fractional depths (0-1, resolved to integer indices against the
+# model's layer count) and/or explicit integer `layers`. They are independent:
+#   analysis_layers : where activations are recorded + cosine is measured.
+#   prompt_layers   : the integer substituted into "{layer}" in *_at_layer
+#                     prompts. Set to [] to disable the layer-targeted conditions.
+analysis_layers:
+  fractions: [0.2, 0.4, 0.6, 0.8]
+
+prompt_layers:
+  fractions: [0.2, 0.4, 0.6, 0.8]
+
+# ---- Concept-vector extraction (src/vectors/extraction.py) ------------------
+# A concept vector at layer L = activation of the last token of
+# "Tell me about {word}", minus the mean over n_baseline_words unrelated words.
+concept_vectors:
+  method: "baseline"                    # baseline | simple | no_baseline
+  template: "Tell me about {word}"
+  token_idx: -1
+  normalize: false
+  n_baseline_words: 100
+  cache_dir: "results/vector_cache"
+
+# ---- Concepts (the words whose vectors we steer toward) --------------------
+concepts:
+  - "Denim"
+  - "Lightning"
+  - "Volcanoes"
+  - "Bread"
+  - "Trees"
+  - "Cameras"
+  - "Vegetables"
+  - "Milk"
+  - "Dynasties"
+  - "Deserts"
+
+# ---- Sentences (transcribed verbatim; crossed with every concept) ----------
+# s0-s4 neutral; s5 uniform control (no content tokens); s6-s11 register-rich
+# (chosen to probe specific structural tokens). See sentences.txt.
+sentences:
+  - "The old photograph brought back forgotten memories."
+  - "A bright kite drifted slowly across the empty park."
+  - "The library closed early because of the heavy snowfall."
+  - "She arranged the glass bottles along the windowsill carefully."
+  - "The train arrived at the station just before midnight."
+  - "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello"
+  - "The cat watched the bird through the window by the door near the garden."
+  - "A cat watched a bird through a window by a door near a garden."
+  - "A cat watched a bird. It was through a window by a door. The door led to a garden."
+  - "She bought milk, bread, eggs, butter, jam, cheese, sugar, flour, and rice."
+  - "She likes apples and pears and plums and peaches and grapes and lemons."
+  - "She ran. He walked. They stopped. The dog barked. The bird sang. The day ended."
+
+# =============================================================================
+# Prompt conditions. Each has: id, template, kind, has_layer.
+#   kind:  positive (uses {concept})         | negative (uses {concept}, "do not")
+#          control  (concept-less variant)   | baseline (no concept, no thinking)
+#   has_layer: template contains "{layer}" -> instantiated once per prompt_layer.
+#
+# The intensity ramp think_intensity_{1..4}_of_4 is the graded knob that the
+# controllability analysis (scripts/controllability_heatmap.py) sweeps over.
+# =============================================================================
+prompt_conditions:
+  # ---- Positives, no layer (the verb ladder + intensity ramp) ----
+  - id: "think_about"
+    template: 'Write "{sentence}" exactly. Think about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_hard"
+    template: 'Write "{sentence}" exactly. Think hard about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensely"
+    template: 'Write "{sentence}" exactly. Think intensely about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensity_1_of_4"
+    template: 'Write "{sentence}" exactly. Think at intensity 1 out of 4 about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensity_2_of_4"
+    template: 'Write "{sentence}" exactly. Think at intensity 2 out of 4 about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensity_3_of_4"
+    template: 'Write "{sentence}" exactly. Think at intensity 3 out of 4 about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "think_intensity_4_of_4"
+    template: 'Write "{sentence}" exactly. Think at intensity 4 out of 4 about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+
+  # ---- Positives WITH layer (only run when prompt_layers is non-empty) ----
+  - id: "think_at_layer"
+    template: 'Write "{sentence}" exactly. Think about {concept} at layer {layer} of your neural network while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: true
+  - id: "think_intensely_at_layer"
+    template: 'Write "{sentence}" exactly. Think intensely about {concept} at layer {layer} of your neural network while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: true
+
+  # ---- Negative (active suppression) ----
+  - id: "dont_think_about"
+    template: 'Write "{sentence}" exactly. Do not think about {concept} while you write. Don''t write anything else.'
+    kind: "negative"
+    has_layer: false
+
+  # ---- Concept-less controls (plain + layer-targeted; reference for plot8) ----
+  - id: "ctrl_think_intensely"
+    template: 'Write "{sentence}" exactly. Think intensely while you write. Don''t write anything else.'
+    kind: "control"
+    has_layer: false
+  - id: "ctrl_think_intensely_at_layer"
+    template: 'Write "{sentence}" exactly. Think intensely at layer {layer} of your neural network while you write. Don''t write anything else.'
+    kind: "control"
+    has_layer: true
+  - id: "ctrl_think_at_layer"
+    template: 'Write "{sentence}" exactly. Think at layer {layer} of your neural network while you write. Don''t write anything else.'
+    kind: "control"
+    has_layer: true
+
+  # ---- Neutral baseline (no thinking instruction at all) ----
+  # The anchor used by the engagement/suppression analysis: think and dont_think
+  # are measured relative to this.
+  - id: "no_instruction"
+    template: 'Write "{sentence}" exactly. Don''t write anything else.'
+    kind: "baseline"
+    has_layer: false
+
+# ---- Compliance: non-compliant trials are saved but flagged is_compliant=False
+compliance:
+  method: "normalized_levenshtein"
+  threshold: 0.85
+
+wandb:
+  project: "write-introspection-main"
+  entity: null
+  tags: ["write-introspection", "gemma3"]
+
+output:
+  base_dir: "results"
