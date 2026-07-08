@@ -19,14 +19,15 @@ import numpy as np
 def get_run_dir(base_dir: str, experiment_name: str, model_name: str) -> Path:
     """Create and return a unique output directory for one run.
 
-    The directory name encodes model + experiment + timestamp so concurrent or
-    repeated runs never collide and results stay self-describing on disk. The
-    model name is sanitized because HF ids contain "/" (a path separator) and
-    spaces, which would otherwise create unintended nested dirs.
+    The directory name is ``<YYYYMMDD_HHMMSS>_<model>_<experiment>`` -- the
+    timestamp leads so a plain ``ls``/lexical sort of ``results/raw/`` is
+    chronological. Model + experiment follow so runs stay self-describing and
+    never collide. The model name is sanitized because HF ids contain "/" (a path
+    separator) and spaces, which would otherwise create unintended nested dirs.
     """
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     safe_model = model_name.replace("/", "_").replace(" ", "_")
-    run_dir = Path(base_dir) / "raw" / f"{safe_model}_{experiment_name}_{ts}"
+    run_dir = Path(base_dir) / "raw" / f"{ts}_{safe_model}_{experiment_name}"
     run_dir.mkdir(parents=True, exist_ok=True)
     return run_dir
 
@@ -110,3 +111,39 @@ def load_results(path: Path):
             d = json.load(f)
         return d["results"], d.get("metrics", {})
     raise FileNotFoundError(f"No results at {path}")
+
+
+def load_run_config(run_dir) -> Dict:
+    """Load a run's saved ``config.yaml`` summary as a dict ({} if absent/unreadable).
+
+    run_experiment.py writes this per run; the plot scripts read it to recover the
+    experiment's declared ``sentences`` / ``concepts`` order (see order_by_config)
+    so plot labels are stable across runs instead of following trial order.
+    """
+    p = Path(run_dir) / "config.yaml"
+    if not p.exists():
+        return {}
+    import yaml  # local import: keeps io usable in yaml-less minimal contexts
+    try:
+        with open(p) as f:
+            return yaml.safe_load(f) or {}
+    except Exception:
+        return {}
+
+
+def order_by_config(present, canonical) -> List:
+    """Order the items actually present by the config's canonical order.
+
+    `present` is the list of items seen in the results (any order); `canonical`
+    is the config's declared order (e.g. cfg.sentences). Items are returned sorted
+    by their index in `canonical`; anything not in `canonical` (or when `canonical`
+    is missing) keeps its original first-seen order and is appended at the end.
+    This is what makes s6 == the cat sentence, and the concept panels config-ordered,
+    regardless of the per-run trial shuffle.
+    """
+    present = list(present)
+    if not canonical:
+        return present
+    rank = {v: i for i, v in enumerate(canonical)}
+    appear = {v: i for i, v in enumerate(present)}
+    return sorted(present, key=lambda v: (rank.get(v, len(canonical)), appear[v]))

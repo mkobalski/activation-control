@@ -125,11 +125,11 @@ prompt_conditions:
 
   # ---- Positives WITH layer (only run when prompt_layers is non-empty) ----
   - id: "think_at_layer"
-    template: 'Write "{sentence}" exactly. Think about {concept} at layer {layer} of your neural network while you write. Don''t write anything else.'
+    template: 'Write "{sentence}" exactly. While you write, think about {concept} only at layer {layer} of your {total} layers. Don''t write anything else.'
     kind: "positive"
     has_layer: true
   - id: "think_intensely_at_layer"
-    template: 'Write "{sentence}" exactly. Think intensely about {concept} at layer {layer} of your neural network while you write. Don''t write anything else.'
+    template: 'Write "{sentence}" exactly. While you write, think intensely about {concept} only at layer {layer} of your {total} layers. Don''t write anything else.'
     kind: "positive"
     has_layer: true
 
@@ -145,11 +145,11 @@ prompt_conditions:
     kind: "control"
     has_layer: false
   - id: "ctrl_think_intensely_at_layer"
-    template: 'Write "{sentence}" exactly. Think intensely at layer {layer} of your neural network while you write. Don''t write anything else.'
+    template: 'Write "{sentence}" exactly. While you write, think intensely only at layer {layer} of your {total} layers. Don''t write anything else.'
     kind: "control"
     has_layer: true
   - id: "ctrl_think_at_layer"
-    template: 'Write "{sentence}" exactly. Think at layer {layer} of your neural network while you write. Don''t write anything else.'
+    template: 'Write "{sentence}" exactly. While you write, think only at layer {layer} of your {total} layers. Don''t write anything else.'
     kind: "control"
     has_layer: true
 

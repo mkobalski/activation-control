@@ -1,0 +1,9 @@
+# Register-rich / 'exaggerated' probe phrases, moved out of the baseline set
+# (was s5-s11). Kept for targeted register / attention-sink studies.
+p0: hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello
+p1: The cat watched the bird through the window by the door near the garden.
+p2: A cat watched a bird through a window by a door near a garden.
+p3: A cat watched a bird. It was through a window by a door. The door led to a garden.
+p4: She bought milk, bread, eggs, butter, jam, cheese, sugar, flour, and rice.
+p5: She likes apples and pears and plums and peaches and grapes and lemons.
+p6: She ran. He walked. They stopped. The dog barked. The bird sang. The day ended.

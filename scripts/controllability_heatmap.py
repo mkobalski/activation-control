@@ -24,6 +24,7 @@ MEASURES at (layer, token):
               (raw + specific for cos; raw for the magnitude channel).
   gain        mean_C (readout@int4 - readout@int1)   (effect size; signed).
   Cohen's d   mean_C Delta / sd_C Delta              (standardized, unbounded).
+              [DISABLED -- no longer computed or rendered; code kept, commented.]
   engage/suppress   two-panel figure: (think - neutral) and (dont - neutral),
               shared symmetric scale.
 
@@ -49,7 +50,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
-CAT = "The cat watched the bird through the window by the door near the garden."
+# Default single sentence for the heatmaps (a baseline sentence from sentences.txt,
+# comma-bearing). The register-rich "cat" sentence now lives in exaggerated_phrases.txt.
+DEFAULT_SENTENCE = "She stacked the folders, labeled each tab, and shut the drawer."
 RAMP_DEFAULT = [f"think_intensity_{i}_of_4" for i in (1, 2, 3, 4)]
 
 
@@ -191,7 +194,7 @@ def per_token_readout(acts, V, Vn, ci, metric, classes=None):
 # ---- core: compute + render all heatmaps for one (run, metric, sentence) -----
 
 def generate_heatmaps(run_dir, model_name, *, vector_cache="results/vector_cache",
-                      method="baseline", metric="cos", sentence=CAT,
+                      method="baseline", metric="cos", sentence=DEFAULT_SENTENCE,
                       pos_cond="think_about", neg_cond="dont_think_about",
                       ramp=None, ramp_name="intensity_1to4",
                       baseline_cond="no_instruction", alpha=0.05,
@@ -291,9 +294,12 @@ def generate_heatmaps(run_dir, model_name, *, vector_cache="results/vector_cache
                     Rank[fl][ti, li] = obs
                     PRank[fl][ti, li] = pval_two_sided(obs, rank_null(len(rhos), rng))
 
-    # ---------- gain (mean Delta) and Cohen's d (mean Delta / sd Delta) ----------
+    # ---------- gain (mean Delta) ----------
+    # Cohen's d (standardized ramp gain = meanΔ / sdΔ) is intentionally DISABLED
+    # -- we no longer report it. Its computation is kept commented below so it can
+    # be restored if needed.
     Gain = np.full(shape, np.nan); Pgain = np.full(shape, np.nan)
-    Cohen = np.full(shape, np.nan); Pcohen = np.full(shape, np.nan)
+    # Cohen = np.full(shape, np.nan); Pcohen = np.full(shape, np.nan)
     for li, L in enumerate(layers):
         for ti in range(n_tok):
             rows = [[data[L][cond][c][0][ti] for cond in ramp]
@@ -304,13 +310,13 @@ def generate_heatmaps(run_dir, model_name, *, vector_cache="results/vector_cache
             Vd = np.array(rows)                       # (m, R)
             delta = Vd[:, -1] - Vd[:, 0]              # per-concept gain
             gain = float(delta.mean())
-            cohen = float(delta.mean() / (delta.std() + 1e-9))
-            Gain[ti, li], Cohen[ti, li] = gain, cohen
+            # cohen = float(delta.mean() / (delta.std() + 1e-9))
+            Gain[ti, li] = gain
             signs = rng.choice([-1.0, 1.0], size=(B, len(delta)))   # sign-flip null
             ng = (signs * delta).mean(1)
-            nc = (signs * delta).mean(1) / ((signs * delta).std(1) + 1e-9)
+            # nc = (signs * delta).mean(1) / ((signs * delta).std(1) + 1e-9)
             Pgain[ti, li] = (1 + int((np.abs(ng) >= abs(gain) - 1e-15).sum())) / (B + 1)
-            Pcohen[ti, li] = (1 + int((np.abs(nc) >= abs(cohen) - 1e-15).sum())) / (B + 1)
+            # Pcohen[ti, li] = (1 + int((np.abs(nc) >= abs(cohen) - 1e-15).sum())) / (B + 1)
 
     # ---------- rendering ----------
     xt = [str(L) for L in layers]
@@ -361,12 +367,12 @@ def generate_heatmaps(run_dir, model_name, *, vector_cache="results/vector_cache
             print(f"  wrote {p.name}  ({n_sig}/{n_tested} sig)")
 
     if do_ramp:
-        # Rank (signed Spearman, [-1,1])
-        render("Rank_raw", Rank["on"], PRank["on"],
+        # rank (signed Spearman, [-1,1])
+        render("rank_raw", Rank["on"], PRank["on"],
                f"Rank  (mean signed Spearman over {ramp_name}, on-concept)",
                scale=1.0, decimals=2, clabel="Rank (signed Spearman) [-1,1]")
         if "spec" in flavors:
-            render("Rank_specific", Rank["spec"], PRank["spec"],
+            render("rank_specific", Rank["spec"], PRank["spec"],
                    "Rank  (off-concept corrected)",
                    scale=1.0, decimals=2, clabel="Rank (signed Spearman) [-1,1]")
         # gain (only where cross-model comparable: dimensionless readouts)
@@ -376,10 +382,10 @@ def generate_heatmaps(run_dir, model_name, *, vector_cache="results/vector_cache
                    scale=DSCALE, decimals=DDEC, clabel=f"Δ{metric} {DTAG}".strip())
         elif verbose:
             print(f"  [skip gain] raw-unit metric '{metric}' is not cross-model comparable")
-        # Cohen's d (standardized ramp gain; scale-invariant)
-        render("cohensd", Cohen, Pcohen,
-               "Cohen's d  (standardized ramp gain = meanΔ / sdΔ)",
-               scale=1.0, decimals=2, clabel="Cohen's d (signed)")
+        # Cohen's d (standardized ramp gain; scale-invariant) -- DISABLED (no longer reported).
+        # render("cohensd", Cohen, Pcohen,
+        #        "Cohen's d  (standardized ramp gain = meanΔ / sdΔ)",
+        #        scale=1.0, decimals=2, clabel="Cohen's d (signed)")
     elif verbose:
         print("  [skip Rank/gain/Cohen's d] fewer than 3 intensity-ramp conditions present")
 
@@ -477,7 +483,7 @@ def main():
     ap.add_argument("--model-name", default="gemma3_27b")
     ap.add_argument("--vector-cache", default="results/vector_cache")
     ap.add_argument("--vector-method", default="baseline")
-    ap.add_argument("--sentence", default=CAT)
+    ap.add_argument("--sentence", default=DEFAULT_SENTENCE)
     ap.add_argument("--metric", choices=["cos", "proj", "norm", "relnorm"], default="cos")
     ap.add_argument("--pos-cond", default="think_about")
     ap.add_argument("--neg-cond", default="dont_think_about")

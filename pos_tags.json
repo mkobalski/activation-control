@@ -1,0 +1,9880 @@
+{
+ "meta": {
+  "spacy_version": "3.8.14",
+  "spacy_model": "en_core_web_sm",
+  "spacy_model_version": "3.8.0",
+  "tags": "word-level UPOS (upos) + Penn Treebank (ptb); char spans start/end; MODEL-INDEPENDENT"
+ },
+ "entries": [
+  {
+   "source": "sentences.txt",
+   "label": "s0",
+   "text": "The old photograph brought back forgotten memories.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "old",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 4,
+     "end": 7
+    },
+    {
+     "text": "photograph",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 8,
+     "end": 18
+    },
+    {
+     "text": "brought",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 19,
+     "end": 26
+    },
+    {
+     "text": "back",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 27,
+     "end": 31
+    },
+    {
+     "text": "forgotten",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 32,
+     "end": 41
+    },
+    {
+     "text": "memories",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 42,
+     "end": 50
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 50,
+     "end": 51
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s1",
+   "text": "A bright kite drifted slowly across the empty park.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "bright",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 8
+    },
+    {
+     "text": "kite",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 9,
+     "end": 13
+    },
+    {
+     "text": "drifted",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 14,
+     "end": 21
+    },
+    {
+     "text": "slowly",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 22,
+     "end": 28
+    },
+    {
+     "text": "across",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 29,
+     "end": 35
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 36,
+     "end": 39
+    },
+    {
+     "text": "empty",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 40,
+     "end": 45
+    },
+    {
+     "text": "park",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 46,
+     "end": 50
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 50,
+     "end": 51
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s2",
+   "text": "The library closed early because of the heavy snowfall.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "library",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 11
+    },
+    {
+     "text": "closed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 12,
+     "end": 18
+    },
+    {
+     "text": "early",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 19,
+     "end": 24
+    },
+    {
+     "text": "because",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 25,
+     "end": 32
+    },
+    {
+     "text": "of",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 33,
+     "end": 35
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 36,
+     "end": 39
+    },
+    {
+     "text": "heavy",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 40,
+     "end": 45
+    },
+    {
+     "text": "snowfall",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 46,
+     "end": 54
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 54,
+     "end": 55
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s3",
+   "text": "She arranged the glass bottles along the windowsill carefully.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "arranged",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 12
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 13,
+     "end": 16
+    },
+    {
+     "text": "glass",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 17,
+     "end": 22
+    },
+    {
+     "text": "bottles",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 23,
+     "end": 30
+    },
+    {
+     "text": "along",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 31,
+     "end": 36
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 37,
+     "end": 40
+    },
+    {
+     "text": "windowsill",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 41,
+     "end": 51
+    },
+    {
+     "text": "carefully",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 52,
+     "end": 61
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 61,
+     "end": 62
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s4",
+   "text": "The train arrived at the station just before midnight.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "train",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "arrived",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 10,
+     "end": 17
+    },
+    {
+     "text": "at",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 18,
+     "end": 20
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 21,
+     "end": 24
+    },
+    {
+     "text": "station",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 25,
+     "end": 32
+    },
+    {
+     "text": "just",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 33,
+     "end": 37
+    },
+    {
+     "text": "before",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 38,
+     "end": 44
+    },
+    {
+     "text": "midnight",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 45,
+     "end": 53
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 53,
+     "end": 54
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s5",
+   "text": "The elevator doors slid shut just as he reached the lobby.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "elevator",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 12
+    },
+    {
+     "text": "doors",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 13,
+     "end": 18
+    },
+    {
+     "text": "slid",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 19,
+     "end": 23
+    },
+    {
+     "text": "shut",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 24,
+     "end": 28
+    },
+    {
+     "text": "just",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 29,
+     "end": 33
+    },
+    {
+     "text": "as",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 34,
+     "end": 36
+    },
+    {
+     "text": "he",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 37,
+     "end": 39
+    },
+    {
+     "text": "reached",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 40,
+     "end": 47
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 48,
+     "end": 51
+    },
+    {
+     "text": "lobby",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 52,
+     "end": 57
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 57,
+     "end": 58
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s6",
+   "text": "She stacked the folders, labeled each tab, and shut the drawer.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "stacked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 11
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 12,
+     "end": 15
+    },
+    {
+     "text": "folders",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 16,
+     "end": 23
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 23,
+     "end": 24
+    },
+    {
+     "text": "labeled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 25,
+     "end": 32
+    },
+    {
+     "text": "each",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 33,
+     "end": 37
+    },
+    {
+     "text": "tab",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 38,
+     "end": 41
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 41,
+     "end": 42
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 43,
+     "end": 46
+    },
+    {
+     "text": "shut",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 47,
+     "end": 51
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 52,
+     "end": 55
+    },
+    {
+     "text": "drawer",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 56,
+     "end": 62
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 62,
+     "end": 63
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s7",
+   "text": "A faint hum came from the refrigerator down the hall.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "faint",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 7
+    },
+    {
+     "text": "hum",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 8,
+     "end": 11
+    },
+    {
+     "text": "came",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 12,
+     "end": 16
+    },
+    {
+     "text": "from",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 17,
+     "end": 21
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 22,
+     "end": 25
+    },
+    {
+     "text": "refrigerator",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 26,
+     "end": 38
+    },
+    {
+     "text": "down",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 39,
+     "end": 43
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 44,
+     "end": 47
+    },
+    {
+     "text": "hall",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 48,
+     "end": 52
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 52,
+     "end": 53
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s8",
+   "text": "The bus pulled away before the last passenger sat down.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "bus",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 7
+    },
+    {
+     "text": "pulled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 8,
+     "end": 14
+    },
+    {
+     "text": "away",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 15,
+     "end": 19
+    },
+    {
+     "text": "before",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 20,
+     "end": 26
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 27,
+     "end": 30
+    },
+    {
+     "text": "last",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 31,
+     "end": 35
+    },
+    {
+     "text": "passenger",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 36,
+     "end": 45
+    },
+    {
+     "text": "sat",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 46,
+     "end": 49
+    },
+    {
+     "text": "down",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 50,
+     "end": 54
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 54,
+     "end": 55
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s9",
+   "text": "He wiped the table, refilled the mugs, and dimmed the lights.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "wiped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 8
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 9,
+     "end": 12
+    },
+    {
+     "text": "table",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 13,
+     "end": 18
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 18,
+     "end": 19
+    },
+    {
+     "text": "refilled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 20,
+     "end": 28
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 29,
+     "end": 32
+    },
+    {
+     "text": "mugs",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 33,
+     "end": 37
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 37,
+     "end": 38
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 39,
+     "end": 42
+    },
+    {
+     "text": "dimmed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 43,
+     "end": 49
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 50,
+     "end": 53
+    },
+    {
+     "text": "lights",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 54,
+     "end": 60
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 60,
+     "end": 61
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s10",
+   "text": "Rain streaked the windows while the meeting dragged on.",
+   "words": [
+    {
+     "text": "Rain",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "streaked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 5,
+     "end": 13
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 14,
+     "end": 17
+    },
+    {
+     "text": "windows",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 18,
+     "end": 25
+    },
+    {
+     "text": "while",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 26,
+     "end": 31
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 32,
+     "end": 35
+    },
+    {
+     "text": "meeting",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 36,
+     "end": 43
+    },
+    {
+     "text": "dragged",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 44,
+     "end": 51
+    },
+    {
+     "text": "on",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 52,
+     "end": 54
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 54,
+     "end": 55
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s11",
+   "text": "The clerk stamped each form, then slid them under the glass.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "clerk",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "stamped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 10,
+     "end": 17
+    },
+    {
+     "text": "each",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 18,
+     "end": 22
+    },
+    {
+     "text": "form",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 23,
+     "end": 27
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 27,
+     "end": 28
+    },
+    {
+     "text": "then",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 29,
+     "end": 33
+    },
+    {
+     "text": "slid",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 34,
+     "end": 38
+    },
+    {
+     "text": "them",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 39,
+     "end": 43
+    },
+    {
+     "text": "under",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 44,
+     "end": 49
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 50,
+     "end": 53
+    },
+    {
+     "text": "glass",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 54,
+     "end": 59
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 59,
+     "end": 60
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s12",
+   "text": "The meeting started late, so everyone rushed through the agenda.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "meeting",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 11
+    },
+    {
+     "text": "started",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 12,
+     "end": 19
+    },
+    {
+     "text": "late",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 20,
+     "end": 24
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 24,
+     "end": 25
+    },
+    {
+     "text": "so",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 26,
+     "end": 28
+    },
+    {
+     "text": "everyone",
+     "upos": "PRON",
+     "ptb": "NN",
+     "start": 29,
+     "end": 37
+    },
+    {
+     "text": "rushed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 38,
+     "end": 44
+    },
+    {
+     "text": "through",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 45,
+     "end": 52
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 53,
+     "end": 56
+    },
+    {
+     "text": "agenda",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 57,
+     "end": 63
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 63,
+     "end": 64
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s13",
+   "text": "After the rain stopped, the streets looked clean and quiet.",
+   "words": [
+    {
+     "text": "After",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 0,
+     "end": 5
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 6,
+     "end": 9
+    },
+    {
+     "text": "rain",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 10,
+     "end": 14
+    },
+    {
+     "text": "stopped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 15,
+     "end": 22
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 22,
+     "end": 23
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 24,
+     "end": 27
+    },
+    {
+     "text": "streets",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 28,
+     "end": 35
+    },
+    {
+     "text": "looked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 36,
+     "end": 42
+    },
+    {
+     "text": "clean",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 43,
+     "end": 48
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 49,
+     "end": 52
+    },
+    {
+     "text": "quiet",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 53,
+     "end": 58
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 58,
+     "end": 59
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s14",
+   "text": "She locked the door, checked the mail, and hurried to the bus.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "locked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 11,
+     "end": 14
+    },
+    {
+     "text": "door",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 15,
+     "end": 19
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 19,
+     "end": 20
+    },
+    {
+     "text": "checked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 21,
+     "end": 28
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 29,
+     "end": 32
+    },
+    {
+     "text": "mail",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 33,
+     "end": 37
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 37,
+     "end": 38
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 39,
+     "end": 42
+    },
+    {
+     "text": "hurried",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 43,
+     "end": 50
+    },
+    {
+     "text": "to",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 51,
+     "end": 53
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 54,
+     "end": 57
+    },
+    {
+     "text": "bus",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 58,
+     "end": 61
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 61,
+     "end": 62
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s15",
+   "text": "The clock on the wall was ten minutes fast.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "clock",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "on",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 10,
+     "end": 12
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 13,
+     "end": 16
+    },
+    {
+     "text": "wall",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 17,
+     "end": 21
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 22,
+     "end": 25
+    },
+    {
+     "text": "ten",
+     "upos": "NUM",
+     "ptb": "CD",
+     "start": 26,
+     "end": 29
+    },
+    {
+     "text": "minutes",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 30,
+     "end": 37
+    },
+    {
+     "text": "fast",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 38,
+     "end": 42
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 42,
+     "end": 43
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s16",
+   "text": "He poured a cup of tea and sat by the window.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "poured",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 9
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 10,
+     "end": 11
+    },
+    {
+     "text": "cup",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 12,
+     "end": 15
+    },
+    {
+     "text": "of",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 16,
+     "end": 18
+    },
+    {
+     "text": "tea",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 19,
+     "end": 22
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 23,
+     "end": 26
+    },
+    {
+     "text": "sat",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 27,
+     "end": 30
+    },
+    {
+     "text": "by",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 31,
+     "end": 33
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 34,
+     "end": 37
+    },
+    {
+     "text": "window",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 38,
+     "end": 44
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 44,
+     "end": 45
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s17",
+   "text": "When the phone rang, nobody bothered to answer it.",
+   "words": [
+    {
+     "text": "When",
+     "upos": "SCONJ",
+     "ptb": "WRB",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 5,
+     "end": 8
+    },
+    {
+     "text": "phone",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 9,
+     "end": 14
+    },
+    {
+     "text": "rang",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 15,
+     "end": 19
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 19,
+     "end": 20
+    },
+    {
+     "text": "nobody",
+     "upos": "PRON",
+     "ptb": "NN",
+     "start": 21,
+     "end": 27
+    },
+    {
+     "text": "bothered",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 28,
+     "end": 36
+    },
+    {
+     "text": "to",
+     "upos": "PART",
+     "ptb": "TO",
+     "start": 37,
+     "end": 39
+    },
+    {
+     "text": "answer",
+     "upos": "VERB",
+     "ptb": "VB",
+     "start": 40,
+     "end": 46
+    },
+    {
+     "text": "it",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 47,
+     "end": 49
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 49,
+     "end": 50
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s18",
+   "text": "The children played outside until it grew dark.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "children",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 4,
+     "end": 12
+    },
+    {
+     "text": "played",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 13,
+     "end": 19
+    },
+    {
+     "text": "outside",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 20,
+     "end": 27
+    },
+    {
+     "text": "until",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 28,
+     "end": 33
+    },
+    {
+     "text": "it",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 34,
+     "end": 36
+    },
+    {
+     "text": "grew",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 37,
+     "end": 41
+    },
+    {
+     "text": "dark",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 42,
+     "end": 46
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 46,
+     "end": 47
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s19",
+   "text": "My neighbor waved, smiled, and walked toward the corner shop.",
+   "words": [
+    {
+     "text": "My",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "neighbor",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 3,
+     "end": 11
+    },
+    {
+     "text": "waved",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 12,
+     "end": 17
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 17,
+     "end": 18
+    },
+    {
+     "text": "smiled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 19,
+     "end": 25
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 25,
+     "end": 26
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 27,
+     "end": 30
+    },
+    {
+     "text": "walked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 31,
+     "end": 37
+    },
+    {
+     "text": "toward",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 38,
+     "end": 44
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 45,
+     "end": 48
+    },
+    {
+     "text": "corner",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 49,
+     "end": 55
+    },
+    {
+     "text": "shop",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 56,
+     "end": 60
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 60,
+     "end": 61
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s20",
+   "text": "The printer jammed again, and the report was already late.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "printer",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 11
+    },
+    {
+     "text": "jammed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 12,
+     "end": 18
+    },
+    {
+     "text": "again",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 19,
+     "end": 24
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 24,
+     "end": 25
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 26,
+     "end": 29
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 30,
+     "end": 33
+    },
+    {
+     "text": "report",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 34,
+     "end": 40
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 41,
+     "end": 44
+    },
+    {
+     "text": "already",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 45,
+     "end": 52
+    },
+    {
+     "text": "late",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 53,
+     "end": 57
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 57,
+     "end": 58
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s21",
+   "text": "A cold wind swept across the empty parking lot.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "cold",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 6
+    },
+    {
+     "text": "wind",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 7,
+     "end": 11
+    },
+    {
+     "text": "swept",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 12,
+     "end": 17
+    },
+    {
+     "text": "across",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 18,
+     "end": 24
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 25,
+     "end": 28
+    },
+    {
+     "text": "empty",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 29,
+     "end": 34
+    },
+    {
+     "text": "parking",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 35,
+     "end": 42
+    },
+    {
+     "text": "lot",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 43,
+     "end": 46
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 46,
+     "end": 47
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s22",
+   "text": "She wrote a short note, folded it, and left it on the desk.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "wrote",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 10,
+     "end": 11
+    },
+    {
+     "text": "short",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 12,
+     "end": 17
+    },
+    {
+     "text": "note",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 18,
+     "end": 22
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 22,
+     "end": 23
+    },
+    {
+     "text": "folded",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 24,
+     "end": 30
+    },
+    {
+     "text": "it",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 31,
+     "end": 33
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 33,
+     "end": 34
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 35,
+     "end": 38
+    },
+    {
+     "text": "left",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 39,
+     "end": 43
+    },
+    {
+     "text": "it",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 44,
+     "end": 46
+    },
+    {
+     "text": "on",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 47,
+     "end": 49
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 50,
+     "end": 53
+    },
+    {
+     "text": "desk",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 54,
+     "end": 58
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 58,
+     "end": 59
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s23",
+   "text": "The bus was crowded, but I found a seat near the back.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "bus",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 7
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 8,
+     "end": 11
+    },
+    {
+     "text": "crowded",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 12,
+     "end": 19
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 19,
+     "end": 20
+    },
+    {
+     "text": "but",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 21,
+     "end": 24
+    },
+    {
+     "text": "I",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 25,
+     "end": 26
+    },
+    {
+     "text": "found",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 27,
+     "end": 32
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 33,
+     "end": 34
+    },
+    {
+     "text": "seat",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": "near",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 40,
+     "end": 44
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 45,
+     "end": 48
+    },
+    {
+     "text": "back",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 49,
+     "end": 53
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 53,
+     "end": 54
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s24",
+   "text": "He forgot his keys, so he waited on the steps for an hour.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "forgot",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 9
+    },
+    {
+     "text": "his",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 10,
+     "end": 13
+    },
+    {
+     "text": "keys",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 14,
+     "end": 18
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 18,
+     "end": 19
+    },
+    {
+     "text": "so",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 20,
+     "end": 22
+    },
+    {
+     "text": "he",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 23,
+     "end": 25
+    },
+    {
+     "text": "waited",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 26,
+     "end": 32
+    },
+    {
+     "text": "on",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 33,
+     "end": 35
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 36,
+     "end": 39
+    },
+    {
+     "text": "steps",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 40,
+     "end": 45
+    },
+    {
+     "text": "for",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 46,
+     "end": 49
+    },
+    {
+     "text": "an",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 50,
+     "end": 52
+    },
+    {
+     "text": "hour",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 53,
+     "end": 57
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 57,
+     "end": 58
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s25",
+   "text": "The kitchen smelled of coffee and warm cinnamon.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "kitchen",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 11
+    },
+    {
+     "text": "smelled",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 12,
+     "end": 19
+    },
+    {
+     "text": "of",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 20,
+     "end": 22
+    },
+    {
+     "text": "coffee",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 23,
+     "end": 29
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 30,
+     "end": 33
+    },
+    {
+     "text": "warm",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 34,
+     "end": 38
+    },
+    {
+     "text": "cinnamon",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 39,
+     "end": 47
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 47,
+     "end": 48
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s26",
+   "text": "They painted the fence white and cleaned the old gate.",
+   "words": [
+    {
+     "text": "They",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "painted",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 5,
+     "end": 12
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 13,
+     "end": 16
+    },
+    {
+     "text": "fence",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 17,
+     "end": 22
+    },
+    {
+     "text": "white",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 23,
+     "end": 28
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 29,
+     "end": 32
+    },
+    {
+     "text": "cleaned",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 33,
+     "end": 40
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 41,
+     "end": 44
+    },
+    {
+     "text": "old",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 45,
+     "end": 48
+    },
+    {
+     "text": "gate",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 49,
+     "end": 53
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 53,
+     "end": 54
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s27",
+   "text": "Before the movie began, we grabbed snacks and found our seats.",
+   "words": [
+    {
+     "text": "Before",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 0,
+     "end": 6
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 7,
+     "end": 10
+    },
+    {
+     "text": "movie",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 11,
+     "end": 16
+    },
+    {
+     "text": "began",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 17,
+     "end": 22
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 22,
+     "end": 23
+    },
+    {
+     "text": "we",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 24,
+     "end": 26
+    },
+    {
+     "text": "grabbed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 27,
+     "end": 34
+    },
+    {
+     "text": "snacks",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 35,
+     "end": 41
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 42,
+     "end": 45
+    },
+    {
+     "text": "found",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 46,
+     "end": 51
+    },
+    {
+     "text": "our",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 52,
+     "end": 55
+    },
+    {
+     "text": "seats",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 56,
+     "end": 61
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 61,
+     "end": 62
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s28",
+   "text": "The librarian stamped the book and handed it back with a smile.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "librarian",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 13
+    },
+    {
+     "text": "stamped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 14,
+     "end": 21
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 22,
+     "end": 25
+    },
+    {
+     "text": "book",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 26,
+     "end": 30
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "handed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 35,
+     "end": 41
+    },
+    {
+     "text": "it",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 42,
+     "end": 44
+    },
+    {
+     "text": "back",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 45,
+     "end": 49
+    },
+    {
+     "text": "with",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 50,
+     "end": 54
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 55,
+     "end": 56
+    },
+    {
+     "text": "smile",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 57,
+     "end": 62
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 62,
+     "end": 63
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s29",
+   "text": "A thin layer of frost covered the car this morning.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "thin",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 6
+    },
+    {
+     "text": "layer",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 7,
+     "end": 12
+    },
+    {
+     "text": "of",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 13,
+     "end": 15
+    },
+    {
+     "text": "frost",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 16,
+     "end": 21
+    },
+    {
+     "text": "covered",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 22,
+     "end": 29
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 30,
+     "end": 33
+    },
+    {
+     "text": "car",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 34,
+     "end": 37
+    },
+    {
+     "text": "this",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 38,
+     "end": 42
+    },
+    {
+     "text": "morning",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 43,
+     "end": 50
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 50,
+     "end": 51
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s30",
+   "text": "She tied her shoes, stretched, and started her morning run.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "tied",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "her",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 9,
+     "end": 12
+    },
+    {
+     "text": "shoes",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 13,
+     "end": 18
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 18,
+     "end": 19
+    },
+    {
+     "text": "stretched",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 20,
+     "end": 29
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 29,
+     "end": 30
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "started",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 35,
+     "end": 42
+    },
+    {
+     "text": "her",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 43,
+     "end": 46
+    },
+    {
+     "text": "morning",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 47,
+     "end": 54
+    },
+    {
+     "text": "run",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 55,
+     "end": 58
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 58,
+     "end": 59
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s31",
+   "text": "The lamp flickered twice; then the room went dark.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "lamp",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "flickered",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 9,
+     "end": 18
+    },
+    {
+     "text": "twice",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 19,
+     "end": 24
+    },
+    {
+     "text": ";",
+     "upos": "PUNCT",
+     "ptb": ":",
+     "start": 24,
+     "end": 25
+    },
+    {
+     "text": "then",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 26,
+     "end": 30
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "room",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": "went",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 40,
+     "end": 44
+    },
+    {
+     "text": "dark",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 45,
+     "end": 49
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 49,
+     "end": 50
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s32",
+   "text": "We took the early train and reached the city by noon.",
+   "words": [
+    {
+     "text": "We",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "took",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 7
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 8,
+     "end": 11
+    },
+    {
+     "text": "early",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 12,
+     "end": 17
+    },
+    {
+     "text": "train",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 18,
+     "end": 23
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 24,
+     "end": 27
+    },
+    {
+     "text": "reached",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 28,
+     "end": 35
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 36,
+     "end": 39
+    },
+    {
+     "text": "city",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 40,
+     "end": 44
+    },
+    {
+     "text": "by",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 45,
+     "end": 47
+    },
+    {
+     "text": "noon",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 48,
+     "end": 52
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 52,
+     "end": 53
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s33",
+   "text": "The dog barked at the mailman, then rolled over lazily.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "dog",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 7
+    },
+    {
+     "text": "barked",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 8,
+     "end": 14
+    },
+    {
+     "text": "at",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 15,
+     "end": 17
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 18,
+     "end": 21
+    },
+    {
+     "text": "mailman",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 22,
+     "end": 29
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 29,
+     "end": 30
+    },
+    {
+     "text": "then",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 31,
+     "end": 35
+    },
+    {
+     "text": "rolled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 36,
+     "end": 42
+    },
+    {
+     "text": "over",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 43,
+     "end": 47
+    },
+    {
+     "text": "lazily",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 48,
+     "end": 54
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 54,
+     "end": 55
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s34",
+   "text": "He fixed the leaky faucet, but the sink still dripped.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "fixed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 8
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 9,
+     "end": 12
+    },
+    {
+     "text": "leaky",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 13,
+     "end": 18
+    },
+    {
+     "text": "faucet",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 19,
+     "end": 25
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 25,
+     "end": 26
+    },
+    {
+     "text": "but",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 27,
+     "end": 30
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "sink",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": "still",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 40,
+     "end": 45
+    },
+    {
+     "text": "dripped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 46,
+     "end": 53
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 53,
+     "end": 54
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s35",
+   "text": "The store was closed, so we walked to the corner instead.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "store",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 10,
+     "end": 13
+    },
+    {
+     "text": "closed",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 14,
+     "end": 20
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 20,
+     "end": 21
+    },
+    {
+     "text": "so",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 22,
+     "end": 24
+    },
+    {
+     "text": "we",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 25,
+     "end": 27
+    },
+    {
+     "text": "walked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 28,
+     "end": 34
+    },
+    {
+     "text": "to",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 35,
+     "end": 37
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 38,
+     "end": 41
+    },
+    {
+     "text": "corner",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 42,
+     "end": 48
+    },
+    {
+     "text": "instead",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 49,
+     "end": 56
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 56,
+     "end": 57
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s36",
+   "text": "Rain tapped against the window all through the night.",
+   "words": [
+    {
+     "text": "Rain",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "tapped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 5,
+     "end": 11
+    },
+    {
+     "text": "against",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 12,
+     "end": 19
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 20,
+     "end": 23
+    },
+    {
+     "text": "window",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 24,
+     "end": 30
+    },
+    {
+     "text": "all",
+     "upos": "PRON",
+     "ptb": "DT",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "through",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 35,
+     "end": 42
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 43,
+     "end": 46
+    },
+    {
+     "text": "night",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 47,
+     "end": 52
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 52,
+     "end": 53
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s37",
+   "text": "She sorted the laundry, folded the towels, and swept the floor.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "sorted",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 11,
+     "end": 14
+    },
+    {
+     "text": "laundry",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 15,
+     "end": 22
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 22,
+     "end": 23
+    },
+    {
+     "text": "folded",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 24,
+     "end": 30
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "towels",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 35,
+     "end": 41
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 41,
+     "end": 42
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 43,
+     "end": 46
+    },
+    {
+     "text": "swept",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 47,
+     "end": 52
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 53,
+     "end": 56
+    },
+    {
+     "text": "floor",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 57,
+     "end": 62
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 62,
+     "end": 63
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s38",
+   "text": "The teacher wrote three questions on the board.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "teacher",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 11
+    },
+    {
+     "text": "wrote",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 12,
+     "end": 17
+    },
+    {
+     "text": "three",
+     "upos": "NUM",
+     "ptb": "CD",
+     "start": 18,
+     "end": 23
+    },
+    {
+     "text": "questions",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 24,
+     "end": 33
+    },
+    {
+     "text": "on",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 34,
+     "end": 36
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 37,
+     "end": 40
+    },
+    {
+     "text": "board",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 41,
+     "end": 46
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 46,
+     "end": 47
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s39",
+   "text": "A quiet street lined with old lamps led to the square.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "quiet",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 7
+    },
+    {
+     "text": "street",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 8,
+     "end": 14
+    },
+    {
+     "text": "lined",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 15,
+     "end": 20
+    },
+    {
+     "text": "with",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 21,
+     "end": 25
+    },
+    {
+     "text": "old",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 26,
+     "end": 29
+    },
+    {
+     "text": "lamps",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 30,
+     "end": 35
+    },
+    {
+     "text": "led",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 36,
+     "end": 39
+    },
+    {
+     "text": "to",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 40,
+     "end": 42
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 43,
+     "end": 46
+    },
+    {
+     "text": "square",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 47,
+     "end": 53
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 53,
+     "end": 54
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s40",
+   "text": "He checked his watch, sighed, and joined the long line.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "checked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 10
+    },
+    {
+     "text": "his",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 11,
+     "end": 14
+    },
+    {
+     "text": "watch",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 15,
+     "end": 20
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 20,
+     "end": 21
+    },
+    {
+     "text": "sighed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 22,
+     "end": 28
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 28,
+     "end": 29
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 30,
+     "end": 33
+    },
+    {
+     "text": "joined",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 34,
+     "end": 40
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 41,
+     "end": 44
+    },
+    {
+     "text": "long",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 45,
+     "end": 49
+    },
+    {
+     "text": "line",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 50,
+     "end": 54
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 54,
+     "end": 55
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s41",
+   "text": "The elevator was broken, so we climbed the stairs.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "elevator",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 12
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 13,
+     "end": 16
+    },
+    {
+     "text": "broken",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 17,
+     "end": 23
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 23,
+     "end": 24
+    },
+    {
+     "text": "so",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 25,
+     "end": 27
+    },
+    {
+     "text": "we",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 28,
+     "end": 30
+    },
+    {
+     "text": "climbed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 31,
+     "end": 38
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 39,
+     "end": 42
+    },
+    {
+     "text": "stairs",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 43,
+     "end": 49
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 49,
+     "end": 50
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s42",
+   "text": "They chatted for hours, laughing about old memories.",
+   "words": [
+    {
+     "text": "They",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "chatted",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 5,
+     "end": 12
+    },
+    {
+     "text": "for",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 13,
+     "end": 16
+    },
+    {
+     "text": "hours",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 17,
+     "end": 22
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 22,
+     "end": 23
+    },
+    {
+     "text": "laughing",
+     "upos": "VERB",
+     "ptb": "VBG",
+     "start": 24,
+     "end": 32
+    },
+    {
+     "text": "about",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 33,
+     "end": 38
+    },
+    {
+     "text": "old",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 39,
+     "end": 42
+    },
+    {
+     "text": "memories",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 43,
+     "end": 51
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 51,
+     "end": 52
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s43",
+   "text": "The road curved sharply, then dropped toward the river.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "road",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "curved",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 9,
+     "end": 15
+    },
+    {
+     "text": "sharply",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 16,
+     "end": 23
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 23,
+     "end": 24
+    },
+    {
+     "text": "then",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 25,
+     "end": 29
+    },
+    {
+     "text": "dropped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 30,
+     "end": 37
+    },
+    {
+     "text": "toward",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 38,
+     "end": 44
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 45,
+     "end": 48
+    },
+    {
+     "text": "river",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 49,
+     "end": 54
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 54,
+     "end": 55
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s44",
+   "text": "She opened the box, unwrapped the gift, and gasped.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "opened",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 11,
+     "end": 14
+    },
+    {
+     "text": "box",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 15,
+     "end": 18
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 18,
+     "end": 19
+    },
+    {
+     "text": "unwrapped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 20,
+     "end": 29
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 30,
+     "end": 33
+    },
+    {
+     "text": "gift",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 34,
+     "end": 38
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 38,
+     "end": 39
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 40,
+     "end": 43
+    },
+    {
+     "text": "gasped",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 44,
+     "end": 50
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 50,
+     "end": 51
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s45",
+   "text": "Warm light spilled from the cafe onto the wet pavement.",
+   "words": [
+    {
+     "text": "Warm",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "light",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 5,
+     "end": 10
+    },
+    {
+     "text": "spilled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 11,
+     "end": 18
+    },
+    {
+     "text": "from",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 19,
+     "end": 23
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 24,
+     "end": 27
+    },
+    {
+     "text": "cafe",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 28,
+     "end": 32
+    },
+    {
+     "text": "onto",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 33,
+     "end": 37
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 38,
+     "end": 41
+    },
+    {
+     "text": "wet",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 42,
+     "end": 45
+    },
+    {
+     "text": "pavement",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 46,
+     "end": 54
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 54,
+     "end": 55
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s46",
+   "text": "The kettle whistled; steam filled the small room.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "kettle",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "whistled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 11,
+     "end": 19
+    },
+    {
+     "text": ";",
+     "upos": "PUNCT",
+     "ptb": ":",
+     "start": 19,
+     "end": 20
+    },
+    {
+     "text": "steam",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 21,
+     "end": 26
+    },
+    {
+     "text": "filled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 27,
+     "end": 33
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 34,
+     "end": 37
+    },
+    {
+     "text": "small",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 38,
+     "end": 43
+    },
+    {
+     "text": "room",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 44,
+     "end": 48
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 48,
+     "end": 49
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s47",
+   "text": "He parked the car, grabbed his bag, and ran for the gate.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "parked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 9
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 10,
+     "end": 13
+    },
+    {
+     "text": "car",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 14,
+     "end": 17
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 17,
+     "end": 18
+    },
+    {
+     "text": "grabbed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 19,
+     "end": 26
+    },
+    {
+     "text": "his",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 27,
+     "end": 30
+    },
+    {
+     "text": "bag",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 34,
+     "end": 35
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 36,
+     "end": 39
+    },
+    {
+     "text": "ran",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 40,
+     "end": 43
+    },
+    {
+     "text": "for",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 44,
+     "end": 47
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 48,
+     "end": 51
+    },
+    {
+     "text": "gate",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 52,
+     "end": 56
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 56,
+     "end": 57
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s48",
+   "text": "A gentle breeze moved the curtains near the open window.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "gentle",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 8
+    },
+    {
+     "text": "breeze",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 9,
+     "end": 15
+    },
+    {
+     "text": "moved",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 16,
+     "end": 21
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 22,
+     "end": 25
+    },
+    {
+     "text": "curtains",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 26,
+     "end": 34
+    },
+    {
+     "text": "near",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 40,
+     "end": 43
+    },
+    {
+     "text": "open",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 44,
+     "end": 48
+    },
+    {
+     "text": "window",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 49,
+     "end": 55
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 55,
+     "end": 56
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s49",
+   "text": "The waiter brought the menus and filled our glasses with water.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "waiter",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "brought",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 11,
+     "end": 18
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 19,
+     "end": 22
+    },
+    {
+     "text": "menus",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 23,
+     "end": 28
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 29,
+     "end": 32
+    },
+    {
+     "text": "filled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 33,
+     "end": 39
+    },
+    {
+     "text": "our",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 40,
+     "end": 43
+    },
+    {
+     "text": "glasses",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 44,
+     "end": 51
+    },
+    {
+     "text": "with",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 52,
+     "end": 56
+    },
+    {
+     "text": "water",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 57,
+     "end": 62
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 62,
+     "end": 63
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s50",
+   "text": "She practiced the piano until her fingers ached.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "practiced",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 13
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 14,
+     "end": 17
+    },
+    {
+     "text": "piano",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 18,
+     "end": 23
+    },
+    {
+     "text": "until",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 24,
+     "end": 29
+    },
+    {
+     "text": "her",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 30,
+     "end": 33
+    },
+    {
+     "text": "fingers",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 34,
+     "end": 41
+    },
+    {
+     "text": "ached",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 42,
+     "end": 47
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 47,
+     "end": 48
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s51",
+   "text": "The map was old, but the roads were still easy to follow.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "map",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 7
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 8,
+     "end": 11
+    },
+    {
+     "text": "old",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 12,
+     "end": 15
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 15,
+     "end": 16
+    },
+    {
+     "text": "but",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 17,
+     "end": 20
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 21,
+     "end": 24
+    },
+    {
+     "text": "roads",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 25,
+     "end": 30
+    },
+    {
+     "text": "were",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 31,
+     "end": 35
+    },
+    {
+     "text": "still",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 36,
+     "end": 41
+    },
+    {
+     "text": "easy",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 42,
+     "end": 46
+    },
+    {
+     "text": "to",
+     "upos": "PART",
+     "ptb": "TO",
+     "start": 47,
+     "end": 49
+    },
+    {
+     "text": "follow",
+     "upos": "VERB",
+     "ptb": "VB",
+     "start": 50,
+     "end": 56
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 56,
+     "end": 57
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s52",
+   "text": "We waited at the station, watching the clock tick slowly.",
+   "words": [
+    {
+     "text": "We",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "waited",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 9
+    },
+    {
+     "text": "at",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 10,
+     "end": 12
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 13,
+     "end": 16
+    },
+    {
+     "text": "station",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 17,
+     "end": 24
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 24,
+     "end": 25
+    },
+    {
+     "text": "watching",
+     "upos": "VERB",
+     "ptb": "VBG",
+     "start": 26,
+     "end": 34
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 35,
+     "end": 38
+    },
+    {
+     "text": "clock",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 39,
+     "end": 44
+    },
+    {
+     "text": "tick",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 45,
+     "end": 49
+    },
+    {
+     "text": "slowly",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 50,
+     "end": 56
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 56,
+     "end": 57
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s53",
+   "text": "The old radio crackled, then played a soft, familiar tune.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "old",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 4,
+     "end": 7
+    },
+    {
+     "text": "radio",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 8,
+     "end": 13
+    },
+    {
+     "text": "crackled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 14,
+     "end": 22
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 22,
+     "end": 23
+    },
+    {
+     "text": "then",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 24,
+     "end": 28
+    },
+    {
+     "text": "played",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 29,
+     "end": 35
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 36,
+     "end": 37
+    },
+    {
+     "text": "soft",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 38,
+     "end": 42
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 42,
+     "end": 43
+    },
+    {
+     "text": "familiar",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 44,
+     "end": 52
+    },
+    {
+     "text": "tune",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 53,
+     "end": 57
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 57,
+     "end": 58
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s54",
+   "text": "He swept the porch, watered the plants, and locked the shed.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "swept",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 8
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 9,
+     "end": 12
+    },
+    {
+     "text": "porch",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 13,
+     "end": 18
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 18,
+     "end": 19
+    },
+    {
+     "text": "watered",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 20,
+     "end": 27
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 28,
+     "end": 31
+    },
+    {
+     "text": "plants",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 32,
+     "end": 38
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 38,
+     "end": 39
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 40,
+     "end": 43
+    },
+    {
+     "text": "locked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 44,
+     "end": 50
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 51,
+     "end": 54
+    },
+    {
+     "text": "shed",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 55,
+     "end": 59
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 59,
+     "end": 60
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s55",
+   "text": "The letter arrived late, wrinkled and slightly torn.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "letter",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "arrived",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 11,
+     "end": 18
+    },
+    {
+     "text": "late",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 19,
+     "end": 23
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 23,
+     "end": 24
+    },
+    {
+     "text": "wrinkled",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 25,
+     "end": 33
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 34,
+     "end": 37
+    },
+    {
+     "text": "slightly",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 38,
+     "end": 46
+    },
+    {
+     "text": "torn",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 47,
+     "end": 51
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 51,
+     "end": 52
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s56",
+   "text": "She hummed a tune while she washed the dishes.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "hummed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 11,
+     "end": 12
+    },
+    {
+     "text": "tune",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 13,
+     "end": 17
+    },
+    {
+     "text": "while",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 18,
+     "end": 23
+    },
+    {
+     "text": "she",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 24,
+     "end": 27
+    },
+    {
+     "text": "washed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 28,
+     "end": 34
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 35,
+     "end": 38
+    },
+    {
+     "text": "dishes",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 39,
+     "end": 45
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 45,
+     "end": 46
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s57",
+   "text": "The hallway was dark, so he felt along the wall for the switch.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "hallway",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 11
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 12,
+     "end": 15
+    },
+    {
+     "text": "dark",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 16,
+     "end": 20
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 20,
+     "end": 21
+    },
+    {
+     "text": "so",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 22,
+     "end": 24
+    },
+    {
+     "text": "he",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 25,
+     "end": 27
+    },
+    {
+     "text": "felt",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 28,
+     "end": 32
+    },
+    {
+     "text": "along",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 33,
+     "end": 38
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 39,
+     "end": 42
+    },
+    {
+     "text": "wall",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 43,
+     "end": 47
+    },
+    {
+     "text": "for",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 48,
+     "end": 51
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 52,
+     "end": 55
+    },
+    {
+     "text": "switch",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 56,
+     "end": 62
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 62,
+     "end": 63
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s58",
+   "text": "A stray cat curled up on the warm doorstep.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "stray",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 7
+    },
+    {
+     "text": "cat",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 8,
+     "end": 11
+    },
+    {
+     "text": "curled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 12,
+     "end": 18
+    },
+    {
+     "text": "up",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 19,
+     "end": 21
+    },
+    {
+     "text": "on",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 22,
+     "end": 24
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 25,
+     "end": 28
+    },
+    {
+     "text": "warm",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 29,
+     "end": 33
+    },
+    {
+     "text": "doorstep",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 34,
+     "end": 42
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 42,
+     "end": 43
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s59",
+   "text": "They packed their bags, checked the tickets, and left before dawn.",
+   "words": [
+    {
+     "text": "They",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "packed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 5,
+     "end": 11
+    },
+    {
+     "text": "their",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 12,
+     "end": 17
+    },
+    {
+     "text": "bags",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 18,
+     "end": 22
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 22,
+     "end": 23
+    },
+    {
+     "text": "checked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 24,
+     "end": 31
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 32,
+     "end": 35
+    },
+    {
+     "text": "tickets",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 36,
+     "end": 43
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 43,
+     "end": 44
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 45,
+     "end": 48
+    },
+    {
+     "text": "left",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 49,
+     "end": 53
+    },
+    {
+     "text": "before",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 54,
+     "end": 60
+    },
+    {
+     "text": "dawn",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 61,
+     "end": 65
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 65,
+     "end": 66
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s60",
+   "text": "The market buzzed with voices, footsteps, and clinking coins.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "market",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "buzzed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 11,
+     "end": 17
+    },
+    {
+     "text": "with",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 18,
+     "end": 22
+    },
+    {
+     "text": "voices",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 23,
+     "end": 29
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 29,
+     "end": 30
+    },
+    {
+     "text": "footsteps",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 31,
+     "end": 40
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 40,
+     "end": 41
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 42,
+     "end": 45
+    },
+    {
+     "text": "clinking",
+     "upos": "VERB",
+     "ptb": "VBG",
+     "start": 46,
+     "end": 54
+    },
+    {
+     "text": "coins",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 55,
+     "end": 60
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 60,
+     "end": 61
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s61",
+   "text": "He read the same paragraph three times before giving up.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "read",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 7
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 8,
+     "end": 11
+    },
+    {
+     "text": "same",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 12,
+     "end": 16
+    },
+    {
+     "text": "paragraph",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 17,
+     "end": 26
+    },
+    {
+     "text": "three",
+     "upos": "NUM",
+     "ptb": "CD",
+     "start": 27,
+     "end": 32
+    },
+    {
+     "text": "times",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 33,
+     "end": 38
+    },
+    {
+     "text": "before",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 39,
+     "end": 45
+    },
+    {
+     "text": "giving",
+     "upos": "VERB",
+     "ptb": "VBG",
+     "start": 46,
+     "end": 52
+    },
+    {
+     "text": "up",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 53,
+     "end": 55
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 55,
+     "end": 56
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s62",
+   "text": "The window fogged as the room grew warm.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "window",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "fogged",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 11,
+     "end": 17
+    },
+    {
+     "text": "as",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 18,
+     "end": 20
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 21,
+     "end": 24
+    },
+    {
+     "text": "room",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 25,
+     "end": 29
+    },
+    {
+     "text": "grew",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 30,
+     "end": 34
+    },
+    {
+     "text": "warm",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 39,
+     "end": 40
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s63",
+   "text": "She drew a small circle, then filled it with careful lines.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "drew",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 9,
+     "end": 10
+    },
+    {
+     "text": "small",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 11,
+     "end": 16
+    },
+    {
+     "text": "circle",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 17,
+     "end": 23
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 23,
+     "end": 24
+    },
+    {
+     "text": "then",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 25,
+     "end": 29
+    },
+    {
+     "text": "filled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 30,
+     "end": 36
+    },
+    {
+     "text": "it",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 37,
+     "end": 39
+    },
+    {
+     "text": "with",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 40,
+     "end": 44
+    },
+    {
+     "text": "careful",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 45,
+     "end": 52
+    },
+    {
+     "text": "lines",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 53,
+     "end": 58
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 58,
+     "end": 59
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s64",
+   "text": "The bell rang, and the students filed out of the room.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "bell",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "rang",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 9,
+     "end": 13
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 13,
+     "end": 14
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 15,
+     "end": 18
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 19,
+     "end": 22
+    },
+    {
+     "text": "students",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 23,
+     "end": 31
+    },
+    {
+     "text": "filed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 32,
+     "end": 37
+    },
+    {
+     "text": "out",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 38,
+     "end": 41
+    },
+    {
+     "text": "of",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 42,
+     "end": 44
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 45,
+     "end": 48
+    },
+    {
+     "text": "room",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 49,
+     "end": 53
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 53,
+     "end": 54
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s65",
+   "text": "A single lamp lit the quiet, narrow street.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "single",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 8
+    },
+    {
+     "text": "lamp",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 9,
+     "end": 13
+    },
+    {
+     "text": "lit",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 14,
+     "end": 17
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 18,
+     "end": 21
+    },
+    {
+     "text": "quiet",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 22,
+     "end": 27
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 27,
+     "end": 28
+    },
+    {
+     "text": "narrow",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 29,
+     "end": 35
+    },
+    {
+     "text": "street",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 36,
+     "end": 42
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 42,
+     "end": 43
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s66",
+   "text": "He tightened the last screw and closed the cabinet door.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "tightened",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 12
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 13,
+     "end": 16
+    },
+    {
+     "text": "last",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 17,
+     "end": 21
+    },
+    {
+     "text": "screw",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 22,
+     "end": 27
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 28,
+     "end": 31
+    },
+    {
+     "text": "closed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 32,
+     "end": 38
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 39,
+     "end": 42
+    },
+    {
+     "text": "cabinet",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 43,
+     "end": 50
+    },
+    {
+     "text": "door",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 51,
+     "end": 55
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 55,
+     "end": 56
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s67",
+   "text": "They labeled three boxes: books, papers, and old letters.",
+   "words": [
+    {
+     "text": "They",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "labeled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 5,
+     "end": 12
+    },
+    {
+     "text": "three",
+     "upos": "NUM",
+     "ptb": "CD",
+     "start": 13,
+     "end": 18
+    },
+    {
+     "text": "boxes",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 19,
+     "end": 24
+    },
+    {
+     "text": ":",
+     "upos": "PUNCT",
+     "ptb": ":",
+     "start": 24,
+     "end": 25
+    },
+    {
+     "text": "books",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 26,
+     "end": 31
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 31,
+     "end": 32
+    },
+    {
+     "text": "papers",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 33,
+     "end": 39
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 39,
+     "end": 40
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 41,
+     "end": 44
+    },
+    {
+     "text": "old",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 45,
+     "end": 48
+    },
+    {
+     "text": "letters",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 49,
+     "end": 56
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 56,
+     "end": 57
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s68",
+   "text": "They crossed the bridge, paused, and looked at the water below.",
+   "words": [
+    {
+     "text": "They",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "crossed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 5,
+     "end": 12
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 13,
+     "end": 16
+    },
+    {
+     "text": "bridge",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 17,
+     "end": 23
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 23,
+     "end": 24
+    },
+    {
+     "text": "paused",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 25,
+     "end": 31
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 31,
+     "end": 32
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 33,
+     "end": 36
+    },
+    {
+     "text": "looked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 37,
+     "end": 43
+    },
+    {
+     "text": "at",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 44,
+     "end": 46
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 47,
+     "end": 50
+    },
+    {
+     "text": "water",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 51,
+     "end": 56
+    },
+    {
+     "text": "below",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 57,
+     "end": 62
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 62,
+     "end": 63
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s69",
+   "text": "The clock chimed noon, and the office slowly emptied.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "clock",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "chimed",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 10,
+     "end": 16
+    },
+    {
+     "text": "noon",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 17,
+     "end": 21
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 21,
+     "end": 22
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 23,
+     "end": 26
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 27,
+     "end": 30
+    },
+    {
+     "text": "office",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 31,
+     "end": 37
+    },
+    {
+     "text": "slowly",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 38,
+     "end": 44
+    },
+    {
+     "text": "emptied",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 45,
+     "end": 52
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 52,
+     "end": 53
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s70",
+   "text": "She wiped the counter, rinsed the cloth, and turned off the light.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "wiped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 10,
+     "end": 13
+    },
+    {
+     "text": "counter",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 14,
+     "end": 21
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 21,
+     "end": 22
+    },
+    {
+     "text": "rinsed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 23,
+     "end": 29
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 30,
+     "end": 33
+    },
+    {
+     "text": "cloth",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 34,
+     "end": 39
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 39,
+     "end": 40
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 41,
+     "end": 44
+    },
+    {
+     "text": "turned",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 45,
+     "end": 51
+    },
+    {
+     "text": "off",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 52,
+     "end": 55
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 56,
+     "end": 59
+    },
+    {
+     "text": "light",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 60,
+     "end": 65
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 65,
+     "end": 66
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s71",
+   "text": "The wind rattled the shutters throughout the evening.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "wind",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "rattled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 9,
+     "end": 16
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 17,
+     "end": 20
+    },
+    {
+     "text": "shutters",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 21,
+     "end": 29
+    },
+    {
+     "text": "throughout",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 30,
+     "end": 40
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 41,
+     "end": 44
+    },
+    {
+     "text": "evening",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 45,
+     "end": 52
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 52,
+     "end": 53
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s72",
+   "text": "He wrote the address twice to make sure it was right.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "wrote",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 8
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 9,
+     "end": 12
+    },
+    {
+     "text": "address",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 13,
+     "end": 20
+    },
+    {
+     "text": "twice",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 21,
+     "end": 26
+    },
+    {
+     "text": "to",
+     "upos": "PART",
+     "ptb": "TO",
+     "start": 27,
+     "end": 29
+    },
+    {
+     "text": "make",
+     "upos": "VERB",
+     "ptb": "VB",
+     "start": 30,
+     "end": 34
+    },
+    {
+     "text": "sure",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": "it",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 40,
+     "end": 42
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 43,
+     "end": 46
+    },
+    {
+     "text": "right",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 47,
+     "end": 52
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 52,
+     "end": 53
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s73",
+   "text": "A row of chairs stood empty in the cold, silent hall.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "row",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 2,
+     "end": 5
+    },
+    {
+     "text": "of",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 6,
+     "end": 8
+    },
+    {
+     "text": "chairs",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 9,
+     "end": 15
+    },
+    {
+     "text": "stood",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 16,
+     "end": 21
+    },
+    {
+     "text": "empty",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 22,
+     "end": 27
+    },
+    {
+     "text": "in",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 28,
+     "end": 30
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "cold",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 39,
+     "end": 40
+    },
+    {
+     "text": "silent",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 41,
+     "end": 47
+    },
+    {
+     "text": "hall",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 48,
+     "end": 52
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 52,
+     "end": 53
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s74",
+   "text": "The taxi honked, swerved, and sped down the avenue.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "taxi",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "honked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 9,
+     "end": 15
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 15,
+     "end": 16
+    },
+    {
+     "text": "swerved",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 17,
+     "end": 24
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 24,
+     "end": 25
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 26,
+     "end": 29
+    },
+    {
+     "text": "sped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 30,
+     "end": 34
+    },
+    {
+     "text": "down",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 40,
+     "end": 43
+    },
+    {
+     "text": "avenue",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 44,
+     "end": 50
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 50,
+     "end": 51
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s75",
+   "text": "She whispered the answer, hoping no one would hear.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "whispered",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 13
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 14,
+     "end": 17
+    },
+    {
+     "text": "answer",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 18,
+     "end": 24
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 24,
+     "end": 25
+    },
+    {
+     "text": "hoping",
+     "upos": "VERB",
+     "ptb": "VBG",
+     "start": 26,
+     "end": 32
+    },
+    {
+     "text": "no",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 33,
+     "end": 35
+    },
+    {
+     "text": "one",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 36,
+     "end": 39
+    },
+    {
+     "text": "would",
+     "upos": "AUX",
+     "ptb": "MD",
+     "start": 40,
+     "end": 45
+    },
+    {
+     "text": "hear",
+     "upos": "VERB",
+     "ptb": "VB",
+     "start": 46,
+     "end": 50
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 50,
+     "end": 51
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s76",
+   "text": "The paint dried slowly in the damp morning air.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "paint",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "dried",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 10,
+     "end": 15
+    },
+    {
+     "text": "slowly",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 16,
+     "end": 22
+    },
+    {
+     "text": "in",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 23,
+     "end": 25
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 26,
+     "end": 29
+    },
+    {
+     "text": "damp",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 30,
+     "end": 34
+    },
+    {
+     "text": "morning",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 35,
+     "end": 42
+    },
+    {
+     "text": "air",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 43,
+     "end": 46
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 46,
+     "end": 47
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s77",
+   "text": "They lined up the boxes, labeled each one, and sealed them.",
+   "words": [
+    {
+     "text": "They",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "lined",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 5,
+     "end": 10
+    },
+    {
+     "text": "up",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 11,
+     "end": 13
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 14,
+     "end": 17
+    },
+    {
+     "text": "boxes",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 18,
+     "end": 23
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 23,
+     "end": 24
+    },
+    {
+     "text": "labeled",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 25,
+     "end": 32
+    },
+    {
+     "text": "each",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 33,
+     "end": 37
+    },
+    {
+     "text": "one",
+     "upos": "NUM",
+     "ptb": "CD",
+     "start": 38,
+     "end": 41
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 41,
+     "end": 42
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 43,
+     "end": 46
+    },
+    {
+     "text": "sealed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 47,
+     "end": 53
+    },
+    {
+     "text": "them",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 54,
+     "end": 58
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 58,
+     "end": 59
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s78",
+   "text": "The pond was still, reflecting the pale gray sky.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "pond",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 9,
+     "end": 12
+    },
+    {
+     "text": "still",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 13,
+     "end": 18
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 18,
+     "end": 19
+    },
+    {
+     "text": "reflecting",
+     "upos": "VERB",
+     "ptb": "VBG",
+     "start": 20,
+     "end": 30
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "pale",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": "gray",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 40,
+     "end": 44
+    },
+    {
+     "text": "sky",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 45,
+     "end": 48
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 48,
+     "end": 49
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s79",
+   "text": "He counted the coins, sorted them, and dropped them in the jar.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "counted",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 10
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 11,
+     "end": 14
+    },
+    {
+     "text": "coins",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 15,
+     "end": 20
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 20,
+     "end": 21
+    },
+    {
+     "text": "sorted",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 22,
+     "end": 28
+    },
+    {
+     "text": "them",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 29,
+     "end": 33
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 33,
+     "end": 34
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 35,
+     "end": 38
+    },
+    {
+     "text": "dropped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 39,
+     "end": 46
+    },
+    {
+     "text": "them",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 47,
+     "end": 51
+    },
+    {
+     "text": "in",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 52,
+     "end": 54
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 55,
+     "end": 58
+    },
+    {
+     "text": "jar",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 59,
+     "end": 62
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 62,
+     "end": 63
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s80",
+   "text": "The hall echoed with footsteps as the crowd left.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "hall",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "echoed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 9,
+     "end": 15
+    },
+    {
+     "text": "with",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 16,
+     "end": 20
+    },
+    {
+     "text": "footsteps",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 21,
+     "end": 30
+    },
+    {
+     "text": "as",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 31,
+     "end": 33
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 34,
+     "end": 37
+    },
+    {
+     "text": "crowd",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 38,
+     "end": 43
+    },
+    {
+     "text": "left",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 44,
+     "end": 48
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 48,
+     "end": 49
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s81",
+   "text": "She folded the map, tucked it away, and started the engine.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "folded",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 11,
+     "end": 14
+    },
+    {
+     "text": "map",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 15,
+     "end": 18
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 18,
+     "end": 19
+    },
+    {
+     "text": "tucked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 20,
+     "end": 26
+    },
+    {
+     "text": "it",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 27,
+     "end": 29
+    },
+    {
+     "text": "away",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 30,
+     "end": 34
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 34,
+     "end": 35
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 36,
+     "end": 39
+    },
+    {
+     "text": "started",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 40,
+     "end": 47
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 48,
+     "end": 51
+    },
+    {
+     "text": "engine",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 52,
+     "end": 58
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 58,
+     "end": 59
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s82",
+   "text": "The candle burned low, casting shadows on the wall.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "candle",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "burned",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 11,
+     "end": 17
+    },
+    {
+     "text": "low",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 18,
+     "end": 21
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 21,
+     "end": 22
+    },
+    {
+     "text": "casting",
+     "upos": "VERB",
+     "ptb": "VBG",
+     "start": 23,
+     "end": 30
+    },
+    {
+     "text": "shadows",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 31,
+     "end": 38
+    },
+    {
+     "text": "on",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 39,
+     "end": 41
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 42,
+     "end": 45
+    },
+    {
+     "text": "wall",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 46,
+     "end": 50
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 50,
+     "end": 51
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s83",
+   "text": "A soft knock came at the door, then another.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "soft",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 6
+    },
+    {
+     "text": "knock",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 7,
+     "end": 12
+    },
+    {
+     "text": "came",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 13,
+     "end": 17
+    },
+    {
+     "text": "at",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 18,
+     "end": 20
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 21,
+     "end": 24
+    },
+    {
+     "text": "door",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 25,
+     "end": 29
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 29,
+     "end": 30
+    },
+    {
+     "text": "then",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 31,
+     "end": 35
+    },
+    {
+     "text": "another",
+     "upos": "PRON",
+     "ptb": "DT",
+     "start": 36,
+     "end": 43
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 43,
+     "end": 44
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s84",
+   "text": "He wiped his glasses, blinked, and read the sign again.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "wiped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 8
+    },
+    {
+     "text": "his",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 9,
+     "end": 12
+    },
+    {
+     "text": "glasses",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 13,
+     "end": 20
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 20,
+     "end": 21
+    },
+    {
+     "text": "blinked",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 22,
+     "end": 29
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 29,
+     "end": 30
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "read",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 40,
+     "end": 43
+    },
+    {
+     "text": "sign",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 44,
+     "end": 48
+    },
+    {
+     "text": "again",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 49,
+     "end": 54
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 54,
+     "end": 55
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s85",
+   "text": "The kettle boiled over while she answered the phone.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "kettle",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "boiled",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 11,
+     "end": 17
+    },
+    {
+     "text": "over",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 18,
+     "end": 22
+    },
+    {
+     "text": "while",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 23,
+     "end": 28
+    },
+    {
+     "text": "she",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 29,
+     "end": 32
+    },
+    {
+     "text": "answered",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 33,
+     "end": 41
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 42,
+     "end": 45
+    },
+    {
+     "text": "phone",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 46,
+     "end": 51
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 51,
+     "end": 52
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s86",
+   "text": "They walked along the shore, collecting smooth, flat stones.",
+   "words": [
+    {
+     "text": "They",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "walked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 5,
+     "end": 11
+    },
+    {
+     "text": "along",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 12,
+     "end": 17
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 18,
+     "end": 21
+    },
+    {
+     "text": "shore",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 22,
+     "end": 27
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 27,
+     "end": 28
+    },
+    {
+     "text": "collecting",
+     "upos": "VERB",
+     "ptb": "VBG",
+     "start": 29,
+     "end": 39
+    },
+    {
+     "text": "smooth",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 40,
+     "end": 46
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 46,
+     "end": 47
+    },
+    {
+     "text": "flat",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 48,
+     "end": 52
+    },
+    {
+     "text": "stones",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 53,
+     "end": 59
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 59,
+     "end": 60
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s87",
+   "text": "The engine sputtered, coughed, and finally started.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "engine",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "sputtered",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 11,
+     "end": 20
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 20,
+     "end": 21
+    },
+    {
+     "text": "coughed",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 22,
+     "end": 29
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 29,
+     "end": 30
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "finally",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 35,
+     "end": 42
+    },
+    {
+     "text": "started",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 43,
+     "end": 50
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 50,
+     "end": 51
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s88",
+   "text": "She hung the coat, kicked off her shoes, and sank into the chair.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "hung",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 9,
+     "end": 12
+    },
+    {
+     "text": "coat",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 13,
+     "end": 17
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 17,
+     "end": 18
+    },
+    {
+     "text": "kicked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 19,
+     "end": 25
+    },
+    {
+     "text": "off",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 26,
+     "end": 29
+    },
+    {
+     "text": "her",
+     "upos": "PRON",
+     "ptb": "PRP$",
+     "start": 30,
+     "end": 33
+    },
+    {
+     "text": "shoes",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 34,
+     "end": 39
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 39,
+     "end": 40
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 41,
+     "end": 44
+    },
+    {
+     "text": "sank",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 45,
+     "end": 49
+    },
+    {
+     "text": "into",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 50,
+     "end": 54
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 55,
+     "end": 58
+    },
+    {
+     "text": "chair",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 59,
+     "end": 64
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 64,
+     "end": 65
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s89",
+   "text": "The office was quiet except for the hum of the printer.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "office",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 11,
+     "end": 14
+    },
+    {
+     "text": "quiet",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 15,
+     "end": 20
+    },
+    {
+     "text": "except",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 21,
+     "end": 27
+    },
+    {
+     "text": "for",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 28,
+     "end": 31
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 32,
+     "end": 35
+    },
+    {
+     "text": "hum",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 36,
+     "end": 39
+    },
+    {
+     "text": "of",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 40,
+     "end": 42
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 43,
+     "end": 46
+    },
+    {
+     "text": "printer",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 47,
+     "end": 54
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 54,
+     "end": 55
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s90",
+   "text": "A long shadow stretched across the empty courtyard.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "long",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 6
+    },
+    {
+     "text": "shadow",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 7,
+     "end": 13
+    },
+    {
+     "text": "stretched",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 14,
+     "end": 23
+    },
+    {
+     "text": "across",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 24,
+     "end": 30
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "empty",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 35,
+     "end": 40
+    },
+    {
+     "text": "courtyard",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 41,
+     "end": 50
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 50,
+     "end": 51
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s91",
+   "text": "He stacked the plates, wiped the tray, and closed the drawer.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "stacked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 10
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 11,
+     "end": 14
+    },
+    {
+     "text": "plates",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 15,
+     "end": 21
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 21,
+     "end": 22
+    },
+    {
+     "text": "wiped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 23,
+     "end": 28
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 29,
+     "end": 32
+    },
+    {
+     "text": "tray",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 33,
+     "end": 37
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 37,
+     "end": 38
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 39,
+     "end": 42
+    },
+    {
+     "text": "closed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 43,
+     "end": 49
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 50,
+     "end": 53
+    },
+    {
+     "text": "drawer",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 54,
+     "end": 60
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 60,
+     "end": 61
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s92",
+   "text": "The train slowed, stopped, and let the passengers off.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "train",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "slowed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 10,
+     "end": 16
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 16,
+     "end": 17
+    },
+    {
+     "text": "stopped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 18,
+     "end": 25
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 25,
+     "end": 26
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 27,
+     "end": 30
+    },
+    {
+     "text": "let",
+     "upos": "VERB",
+     "ptb": "VB",
+     "start": 31,
+     "end": 34
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 35,
+     "end": 38
+    },
+    {
+     "text": "passengers",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 39,
+     "end": 49
+    },
+    {
+     "text": "off",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 50,
+     "end": 53
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 53,
+     "end": 54
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s93",
+   "text": "She checked the list twice: sugar, salt, and tea.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "checked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 11
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 12,
+     "end": 15
+    },
+    {
+     "text": "list",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 16,
+     "end": 20
+    },
+    {
+     "text": "twice",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 21,
+     "end": 26
+    },
+    {
+     "text": ":",
+     "upos": "PUNCT",
+     "ptb": ":",
+     "start": 26,
+     "end": 27
+    },
+    {
+     "text": "sugar",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 28,
+     "end": 33
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 33,
+     "end": 34
+    },
+    {
+     "text": "salt",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 35,
+     "end": 39
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 39,
+     "end": 40
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 41,
+     "end": 44
+    },
+    {
+     "text": "tea",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 45,
+     "end": 48
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 48,
+     "end": 49
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s94",
+   "text": "The gate creaked as the wind pushed it open.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "gate",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 8
+    },
+    {
+     "text": "creaked",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 9,
+     "end": 16
+    },
+    {
+     "text": "as",
+     "upos": "SCONJ",
+     "ptb": "IN",
+     "start": 17,
+     "end": 19
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 20,
+     "end": 23
+    },
+    {
+     "text": "wind",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 24,
+     "end": 28
+    },
+    {
+     "text": "pushed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 29,
+     "end": 35
+    },
+    {
+     "text": "it",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 36,
+     "end": 38
+    },
+    {
+     "text": "open",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 39,
+     "end": 43
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 43,
+     "end": 44
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s95",
+   "text": "They sat on the bench, sharing stories until sunset.",
+   "words": [
+    {
+     "text": "They",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 4
+    },
+    {
+     "text": "sat",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 5,
+     "end": 8
+    },
+    {
+     "text": "on",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 9,
+     "end": 11
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 12,
+     "end": 15
+    },
+    {
+     "text": "bench",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 16,
+     "end": 21
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 21,
+     "end": 22
+    },
+    {
+     "text": "sharing",
+     "upos": "VERB",
+     "ptb": "VBG",
+     "start": 23,
+     "end": 30
+    },
+    {
+     "text": "stories",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 31,
+     "end": 38
+    },
+    {
+     "text": "until",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 39,
+     "end": 44
+    },
+    {
+     "text": "sunset",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 45,
+     "end": 51
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 51,
+     "end": 52
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s96",
+   "text": "The clerk counted the change and handed over the receipt.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "clerk",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "counted",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 10,
+     "end": 17
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 18,
+     "end": 21
+    },
+    {
+     "text": "change",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 22,
+     "end": 28
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 29,
+     "end": 32
+    },
+    {
+     "text": "handed",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 33,
+     "end": 39
+    },
+    {
+     "text": "over",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 40,
+     "end": 44
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 45,
+     "end": 48
+    },
+    {
+     "text": "receipt",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 49,
+     "end": 56
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 56,
+     "end": 57
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s97",
+   "text": "A faint smell of paint lingered in the new apartment.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "faint",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 2,
+     "end": 7
+    },
+    {
+     "text": "smell",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 8,
+     "end": 13
+    },
+    {
+     "text": "of",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 14,
+     "end": 16
+    },
+    {
+     "text": "paint",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 17,
+     "end": 22
+    },
+    {
+     "text": "lingered",
+     "upos": "VERB",
+     "ptb": "VBN",
+     "start": 23,
+     "end": 31
+    },
+    {
+     "text": "in",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 32,
+     "end": 34
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 35,
+     "end": 38
+    },
+    {
+     "text": "new",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 39,
+     "end": 42
+    },
+    {
+     "text": "apartment",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 43,
+     "end": 52
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 52,
+     "end": 53
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s98",
+   "text": "He locked the office, rode the elevator down, and stepped outside.",
+   "words": [
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 2
+    },
+    {
+     "text": "locked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 3,
+     "end": 9
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 10,
+     "end": 13
+    },
+    {
+     "text": "office",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 14,
+     "end": 20
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 20,
+     "end": 21
+    },
+    {
+     "text": "rode",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 22,
+     "end": 26
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 27,
+     "end": 30
+    },
+    {
+     "text": "elevator",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 31,
+     "end": 39
+    },
+    {
+     "text": "down",
+     "upos": "ADP",
+     "ptb": "RP",
+     "start": 40,
+     "end": 44
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 44,
+     "end": 45
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 46,
+     "end": 49
+    },
+    {
+     "text": "stepped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 50,
+     "end": 57
+    },
+    {
+     "text": "outside",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 58,
+     "end": 65
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 65,
+     "end": 66
+    }
+   ]
+  },
+  {
+   "source": "sentences.txt",
+   "label": "s99",
+   "text": "The morning fog lifted slowly, revealing the quiet harbor.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "morning",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 11
+    },
+    {
+     "text": "fog",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 12,
+     "end": 15
+    },
+    {
+     "text": "lifted",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 16,
+     "end": 22
+    },
+    {
+     "text": "slowly",
+     "upos": "ADV",
+     "ptb": "RB",
+     "start": 23,
+     "end": 29
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 29,
+     "end": 30
+    },
+    {
+     "text": "revealing",
+     "upos": "VERB",
+     "ptb": "VBG",
+     "start": 31,
+     "end": 40
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 41,
+     "end": 44
+    },
+    {
+     "text": "quiet",
+     "upos": "ADJ",
+     "ptb": "JJ",
+     "start": 45,
+     "end": 50
+    },
+    {
+     "text": "harbor",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 51,
+     "end": 57
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 57,
+     "end": 58
+    }
+   ]
+  },
+  {
+   "source": "exaggerated_phrases.txt",
+   "label": "p0",
+   "text": "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello",
+   "words": [
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 0,
+     "end": 5
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 6,
+     "end": 11
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 12,
+     "end": 17
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 18,
+     "end": 23
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 24,
+     "end": 29
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 30,
+     "end": 35
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 36,
+     "end": 41
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 42,
+     "end": 47
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 48,
+     "end": 53
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 54,
+     "end": 59
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 60,
+     "end": 65
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 66,
+     "end": 71
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 72,
+     "end": 77
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 78,
+     "end": 83
+    },
+    {
+     "text": "hello",
+     "upos": "INTJ",
+     "ptb": "UH",
+     "start": 84,
+     "end": 89
+    }
+   ]
+  },
+  {
+   "source": "exaggerated_phrases.txt",
+   "label": "p1",
+   "text": "The cat watched the bird through the window by the door near the garden.",
+   "words": [
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "cat",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 4,
+     "end": 7
+    },
+    {
+     "text": "watched",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 8,
+     "end": 15
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 16,
+     "end": 19
+    },
+    {
+     "text": "bird",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 20,
+     "end": 24
+    },
+    {
+     "text": "through",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 25,
+     "end": 32
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 33,
+     "end": 36
+    },
+    {
+     "text": "window",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 37,
+     "end": 43
+    },
+    {
+     "text": "by",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 44,
+     "end": 46
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 47,
+     "end": 50
+    },
+    {
+     "text": "door",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 51,
+     "end": 55
+    },
+    {
+     "text": "near",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 56,
+     "end": 60
+    },
+    {
+     "text": "the",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 61,
+     "end": 64
+    },
+    {
+     "text": "garden",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 65,
+     "end": 71
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 71,
+     "end": 72
+    }
+   ]
+  },
+  {
+   "source": "exaggerated_phrases.txt",
+   "label": "p2",
+   "text": "A cat watched a bird through a window by a door near a garden.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "cat",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 2,
+     "end": 5
+    },
+    {
+     "text": "watched",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 6,
+     "end": 13
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 14,
+     "end": 15
+    },
+    {
+     "text": "bird",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 16,
+     "end": 20
+    },
+    {
+     "text": "through",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 21,
+     "end": 28
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 29,
+     "end": 30
+    },
+    {
+     "text": "window",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 31,
+     "end": 37
+    },
+    {
+     "text": "by",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 38,
+     "end": 40
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 41,
+     "end": 42
+    },
+    {
+     "text": "door",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 43,
+     "end": 47
+    },
+    {
+     "text": "near",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 48,
+     "end": 52
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 53,
+     "end": 54
+    },
+    {
+     "text": "garden",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 55,
+     "end": 61
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 61,
+     "end": 62
+    }
+   ]
+  },
+  {
+   "source": "exaggerated_phrases.txt",
+   "label": "p3",
+   "text": "A cat watched a bird. It was through a window by a door. The door led to a garden.",
+   "words": [
+    {
+     "text": "A",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "text": "cat",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 2,
+     "end": 5
+    },
+    {
+     "text": "watched",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 6,
+     "end": 13
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 14,
+     "end": 15
+    },
+    {
+     "text": "bird",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 16,
+     "end": 20
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 20,
+     "end": 21
+    },
+    {
+     "text": "It",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 22,
+     "end": 24
+    },
+    {
+     "text": "was",
+     "upos": "AUX",
+     "ptb": "VBD",
+     "start": 25,
+     "end": 28
+    },
+    {
+     "text": "through",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 29,
+     "end": 36
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 37,
+     "end": 38
+    },
+    {
+     "text": "window",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 39,
+     "end": 45
+    },
+    {
+     "text": "by",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 46,
+     "end": 48
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 49,
+     "end": 50
+    },
+    {
+     "text": "door",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 51,
+     "end": 55
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 55,
+     "end": 56
+    },
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 57,
+     "end": 60
+    },
+    {
+     "text": "door",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 61,
+     "end": 65
+    },
+    {
+     "text": "led",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 66,
+     "end": 69
+    },
+    {
+     "text": "to",
+     "upos": "ADP",
+     "ptb": "IN",
+     "start": 70,
+     "end": 72
+    },
+    {
+     "text": "a",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 73,
+     "end": 74
+    },
+    {
+     "text": "garden",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 75,
+     "end": 81
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 81,
+     "end": 82
+    }
+   ]
+  },
+  {
+   "source": "exaggerated_phrases.txt",
+   "label": "p4",
+   "text": "She bought milk, bread, eggs, butter, jam, cheese, sugar, flour, and rice.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "bought",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 10
+    },
+    {
+     "text": "milk",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 11,
+     "end": 15
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 15,
+     "end": 16
+    },
+    {
+     "text": "bread",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 17,
+     "end": 22
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 22,
+     "end": 23
+    },
+    {
+     "text": "eggs",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 24,
+     "end": 28
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 28,
+     "end": 29
+    },
+    {
+     "text": "butter",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 30,
+     "end": 36
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 36,
+     "end": 37
+    },
+    {
+     "text": "jam",
+     "upos": "PROPN",
+     "ptb": "NNP",
+     "start": 38,
+     "end": 41
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 41,
+     "end": 42
+    },
+    {
+     "text": "cheese",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 43,
+     "end": 49
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 49,
+     "end": 50
+    },
+    {
+     "text": "sugar",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 51,
+     "end": 56
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 56,
+     "end": 57
+    },
+    {
+     "text": "flour",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 58,
+     "end": 63
+    },
+    {
+     "text": ",",
+     "upos": "PUNCT",
+     "ptb": ",",
+     "start": 63,
+     "end": 64
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 65,
+     "end": 68
+    },
+    {
+     "text": "rice",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 69,
+     "end": 73
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 73,
+     "end": 74
+    }
+   ]
+  },
+  {
+   "source": "exaggerated_phrases.txt",
+   "label": "p5",
+   "text": "She likes apples and pears and plums and peaches and grapes and lemons.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "likes",
+     "upos": "VERB",
+     "ptb": "VBZ",
+     "start": 4,
+     "end": 9
+    },
+    {
+     "text": "apples",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 10,
+     "end": 16
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 17,
+     "end": 20
+    },
+    {
+     "text": "pears",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 21,
+     "end": 26
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 27,
+     "end": 30
+    },
+    {
+     "text": "plums",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 31,
+     "end": 36
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 37,
+     "end": 40
+    },
+    {
+     "text": "peaches",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 41,
+     "end": 48
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 49,
+     "end": 52
+    },
+    {
+     "text": "grapes",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 53,
+     "end": 59
+    },
+    {
+     "text": "and",
+     "upos": "CCONJ",
+     "ptb": "CC",
+     "start": 60,
+     "end": 63
+    },
+    {
+     "text": "lemons",
+     "upos": "NOUN",
+     "ptb": "NNS",
+     "start": 64,
+     "end": 70
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 70,
+     "end": 71
+    }
+   ]
+  },
+  {
+   "source": "exaggerated_phrases.txt",
+   "label": "p6",
+   "text": "She ran. He walked. They stopped. The dog barked. The bird sang. The day ended.",
+   "words": [
+    {
+     "text": "She",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "text": "ran",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 4,
+     "end": 7
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 7,
+     "end": 8
+    },
+    {
+     "text": "He",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 9,
+     "end": 11
+    },
+    {
+     "text": "walked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 12,
+     "end": 18
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 18,
+     "end": 19
+    },
+    {
+     "text": "They",
+     "upos": "PRON",
+     "ptb": "PRP",
+     "start": 20,
+     "end": 24
+    },
+    {
+     "text": "stopped",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 25,
+     "end": 32
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 32,
+     "end": 33
+    },
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 34,
+     "end": 37
+    },
+    {
+     "text": "dog",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 38,
+     "end": 41
+    },
+    {
+     "text": "barked",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 42,
+     "end": 48
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 48,
+     "end": 49
+    },
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 50,
+     "end": 53
+    },
+    {
+     "text": "bird",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 54,
+     "end": 58
+    },
+    {
+     "text": "sang",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 59,
+     "end": 63
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 63,
+     "end": 64
+    },
+    {
+     "text": "The",
+     "upos": "DET",
+     "ptb": "DT",
+     "start": 65,
+     "end": 68
+    },
+    {
+     "text": "day",
+     "upos": "NOUN",
+     "ptb": "NN",
+     "start": 69,
+     "end": 72
+    },
+    {
+     "text": "ended",
+     "upos": "VERB",
+     "ptb": "VBD",
+     "start": 73,
+     "end": 78
+    },
+    {
+     "text": ".",
+     "upos": "PUNCT",
+     "ptb": ".",
+     "start": 78,
+     "end": 79
+    }
+   ]
+  }
+ ]
+}

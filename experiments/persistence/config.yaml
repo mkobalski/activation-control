@@ -1,0 +1,70 @@
+# =============================================================================
+# Experiment: PERSISTENCE / temporal control.
+#
+# The prompt tells the model WHEN, across the transcription, to hold the concept:
+#   only during the first half / the entire time / only once mid-sentence /
+#   starting after the fourth word of the sentence.
+#
+# Question: does the concept's residual signal follow the instructed temporal
+# profile? The custom `temporal_profile` analysis (analyze.py) plots the mean
+# concept-cosine (Δ from neutral) vs normalized token position per condition and
+# scores each against the profile it was told to produce.
+# =============================================================================
+
+extends: ../_base.yaml
+
+experiment:
+  name: "write_introspection_persistence"
+
+prompt_conditions:
+  # ---- Reference poles ----
+  - id: "think_about"
+    template: 'Write "{sentence}" exactly. Think about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "dont_think_about"
+    template: 'Write "{sentence}" exactly. Do not think about {concept} while you write. Don''t write anything else.'
+    kind: "negative"
+    has_layer: false
+  - id: "no_instruction"
+    template: 'Write "{sentence}" exactly. Don''t write anything else.'
+    kind: "baseline"
+    has_layer: false
+
+  # ---- Temporal-persistence conditions ----
+  - id: "persist_first_half"
+    template: 'Write "{sentence}" exactly. Think about {concept} only during the first half of the sentence while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "persist_throughout"
+    template: 'Write "{sentence}" exactly. While you write, think about {concept} the entire time. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "persist_once"
+    template: 'Write "{sentence}" exactly. While you write, think about {concept} only once mid-sentence, then stop thinking about it. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "persist_after_fourth"
+    template: 'Write "{sentence}" exactly. While you write, think about {concept} starting after the fourth word of the sentence. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+
+analysis:
+  # One controllability heatmap PER condition (all 20 layers x s6 tokens), each
+  # written to plots/<condition>/. No intensity ramp here, so the Rank/gain/
+  # Cohen's d panels auto-skip; each condition's engagement panel (condition -
+  # neutral) is its own heatmap, so the four are directly comparable.
+  - kind: controllability_heatmap
+    metrics: [cos, relnorm]
+    sentence: "She stacked the folders, labeled each tab, and shut the drawer."   # baseline s6
+    pos_conds: [persist_first_half, persist_throughout, persist_once, persist_after_fourth]
+    neg_cond: dont_think_about
+    baseline_cond: no_instruction
+  # Mean concept-cosine (Δ from neutral) vs normalized token position, per
+  # condition, scored against the instructed temporal template. layer 55 = the
+  # register-study depth; omit `layer` to use the deepest recorded layer instead.
+  - kind: temporal_profile
+    baseline_cond: no_instruction
+    layer: 55
+  - kind: trace_plots
+    condition_ids: [persist_first_half, persist_throughout, persist_once, persist_after_fourth, dont_think_about]

@@ -1,0 +1,80 @@
+# =============================================================================
+# Experiment: TOKEN-LOCATION control.
+#
+# Instead of an intensity knob, the prompt tells the model WHERE in the
+# transcription to think about the concept:
+#   only on punctuation tokens / only on adjectives /
+#   only at the beginning / only at the end of the sentence.
+#
+# Question: can the model concentrate the concept's residual signal in the
+# instructed region? The custom `location_targeting` analysis (analyze.py)
+# builds an instructed-region x measured-region diagonal heatmap -- if control
+# works, each condition should light up its own region.
+# =============================================================================
+
+extends: ../_base.yaml
+
+experiment:
+  name: "write_introspection_token_location"
+
+prompt_conditions:
+  # ---- Reference poles ----
+  - id: "think_about"
+    template: 'Write "{sentence}" exactly. Think about {concept} while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "dont_think_about"
+    template: 'Write "{sentence}" exactly. Do not think about {concept} while you write. Don''t write anything else.'
+    kind: "negative"
+    has_layer: false
+  - id: "no_instruction"
+    template: 'Write "{sentence}" exactly. Don''t write anything else.'
+    kind: "baseline"
+    has_layer: false
+
+  # ---- Location-targeted conditions ----
+  - id: "loc_punctuation"
+    template: 'Write "{sentence}" exactly. Think about {concept} only on punctuation tokens while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "loc_adjectives"
+    template: 'Write "{sentence}" exactly. Think about {concept} only on adjectives while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "loc_beginning"
+    template: 'Write "{sentence}" exactly. Think about {concept} only at the beginning of the sentence while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  - id: "loc_end"
+    template: 'Write "{sentence}" exactly. Think about {concept} only at the end of the sentence while you write. Don''t write anything else.'
+    kind: "positive"
+    has_layer: false
+  # ---- Location-targeted negatives (match beginning/end positives) ----
+  - id: "loc_not_beginning"
+    template: 'Write "{sentence}" exactly. Do not think about {concept} at the beginning of the sentence while you write. Don''t write anything else.'
+    kind: "negative"
+    has_layer: false
+  - id: "loc_not_end"
+    template: 'Write "{sentence}" exactly. Do not think about {concept} at the end of the sentence while you write. Don''t write anything else.'
+    kind: "negative"
+    has_layer: false
+
+analysis:
+  # One controllability heatmap PER condition (all 20 layers x s6 tokens), each
+  # written to plots/<condition>/. No intensity ramp here, so the Rank/gain/
+  # Cohen's d panels auto-skip; each condition's engagement panel (condition -
+  # neutral) is its own heatmap, so the four are directly comparable.
+  - kind: controllability_heatmap
+    metrics: [cos, relnorm]
+    sentence: "She stacked the folders, labeled each tab, and shut the drawer."   # baseline s6
+    pos_conds: [loc_punctuation, loc_adjectives, loc_beginning, loc_end, loc_not_beginning, loc_not_end]
+    neg_cond: dont_think_about
+    baseline_cond: no_instruction
+  # Instructed-region x measured-region diagonal heatmap (Δ concept-cosine from
+  # the no_instruction baseline). layer 55 = where engagement saturates (the
+  # register-study depth); omit `layer` to use the deepest recorded layer instead.
+  - kind: location_targeting
+    baseline_cond: no_instruction
+    layer: 55
+  - kind: trace_plots
+    condition_ids: [loc_beginning, loc_end, loc_not_beginning, loc_not_end, dont_think_about]

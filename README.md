@@ -55,8 +55,12 @@ The measures built on a readout:
 |---|---|---|---|
 | **Rank** | graded "dial" control: does the readout track intensity 1→4 monotonically? (mean **signed** Spearman over concepts) | [-1, 1] | yes (rank-based) |
 | **gain** | effect size: how far does the readout swing across the ramp? (`Δreadout` = int4 − int1) | signed | **relnorm: yes**; cos: partial |
-| **Cohen's d** | standardized ramp gain (`meanΔ / sdΔ`) — big *and* consistent across concepts | unbounded | **yes** (ratio cancels units) |
 | **engagement / suppression** | two-panel: each condition minus the neutral baseline (`think − neutral`, `dont − neutral`); red = above neutral, blue = below | signed | **relnorm: yes**; cos: partial |
+
+> **Cohen's d is disabled.** The standardized ramp gain (`meanΔ / sdΔ`) is no
+> longer computed or rendered — its methodology is still documented in
+> `MEASURES.md` §4 and the code is retained (commented) in
+> `controllability_heatmap.py` for easy restoration.
 
 `Rank` has a **`_specific`** variant on the direction channel that subtracts the
 mean off-concept readout, isolating control of *this* concept from a generic
@@ -68,37 +72,31 @@ The two magnitude readouts differ in comparability:
   gain `Δrelnorm` cancels both the model's norm scale *and* hidden-dimension — it
   is **fully cross-model comparable**, so `gain` is reported.
 - **`norm`** (raw `‖r‖`) is in model-specific units, so `gain` is **suppressed**
-  for it — only the scale-invariant `Cohen's d` and `Rank` are kept.
+  for it — only the scale-invariant `Rank` is kept.
 
 On the direction side, `Δcos` is invariant to the norm scale but *drifts with
 hidden dimension* (cosines shrink ~1/√d), so cosine gains are only "comparable
-across models of similar width"; the fully comparable cosine options are the
-rank measures and the ratio-form Cohen's d.
+across models of similar width"; the fully comparable cosine option is the
+rank measures.
 
 **Gain vs consistency are different axes.** A token can move a lot but
-inconsistently across concepts (high `gain`, low `Cohen's d` — e.g. some register
-slots) or move a little but very consistently (low `gain`, high `Cohen's d`).
-`gain` gives the interpretable magnitude; `Cohen's d` gives the standardized,
-cross-model-comparable signal-to-noise; read them together.
+inconsistently across concepts (a large `gain` whose sign flips concept to
+concept — e.g. some register slots) or move a little but very consistently.
+`gain` gives the interpretable magnitude; `Rank` gives the sign-consistent,
+cross-model-comparable graded-control signal; read them together.
 
 ---
 
 ## Install
 
-One machine is enough: a **GPU** generates the data (loads the model, runs the
-experiments) and the **analysis** reads only saved tensors (no model, no GPU),
-so it runs in the same environment. You *can* optionally move the analysis to a
-cheaper CPU-only box later — the minimal install below is for that case.
-`pip install -r requirements.txt` on the GPU box covers both.
+One machine: the **GPU box** generates the data (loads the model, runs the
+experiments) and also runs the **analysis**. The analysis never loads the model,
+but parts of it read a run's multi-GB `results.pkl` (activations), so it needs
+the box that holds the runs and enough host RAM (> pickle size, ~100 GB for the
+full-depth runs).
 
 ```bash
-# --- GPU box (generate data): full deps + CUDA torch ---
-pip install -r requirements.txt          # torch here pulls the CUDA build
-
-# --- CPU-only box (analysis): minimal deps ---
-pip install numpy matplotlib pyyaml      # + a CPU build of torch (to load the
-pip install torch --index-url https://download.pytorch.org/whl/cpu   # .pt vectors)
-# (add pandas only if you also run run_analysis.py)
+pip install -r requirements.txt          # torch pulls the CUDA build
 ```
 
 `bitsandbytes` (quantization) and `wandb` (logging) are optional — skip them for
@@ -111,13 +109,17 @@ Then create a `.env` with `HF_TOKEN=...` (and optional `WANDB_API_KEY=...`).
 ```bash
 # 1-2. Install + .env (see above)
 
-# 3. Generate data (GPU). This ALSO auto-writes, into results/raw/<RUN_DIR>/plots/:
-#      - the controllability heatmaps (cos + relnorm), and
-#      - the per-concept trace plots (plot1_cos, plot1_norms).
-python scripts/run_experiment.py --config configs/experiment_layers.yaml
+# 3. Generate data (GPU). The MAIN experiment is the primary one: always-on
+#    controls + selectable condition sets (intensity / token_location / persistence /
+#    layer_location). Each active set's analyses auto-run at the end
+#    (heatmaps, trace plots, targeting/temporal figures).
+python scripts/run_experiment.py --config experiments/main/config.yaml
+#    ... or a subset of sets:
+python scripts/run_experiment.py --config experiments/main/config.yaml \
+    --set 'experiment.sets=[intensity,persistence]'
 
-# 4. (Optional) re-render standalone -- a different sentence/layer/channel, or on
-#    a CPU-only box. No GPU / model load needed.
+# 4. (Optional) re-render standalone -- a different sentence/layer/channel.
+#    No model load, but may read the run's results.pkl (large RAM).
 python scripts/controllability_heatmap.py \
     --run-dir results/raw/<RUN_DIR> --model-name gemma3_27b --metric cos
 python scripts/plot_results.py --run-dir results/raw/<RUN_DIR> --layers 55 61
@@ -130,13 +132,13 @@ python scripts/plot_layer_targeting.py --run-dir results/raw/<RUN_DIR>
 ```
 
 Steps 3's plots come out automatically. Re-running the analysis scripts reads
-only the saved `results.pkl` + cached concept vectors — **no GPU and no model
-load** — so they also run on a CPU-only box.
+the saved `results.pkl` / `results.json` + cached concept vectors — no model
+load, but run them on the box holding the runs (results.pkl needs the RAM).
 
 Each run's `plots/` then contains:
 - **controllability heatmaps**, per channel (`cos`, `relnorm`):
-  `heatmap_Rank_raw_*`, `heatmap_Rank_specific_*` (cos only), `heatmap_gain_*`,
-  `heatmap_cohensd_*`, `heatmap_engage_suppress_*`, + `controllability_heatmap_<metric>.csv`.
+  `heatmap_rank_raw_*`, `heatmap_rank_specific_*` (cos only), `heatmap_gain_*`,
+  `heatmap_engage_suppress_*`, + `controllability_heatmap_<metric>.csv`.
 - **trace plots**: `plot1_cos_L<layer>_s<idx>.png`, `plot1_norms_L<layer>_s<idx>.png`.
 - **layer-targeting** (only if you run `plot_layer_targeting.py` on a
   layer-targeting run): `plot7*`–`plot12*`.
@@ -149,75 +151,109 @@ deps, call the interpreter directly and set `PYTHONPATH`, e.g.
 
 ---
 
+## Paper figures (`results/paper/`)
+
+A separate, hand-curated figure set for the write-up — **distinct from the
+per-run auto-plots above**. Each `scripts/figN_*.py` loads no model — it reads a
+saved run's `results.json` (+ `no_instruction_cache.pkl`, cached concept vectors,
+and for some analyses the run's `results.pkl`) and renders one figure. Promoted PNGs plus a per-figure `.md` handoff
+(task, measures, exact statistics, draft caption) live in `results/paper/`
+(untracked — regenerate with the driver below).
+
+| fig | script | what |
+|---|---|---|
+| 1 | see `Fig1.md` (`plot1_concept.py` / `fig1_*`) | prompted concept-modulation traces (single concept) |
+| 2 | `fig2_engage_suppress.py` | engage/suppress heatmap across depth, one sentence |
+| 3 | `fig3_position_engage_suppress.py` | …by absolute token position (length-clipped) |
+| 4 | `fig4_fraction_engage_suppress.py` | …by fractional sentence position |
+| 5 | `fig5_rank_intensity.py` | rank (signed Spearman vs intensity) by position |
+| 6 | `fig6_gain_intensity.py` | ramp gain by position |
+| 7 | `fig7_pos_categories.py` | four metrics by POS category (bars + CIs) |
+| 8 | `fig8_location_position.py` | positional targeting (beginning/end) profiles |
+| 9 | `fig9_type_targeting.py` | type targeting (punctuation/adjectives) by POS |
+| 10 | `fig10_persistence.py` | temporal persistence profiles (Fig 10a/10b) |
+| 11 | `fig11_localization_metrics.py` | localization metrics (inside gain / leakage / selectivity / center-of-mass) |
+| 12 | `fig12_persistence_metrics.py` | persistence timing metrics (onset/offset/persistence/rebound/leakage) — **draft, unpromoted** |
+| 13 | `fig13_target_matrix.py` | layer-targeting 8×8 matrices (+ supplementary demeaned); see the "significance dilemma" in `Fig13.md` |
+
+Shared conventions (Figs 2–13): the "signal" is **Δ vs `no_instruction`,
+differenced within each (sentence, concept) unit** (cancels the per-concept
+offset); averages are over **50 sentences × 10 concepts**; error bars/bands are
+**95% bootstrap CIs over units**; significance is a **paired sign-flip permutation
+with BH-FDR**. Layers are each channel's peak depth (cos deep, relnorm mid).
+`Fig11-12_explained.md` is a plain-language walkthrough of the two metric figures.
+
+**Regenerate the whole suite with the driver** (analysis is fully decoupled from
+the experiment code; no model load, reads saved runs):
+
+```bash
+python scripts/make_paper_figures.py           # Figs 1-13 (12 pending), ~5 min
+python scripts/make_paper_figures.py --only 4,7,13
+python scripts/make_paper_figures.py --list
+```
+
+> **Status: work in progress.** Figure content, layers, and some interpretations
+> (e.g. Fig 9) are still being finalized; Fig 12 is an unpromoted draft (skipped
+> by the driver, see the comment in `make_paper_figures.py`). Individual figures
+> can still be run via their own scripts, e.g.
+> `python scripts/fig7_pos_categories.py --run-dir results/raw/<RUN> --out ...`
+
+---
+
 ## Configs
 
 | config | purpose |
 |---|---|
-| `experiment.yaml` | main config: gemma3-27b, fractional analysis + prompt layers, all 14 conditions |
-| `experiment_layers.yaml` | the dataset config: explicit deep layers `[40,45,55]`, layer-targeting off |
-| `experiment_layers_granular.yaml` | granular depth sweep: every 5% of depth (20 layers) — see size note in the file |
-| `experiment_layer_target_deep.yaml` | layer-targeting study: prompts name every layer 55–61 to test per-layer concentration |
-| `experiment_attn.yaml` | attention-mass experiment (register/sink test; uses `run_attn_experiment.py`) |
+| **`experiments/main/config.yaml`** | **THE primary config**: always-on controls + 4 selectable condition sets, deep granular layers (40+), first 50 sentences — see `experiments/README.md` |
+| `experiments/intensity_scales/config.yaml` | one-off exploratory ramps (open-ceiling + 1..8); run AFTER the main experiment (controls sourced from it) |
+| `experiments/_base.yaml` | shared base (model, concepts, `sentences_file`, compliance) that the main experiment / one-offs `extends:` |
+| `configs/*.yaml` (legacy) | historical configs matching past runs (`experiment.yaml`, `experiment_layers*.yaml`, `experiment_layer_target_deep.yaml`, `experiment_attn.yaml`) — kept as records |
 | `configs/models/*.yaml` | per-model HF id + dtype |
 
-Override any value from the CLI with `--set dotted.key=value`.
+Override any value from the CLI with `--set dotted.key=value` (e.g.
+`--set 'experiment.sets=[intensity]'`, `--set 'experiment.sentence_indices=[0,6]'`,
+`--set 'analysis_layers.fractions=[0.75,0.90,1.0]'`).
 
 ---
 
 ## Repo layout
 
 ```
-configs/                  experiment + model configs (above)
+experiments/              THE experiment definitions (see experiments/README.md)
+  main/                   primary config: controls + 4 condition sets + analyses
+  intensity_scales/       one-off exploratory ramps (needs a main run first)
+  token_location/, persistence/   analyze.py register custom analysis kinds
+  _base.yaml              shared base (extends:)
+configs/                  legacy experiment configs (historical records) + models/
+sentences.txt             the 100 baseline sentences (s0..s99; labels = 0-based indices)
+exaggerated_phrases.txt   register-rich probes (p0..p6; hello x15, cat family, lists)
+pos_tags.json             word-level spaCy POS tags (UPOS+PTB) for both files; model-independent
 scripts/
-  run_experiment.py       main runner: prompt -> generate+record -> cosine -> save
-                          (auto-runs the heatmaps + trace plots at the end)
-  controllability_heatmap.py   THE controllability suite (per-token heatmaps; auto-run)
-  plot_results.py         per-concept trace plots plot1_cos / plot1_norms (auto-run)
-  plot_layer_targeting.py layer-targeting plots 7-12 (manual; layer-targeting runs only)
-  controllability.py      controllability aggregated by (layer, token-class, concept)
+  run_experiment.py       main runner: prompt -> generate+record -> cosine -> save,
+                          then dispatches the config's analysis: steps (set-gated)
+  builtin_analyses.py     registers controllability_heatmap / trace_plots / layer_targeting
+  controllability_heatmap.py   THE controllability suite (per-token heatmaps)
+  plot_results.py         per-concept trace plots plot1_cos / plot1_norms
+  plot_layer_targeting.py layer-targeting plots 7-12 (also registered as an analysis kind)
+  make_paper_figures.py   THE analysis driver: regenerates results/paper/Fig1-13
+  fig{2..13}_*.py         paper-figure scripts (no model load) -- see "Paper figures"
   run_analysis.py         cosine summary CSV by (condition, layer)
   run_attn_experiment.py  per-layer attention-mass recording
   analyze_attn.py         attention aggregation + plots
 src/
-  config.py               YAML + CLI-override -> dataclasses
+  config.py               YAML + extends + condition_sets + CLI-override -> dataclasses;
+                          sentences_file loader; sentence_indices subsetting
+  analysis/registry.py    analysis-kind registry: config `analysis:` -> registered fns
   models/{registry,wrapper}.py   short-name->HF id; loading; batched generation+recording
   vectors/extraction.py   concept-vector extraction (baseline-subtracted, cached)
   activation/recorder.py  forward hooks; per-token residual capture with per-row masking
-  prompts/builder.py      prompt formatting + full-cross trial schedule
+  prompts/builder.py      prompt formatting ({sentence}/{concept}/{layer}/{total},
+                          {total}=model layer count) + full-cross trial schedule
   analysis/{alignment,cosine}.py   align recorded window to sentence span; cosine traces
   utils/{env,io,compliance,layers,wandb_utils}.py
 ```
 
-See also: **`experiments.md`** (every run + the hardware/timing record),
-**`sentences.txt`** (the 12 sentences), and **`Update_5-14-26.md`** (the
-register/attention-sink investigation that motivated the channel split).
-
----
-
-## What we've found so far (gemma3-27b, 20-layer depth sweep)
-
-- **Engagement is deep and emergent.** "Think about X" pushes the residual
-  significantly *toward* X (above the no-instruction baseline), but only in the
-  back third of the network — negligible before ~layer 37, then rising sharply
-  and saturating (all tokens) around layers 52–58.
-- **Engagement is not symmetric with suppression.** Directionally, "don't think
-  about X" is **indistinguishable from neutral at every depth** — the model
-  engages but does not rotate the residual *away* from the concept.
-- **Suppression lives in the magnitude channel.** "Don't think" *does* move the
-  residual **norm** (below neutral at deep layers) even though it doesn't move the
-  direction — a dissociation the cosine-only view hides.
-- **Register slots are high-gain, low-fidelity.** Structural tokens (`the`, the
-  period) show the largest cosine swing with intensity but the *least reliable*
-  per-trial ordering; content tokens and the period are where the concept can be
-  *dialed* cleanly.
-- **Graded direction control is consistent; graded magnitude control is not.**
-  `Rank(cos)` is reliably positive at the deep layers (the concept-cosine climbs
-  monotonically with intensity). `Rank(relnorm)` is near zero / mixed-sign — the
-  magnitude readout dials *up* with intensity at some spots and *down* at others
-  — so "reliable graded control of magnitude" is not supported.
-
-## Credits
-
-Concept-vector extraction + Gemma rotary patch adapted from
-*introspection-master* (Experiment 2); layer-targeted prompting + fractional-depth
-layer selection adapted from *think-hard* (Experiment 1).
+See also: **`experiments/README.md`** (the main experiment: sets, analysis kinds, indexing),
+**`experiments.md`** (every run + the hardware/timing record), and
+**`Update_5-14-26.md`** (the register/attention-sink investigation that motivated
+the channel split).

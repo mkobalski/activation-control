@@ -12,9 +12,44 @@ corresponding YAML sub-section (filling defaults for anything missing).
 """
 
 import argparse
+import re
 import yaml
+from pathlib import Path
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any
+
+# Project root (src/config.py -> ..); used to resolve a relative `sentences_file`.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def load_sentences_file(path: str) -> List[str]:
+    """Read sentences from a ``sentences.txt``-style file -> list of strings.
+
+    Each non-blank, non-``#`` line is one sentence; an optional ``s<N>:`` / ``p<N>:``
+    label prefix is stripped (so the file stays human-readable/renumberable while
+    the code just consumes the text, in file order). A relative path resolves
+    against the project root, so ``sentences_file: sentences.txt`` works from any CWD.
+    """
+    p = Path(path)
+    if not p.is_absolute():
+        p = PROJECT_ROOT / p
+    out: List[str] = []
+    for line in p.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        m = re.match(r"^[sp]\d+:\s*(.*)$", line)
+        out.append(m.group(1) if m else line)
+    return out
+
+
+def _resolve_sentences(raw: Dict[str, Any]) -> List[str]:
+    """Sentences from an explicit ``sentences:`` list, else from ``sentences_file``."""
+    if raw.get("sentences"):
+        return raw["sentences"]
+    if raw.get("sentences_file"):
+        return load_sentences_file(raw["sentences_file"])
+    return []
 
 
 @dataclass
@@ -65,6 +100,21 @@ class PromptCondition:
     has_layer: bool = False
 
 
+# One declarative analysis step from the config's `analysis:` list. `kind` selects
+# a function registered in src/analysis/registry.py; `params` are the remaining
+# keys, splatted into that function as kwargs. This is what lets a new experiment
+# describe its own analysis (which ramp, which conditions, which custom plots)
+# without touching the runner -- see run_experiment.py's dispatch loop.
+# `set` (optional) gates the step on a condition set: the runner skips the step
+# unless that set is in cfg.active_sets. Popped out of the raw dict alongside
+# `kind`, so it never leaks into `params`.
+@dataclass
+class AnalysisStep:
+    kind: str
+    params: Dict[str, Any] = field(default_factory=dict)
+    set: Optional[str] = None
+
+
 @dataclass
 class LayerSpec:
     """Layer selection: fractional depths (0-1) and/or explicit integer indices.
@@ -91,9 +141,24 @@ class ExperimentConfig:
     concept_vectors: ConceptVectorConfig = field(default_factory=ConceptVectorConfig)
     concepts: List[str] = field(default_factory=list)
     sentences: List[str] = field(default_factory=list)
+    # Optional: source `sentences` from a text file (see load_sentences_file). An
+    # explicit `sentences:` list in the config takes precedence over this.
+    sentences_file: Optional[str] = None
+    # Optional subset: indices into `sentences` to actually run this run. Empty =
+    # run all. Indices are global/stable (s6 == cat), so plots keep their labels.
+    sentence_indices: List[int] = field(default_factory=list)
     prompt_conditions: List[PromptCondition] = field(default_factory=list)
+    # Named groups of extra conditions (top-level `condition_sets:` YAML key).
+    # Active sets' conditions are merged into `prompt_conditions` at build time;
+    # this field keeps ALL declared sets for reference/bookkeeping.
+    condition_sets: Dict[str, List[PromptCondition]] = field(default_factory=dict)
+    # Resolved list of active set names (see `experiment.sets`): absent/null ->
+    # every declared set; explicit [] -> none (controls only). Stored in
+    # condition_sets declaration order (the merge order), not selection order.
+    active_sets: List[str] = field(default_factory=list)
     compliance: ComplianceConfig = field(default_factory=ComplianceConfig)
     wandb: WandbConfig = field(default_factory=WandbConfig)
+    analysis: List[AnalysisStep] = field(default_factory=list)
     output_base_dir: str = "results"
 
 
@@ -118,18 +183,68 @@ def _apply_overrides(raw: Dict, overrides: Dict[str, Any]):
         d[parts[-1]] = value
 
 
-def load_config(yaml_path: str, overrides: Optional[Dict[str, Any]] = None) -> ExperimentConfig:
-    """Load the YAML, apply CLI overrides, and assemble the typed config tree.
+def _deep_merge(base: Dict[str, Any], over: Dict[str, Any]) -> Dict[str, Any]:
+    """Return a new dict: ``over`` layered on top of ``base``.
 
-    Every sub-dataclass is built by reading its YAML section with ``.get``
-    defaults, so a sparse YAML still produces a fully-populated config. The
-    ``**raw.get(...)`` calls expand a section dict directly into dataclass
-    kwargs, meaning the YAML keys must line up exactly with the field names.
+    Nested dicts are merged recursively (so a child config can tweak a single key
+    inside, say, the ``experiment`` block without restating the whole block); any
+    non-dict value (scalar OR list) in ``over`` replaces the base value wholesale.
+    Lists are replaced rather than concatenated on purpose: an experiment that
+    lists its own ``prompt_conditions`` gets exactly those, with no surprise
+    leftovers from the base.
+    """
+    out = dict(base)
+    for k, v in over.items():
+        if k in out and isinstance(out[k], dict) and isinstance(v, dict):
+            out[k] = _deep_merge(out[k], v)
+        else:
+            out[k] = v
+    return out
+
+
+def _resolve_extends(raw: Dict[str, Any], base_dir: Path) -> Dict[str, Any]:
+    """Resolve a chain of ``extends: <relative/path.yaml>`` inheritance.
+
+    A config may set ``extends`` to a path (relative to that config's own
+    directory) of a base config to inherit from. We load the base, resolve ITS
+    ``extends`` first (so chains work), then layer the child on top via
+    ``_deep_merge``. This lets each experiment config declare only what differs
+    from a shared base (its conditions + analysis) instead of copying the whole
+    concepts/sentences/model block.
+    """
+    parent = raw.pop("extends", None)
+    if not parent:
+        return raw
+    parent_path = (Path(base_dir) / parent).resolve()
+    parent_raw = load_yaml(str(parent_path))
+    parent_raw = _resolve_extends(parent_raw, parent_path.parent)
+    return _deep_merge(parent_raw, raw)
+
+
+def load_config(yaml_path: str, overrides: Optional[Dict[str, Any]] = None) -> ExperimentConfig:
+    """Load the YAML (resolving ``extends``), apply CLI overrides, and assemble
+    the typed config tree.
+
+    Order matters: base configs are merged in first (``extends``), THEN the
+    ``--set`` CLI overrides are spliced on top, so a command-line override always
+    wins over both the experiment config and any base it inherits from.
     """
     raw = load_yaml(yaml_path)
+    raw = _resolve_extends(raw, Path(yaml_path).resolve().parent)
     if overrides:
         _apply_overrides(raw, overrides)
+    return _build_config(raw)
 
+
+def _build_config(raw: Dict[str, Any]) -> ExperimentConfig:
+    """Assemble the typed config tree from a fully-merged raw dict.
+
+    Every sub-dataclass is built by reading its section with ``.get`` defaults, so
+    a sparse config still produces a fully-populated tree. The ``**raw.get(...)``
+    calls expand a section dict directly into dataclass kwargs, meaning the keys
+    must line up exactly with the field names. Kept separate from ``load_config``
+    (no file/YAML I/O) so the assembly logic can be unit-tested with a plain dict.
+    """
     # Pull each top-level section once; absent sections fall back to {} so the
     # dataclass constructors below just use their own field defaults.
     exp = raw.get("experiment", {})
@@ -140,14 +255,63 @@ def load_config(yaml_path: str, overrides: Optional[Dict[str, Any]] = None) -> E
 
     # prompt_conditions is a list of dicts, so build each PromptCondition by
     # hand (id/template are required; kind/has_layer have defaults).
-    prompt_conds = [
-        PromptCondition(
+    def _parse_condition(p: Dict[str, Any]) -> PromptCondition:
+        return PromptCondition(
             id=p["id"],
             template=p["template"],
             kind=p.get("kind", "positive"),
             has_layer=p.get("has_layer", False),
         )
-        for p in raw.get("prompt_conditions", [])
+
+    # Top-level `prompt_conditions` are the always-on controls.
+    prompt_conds = [_parse_condition(p) for p in raw.get("prompt_conditions", [])]
+
+    # Optional named condition sets: {set_name: [condition dicts...]}. Each
+    # entry has the same shape as a prompt_conditions entry.
+    condition_sets: Dict[str, List[PromptCondition]] = {
+        name: [_parse_condition(p) for p in (conds or [])]
+        for name, conds in (raw.get("condition_sets") or {}).items()
+    }
+
+    # `experiment.sets` selects which sets are active:
+    #   absent / null -> ALL declared sets; explicit [] -> NONE (controls only);
+    #   unknown name  -> error. active_sets is stored (and merged) in
+    #   condition_sets declaration order, regardless of selection order.
+    sets_requested = exp.get("sets")
+    if sets_requested is None:
+        active_sets = list(condition_sets.keys())
+    else:
+        unknown = [s for s in sets_requested if s not in condition_sets]
+        if unknown:
+            raise ValueError(
+                f"Unknown condition set(s) {unknown} in experiment.sets; "
+                f"known sets: {sorted(condition_sets.keys())}"
+            )
+        active_sets = [name for name in condition_sets if name in sets_requested]
+
+    # Final conditions = controls, then each active set's conditions in
+    # declaration order. Condition ids must be globally unique after the merge.
+    merged_conds = list(prompt_conds)
+    for name in active_sets:
+        merged_conds.extend(condition_sets[name])
+    seen_ids = set()
+    for c in merged_conds:
+        if c.id in seen_ids:
+            raise ValueError(
+                f"Duplicate prompt condition id {c.id!r} after merging "
+                f"condition_sets (active sets: {active_sets})"
+            )
+        seen_ids.add(c.id)
+
+    # analysis is a list of {kind: ..., set: ..., <params>}; split kind and the
+    # optional set gate out from the params so the runner can dispatch kind ->
+    # registered fn and splat params as kwargs.
+    analysis_steps = [
+        AnalysisStep(kind=a["kind"],
+                     params={k: v for k, v in a.items() if k not in ("kind", "set")},
+                     set=a.get("set"))
+        for a in (raw.get("analysis") or [])
+        if a.get("kind")
     ]
 
     return ExperimentConfig(
@@ -163,10 +327,15 @@ def load_config(yaml_path: str, overrides: Optional[Dict[str, Any]] = None) -> E
         prompt_layers=LayerSpec(**raw.get("prompt_layers", {"fractions": []})),
         concept_vectors=ConceptVectorConfig(**cv_raw),
         concepts=raw.get("concepts", []),
-        sentences=raw.get("sentences", []),
-        prompt_conditions=prompt_conds,
+        sentences=_resolve_sentences(raw),
+        sentences_file=raw.get("sentences_file"),
+        sentence_indices=exp.get("sentence_indices", []),
+        prompt_conditions=merged_conds,
+        condition_sets=condition_sets,
+        active_sets=active_sets,
         compliance=ComplianceConfig(**comp_raw),
         wandb=WandbConfig(**wandb_raw),
+        analysis=analysis_steps,
         output_base_dir=raw.get("output", {}).get("base_dir", "results"),
     )
 
@@ -186,6 +355,10 @@ def parse_cli_args() -> argparse.Namespace:
     p.add_argument("--set", dest="sets", action="append", default=[],
                    help="Override config: --set experiment.seed=7")
     p.add_argument("--no-wandb", action="store_true")
+    p.add_argument("--no-analysis", action="store_true",
+                   help="generate + save only; skip the end-of-run analyses/plots "
+                        "(re-render later with scripts/replot_run.py). Automatic "
+                        "analysis remains the default when this flag is absent.")
     args = p.parse_args()
     overrides = {}
     for s in args.sets:

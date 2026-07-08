@@ -1,9 +1,11 @@
 """Prompt formatting + trial schedule construction.
 
 Prompts are formatted with the model's chat template. Templates may contain
-the placeholders {sentence}, {concept}, {layer} (any subset). We pass only
-the placeholders the template declares so concept-less / layer-less
-conditions can share the same function.
+the placeholders {sentence}, {concept}, {layer}, {total} (any subset). We pass
+only the placeholders the template declares so concept-less / layer-less
+conditions can share the same function. {total} is the model's layer count
+(wrapper.n_layers), so a layer-targeting prompt can tell the model how many
+layers it has ("layer {layer} of your {total} layers").
 """
 
 from typing import List, Dict, Optional
@@ -42,6 +44,8 @@ def format_prompt(model: ModelWrapper, template: str,
         if layer is None:
             raise ValueError("Template needs {layer} but none provided")
         kwargs["layer"] = layer
+    if "{total}" in template:
+        kwargs["total"] = model.n_layers          # tell the model its layer count
     return _chat_wrap(model, template.format(**kwargs))
 
 

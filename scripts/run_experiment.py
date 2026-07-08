@@ -32,7 +32,8 @@ from src.utils.io import get_run_dir, save_results_json, save_results_pickle
 from src.utils.compliance import check_compliance
 from src.utils.wandb_utils import init_wandb, log_metrics, log_summary, log_artifact, finish_wandb
 from src.utils.layers import resolve_layers
-from src.config import load_config, parse_cli_args
+from src.config import load_config, parse_cli_args, AnalysisStep
+from src.analysis.registry import run_analysis_steps
 from src.models.registry import BASE_MODELS
 from src.models.wrapper import load_model
 from src.activation.recorder import ActivationRecorder
@@ -40,6 +41,55 @@ from src.vectors.extraction import extract_concept_vectors
 from src.prompts.builder import format_prompt, build_trials
 from src.analysis.alignment import tokenize_sentence, align_sentence_span, slice_activations
 from src.analysis.cosine import cosine_traces_per_layer
+
+
+# Default analyses for configs that don't declare an `analysis:` block -- the
+# historical auto-run behavior (direction + magnitude heatmaps and the per-concept
+# trace plots, on the default cat sentence).
+DEFAULT_ANALYSIS = [
+    AnalysisStep("controllability_heatmap", {"metrics": ["cos", "relnorm"]}),
+    AnalysisStep("trace_plots", {}),
+]
+
+
+def _import_experiment_analyze(config_path):
+    """Import an experiment-specific analyze.py sitting next to its config, if any.
+
+    Importing it runs its @register decorators, making the experiment's custom
+    analysis `kind`s available to the dispatch below. No-op when the config has no
+    sibling analyze.py (e.g. the ramp-only experiments and the legacy configs).
+    """
+    analyze_py = Path(config_path).resolve().parent / "analyze.py"
+    if not analyze_py.exists():
+        return
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("experiment_analyze", analyze_py)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    print(f"Loaded experiment analyses from {analyze_py}")
+
+
+def run_analyses(results, config, run_dir, config_path):
+    """Register built-in + experiment analyses, then dispatch the config's steps."""
+    try:
+        # scripts/ on path so builtin_analyses can import the sibling scripts.
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import builtin_analyses  # noqa: F401 - import registers the built-in kinds
+        _import_experiment_analyze(config_path)
+    except Exception as e:
+        print(f"  [analysis] setup failed, skipping analyses: {e}")
+        return
+    steps = config.analysis or DEFAULT_ANALYSIS
+    # A step tagged with `set:` only runs when that condition set is active;
+    # untagged steps (set=None) always run.
+    active_steps = []
+    for step in steps:
+        if step.set is None or step.set in config.active_sets:
+            active_steps.append(step)
+        else:
+            print(f"  [analysis:{step.kind}] skipped: set '{step.set}' not active")
+    run_analysis_steps(active_steps, run_dir=run_dir, results=results,
+                       model_name=config.model.name, cfg=config)
 
 
 def main():
@@ -50,6 +100,20 @@ def main():
     rng = random.Random(config.seed)
     run_dir = get_run_dir(config.output_base_dir, config.name, config.model.name)
     print(f"Output: {run_dir}")
+
+    # Optional sentence subset: run only config.sentence_indices (global indices
+    # into the full list). The FULL list is still saved to config.yaml so plot
+    # labels stay global (s6 == cat) even in a subset run.
+    if config.sentence_indices:
+        n = len(config.sentences)
+        bad = [i for i in config.sentence_indices if not (0 <= i < n)]
+        if bad:
+            raise ValueError(f"sentence_indices out of range for {n} sentences: {bad}")
+        run_sentences = [config.sentences[i] for i in config.sentence_indices]
+        print(f"Sentence subset: running {len(run_sentences)}/{n} "
+              f"(indices {config.sentence_indices})")
+    else:
+        run_sentences = list(config.sentences)
 
     if config.model.name in BASE_MODELS:
         config.compliance.method = "prefix_normalized_levenshtein"
@@ -92,7 +156,9 @@ def main():
                 "prompt_layer_overrides": config.prompt_layers.layers,
                 "n_concepts": len(config.concepts),
                 "n_sentences": len(config.sentences),
+                "n_sentences_run": len(run_sentences),
                 "n_conditions": len(config.prompt_conditions),
+                "active_sets": list(config.active_sets),
                 "num_repetitions": config.num_repetitions,
                 "batch_size": config.batch_size,
                 "max_new_tokens": config.max_new_tokens,
@@ -137,7 +203,7 @@ def main():
     # ── Build trial schedule ─────────────────────────────────────────────
     trials = build_trials(
         concepts=config.concepts,
-        sentences=config.sentences,
+        sentences=run_sentences,
         conditions=config.prompt_conditions,
         prompt_layers=prompt_layers,
         num_repetitions=config.num_repetitions,
@@ -147,7 +213,7 @@ def main():
 
     # Pre-tokenize sentence lengths so we know the recording window per trial.
     sentence_ntokens = {
-        s: len(tokenize_sentence(wrapper.tokenizer, s)) for s in config.sentences
+        s: len(tokenize_sentence(wrapper.tokenizer, s)) for s in run_sentences
     }
 
     all_results = []
@@ -344,7 +410,17 @@ def main():
             "num_repetitions": config.num_repetitions,
             "n_concepts": len(config.concepts),
             "n_sentences": len(config.sentences),
+            "n_sentences_run": len(run_sentences),
             "n_conditions": len(config.prompt_conditions),
+            "active_sets": list(config.active_sets),
+            "condition_sets_defined": sorted(config.condition_sets.keys()),
+            # Persist the FULL declared order so the plot scripts label sentences
+            # (s0..sN) and order concept panels by config order, not trial order --
+            # global even on a subset run. sentence_indices records what was run.
+            "sentences": list(config.sentences),
+            "sentences_file": config.sentences_file,
+            "sentence_indices": list(config.sentence_indices),
+            "concepts": list(config.concepts),
             "concept_vector_method": cv.method,
             "compliance_method": config.compliance.method,
             "compliance_threshold": config.compliance.threshold,
@@ -378,32 +454,20 @@ def main():
                  artifact_type="config")
     finish_wandb()
 
-    # ── Auto-generate controllability heatmaps (CPU-side; best-effort) ─────────
-    # Renders the direction (cos) and magnitude (relnorm) heatmaps for the default
-    # sentence directly from the in-memory results. Skips gracefully if the run's
-    # config lacks the needed sentence/conditions.
-    try:
-        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-        from controllability_heatmap import generate_heatmaps
-        print("\nGenerating controllability heatmaps...")
-        for _metric in ("cos", "relnorm"):
-            try:
-                generate_heatmaps(run_dir, config.model.name,
-                                  vector_cache=cv.cache_dir, method=cv.method,
-                                  metric=_metric, results=all_results)
-            except Exception as e:
-                print(f"  [heatmaps:{_metric}] skipped: {e}")
-    except Exception as e:
-        print(f"  [heatmaps] unavailable: {e}")
-
-    # ── Auto-generate per-concept trace plots (plot1_cos, plot1_norms) ─────────
-    # (Layer-targeting plots 7-12 are NOT auto-run; use scripts/plot_layer_targeting.py.)
-    try:
-        from plot_results import make_trace_plots
-        print("\nGenerating trace plots (plot1_cos, plot1_norms)...")
-        make_trace_plots(all_results, run_dir / "plots")
-    except Exception as e:
-        print(f"  [trace plots] skipped: {e}")
+    # ── Run the config-declared analyses (CPU-side; best-effort) ───────────────
+    # Each experiment's config lists its own `analysis:` steps; the runner just
+    # dispatches them through src/analysis/registry.py. Adding an experiment with a
+    # new analysis needs no change here -- it registers a new `kind` from an
+    # analyze.py next to its config (imported below). A config with no `analysis:`
+    # block falls back to the historical default (cos+relnorm heatmaps + trace
+    # plots on the cat sentence), so existing configs behave exactly as before.
+    # `--no-analysis` skips this step entirely (generate + save only); re-render
+    # later with scripts/replot_run.py once the plotting scripts are finalized.
+    if args.no_analysis:
+        print("\n[--no-analysis] skipping end-of-run analyses. Re-render later with:")
+        print(f"  python scripts/replot_run.py --run-dir {run_dir} --config {args.config}")
+    else:
+        run_analyses(all_results, config, run_dir, args.config)
 
     print(f"\nResults saved to: {run_dir}")
 

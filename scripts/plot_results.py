@@ -27,10 +27,11 @@ from matplotlib.lines import Line2D
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.utils.io import load_results
+from src.utils.io import load_results, load_run_config, order_by_config
 
 
-CAT = "The cat watched the bird through the window by the door near the garden."
+# Default single sentence for the trace plots (baseline sentence from sentences.txt).
+DEFAULT_SENTENCE = "She stacked the folders, labeled each tab, and shut the drawer."
 # One line per condition: the intensity ramp (light->dark red) + the negative (gray).
 _INTENSITY_IDS = [f"think_intensity_{i}_of_4" for i in (1, 2, 3, 4)]
 _NEGATIVE_ID = "dont_think_about"
@@ -45,32 +46,60 @@ def _ensure_dir(d: Path) -> Path:
     return d
 
 
+def _present(compliant, field):
+    """First-appearance list of a field's values among compliant trials."""
+    out = []
+    for r in compliant:
+        v = r["sentence"] if field == "sentence" else r.get("concept")
+        if v and v not in out:
+            out.append(v)
+    return out
+
+
+def _stable_orders(compliant, run_dir):
+    """(sentence_order, concept_order) ordered by the run's config, not trial order.
+
+    Reads the declared sentences/concepts from run_dir/config.yaml (written by
+    run_experiment.py) and orders the present values by it; falls back to
+    first-appearance for older runs whose config.yaml lacks the lists.
+    """
+    cfg = load_run_config(run_dir) if run_dir is not None else {}
+    sents = order_by_config(_present(compliant, "sentence"), cfg.get("sentences"))
+    concs = order_by_config(_present(compliant, "concept"), cfg.get("concepts"))
+    return sents, concs
+
+
 def plot1_traces(results, out_dir: Path, analysis_layer: int, sentence_idx: int,
                  *, metric_key: str, metric_label: str, fname_tag: str,
-                 condition_ids=None, draw_zero=False):
+                 condition_ids=None, draw_zero=False,
+                 sentence_order=None, concept_order=None, target_sentence=None):
     """Per-concept grid of per-token traces for ONE sentence at ONE layer.
 
     Each subplot is a concept; each line is one condition, reading the trace from
     trial[metric_key][layer]. `metric_key` = "cosine_sim_anchored" (plot1_cos) or
-    "norms_anchored" (plot1_norms). Returns the written path, or None if skipped.
+    "norms_anchored" (plot1_norms). `concept_order` fixes the concept-panel order
+    to the config order (else derived from run_dir/config.yaml). `sentence_idx` is
+    used ONLY as the filename label (the global s## index); `target_sentence` is
+    the actual sentence string to plot -- pass both so a subset run keeps global
+    labels. If `target_sentence` is None it falls back to `sentence_order[sentence_idx]`.
+    Returns the written path, or None if skipped.
     """
     if condition_ids is None:
         condition_ids = _INTENSITY_IDS + [_NEGATIVE_ID]
     compliant = _compliant(results)
 
-    sentences = []
-    for r in compliant:
-        if r["sentence"] not in sentences:
-            sentences.append(r["sentence"])
-    if sentence_idx >= len(sentences):
-        print(f"plot1_{fname_tag}: sentence_idx {sentence_idx} out of range")
-        return None
-    target_sent = sentences[sentence_idx]
+    if concept_order is None:
+        _, concept_order = _stable_orders(compliant, Path(out_dir).parent)
+    concepts = concept_order
 
-    concepts = []
-    for r in compliant:
-        if r["concept"] and r["concept"] not in concepts:
-            concepts.append(r["concept"])
+    if target_sentence is not None:
+        target_sent = target_sentence
+    else:
+        sentences = sentence_order or _stable_orders(compliant, Path(out_dir).parent)[0]
+        if sentence_idx >= len(sentences):
+            print(f"plot1_{fname_tag}: sentence_idx {sentence_idx} out of range")
+            return None
+        target_sent = sentences[sentence_idx]
 
     # lookup[(concept, condition_id)] -> trial (for this sentence)
     lookup = {}
@@ -142,23 +171,32 @@ def plot1_traces(results, out_dir: Path, analysis_layer: int, sentence_idx: int,
     return str(out_dir / fname)
 
 
-def make_trace_plots(results, out_dir, *, layers=None, sentence=CAT, verbose=True):
+def make_trace_plots(results, out_dir, *, layers=None, sentence=DEFAULT_SENTENCE,
+                     condition_ids=None, run_dir=None, verbose=True):
     """Generate plot1_cos + plot1_norms for `sentence` at each of `layers`.
 
-    Callable from run_experiment.py. Defaults to the deepest analysis layer.
-    Returns the list of written paths (empty if the sentence isn't present).
+    Callable from run_experiment.py. Defaults to the deepest analysis layer and
+    the standard intensity ramp + dont_think_about. `condition_ids` overrides the
+    per-line conditions (e.g. an experiment's own ramp) -- the first N-1 are drawn
+    on the Reds ramp and the last (typically the negative) in gray, matching
+    plot1_traces. Sentence index (s0..sN) and concept-panel order follow the run's
+    config order (read from run_dir/config.yaml; defaults to out_dir's parent),
+    falling back to first-appearance. Returns written paths (empty if sentence absent).
     """
     out_dir = _ensure_dir(Path(out_dir))
+    if run_dir is None:
+        run_dir = out_dir.parent
     compliant = _compliant(results)
-    sentences = []
-    for r in compliant:
-        if r["sentence"] not in sentences:
-            sentences.append(r["sentence"])
-    if sentence not in sentences:
+    sent_order, conc_order = _stable_orders(compliant, run_dir)
+    if sentence not in sent_order:
         if verbose:
             print("  [skip trace plots] default sentence not in this run")
         return []
-    sidx = sentences.index(sentence)
+    # Filename label is the GLOBAL config index (cat == s6) even on a subset run;
+    # fall back to position-in-present if the full list isn't recorded.
+    canonical = load_run_config(run_dir).get("sentences")
+    sidx = canonical.index(sentence) if canonical and sentence in canonical \
+        else sent_order.index(sentence)
     if layers is None:
         al = sorted(int(x) for x in (results[0].get("analysis_layers") or []))
         layers = [al[-1]] if al else []
@@ -167,11 +205,14 @@ def make_trace_plots(results, out_dir, *, layers=None, sentence=CAT, verbose=Tru
     for L in layers:
         p = plot1_traces(results, out_dir, L, sidx, metric_key="cosine_sim_anchored",
                          metric_label="cos(concept vec, residual)", fname_tag="cos",
-                         draw_zero=True)
+                         condition_ids=condition_ids, draw_zero=True,
+                         target_sentence=sentence, concept_order=conc_order)
         if p:
             paths.append(p)
         p = plot1_traces(results, out_dir, L, sidx, metric_key="norms_anchored",
-                         metric_label="‖residual‖", fname_tag="norms")
+                         metric_label="‖residual‖", fname_tag="norms",
+                         condition_ids=condition_ids,
+                         target_sentence=sentence, concept_order=conc_order)
         if p:
             paths.append(p)
     return paths
@@ -182,7 +223,8 @@ def main():
     ap.add_argument("--run-dir", required=True)
     ap.add_argument("--layers", type=int, nargs="+", default=None,
                     help="analysis layers to plot (default: deepest recorded layer)")
-    ap.add_argument("--sentence", default=CAT, help="sentence to plot (default: cat sentence)")
+    ap.add_argument("--sentence", default=DEFAULT_SENTENCE,
+                    help="sentence to plot (default: baseline s6)")
     args = ap.parse_args()
     run_dir = Path(args.run_dir)
     results, _ = load_results(run_dir / "results")

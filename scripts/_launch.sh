@@ -1,10 +1,17 @@
 #!/bin/bash
-# Launcher: source env, set PYTHONPATH for python3.11 (deps), run experiment.
+# Launcher: source env, then run via the ISOLATED venv interpreter.
+#
+# We deliberately exec /workspace/.venv/bin/python rather than /usr/bin/python3.11
+# with the venv merely on PYTHONPATH: the venv has include-system-site-packages=false,
+# so its own python excludes the system dist-packages. The system site-packages hold a
+# torchvision built against the old system torch (2.4.1); if it stays importable it
+# breaks transformers' Gemma3 import with an ABI error (torchvision::nms missing). The
+# venv python (torch 2.12, no torchvision) avoids that entirely. Do NOT reintroduce the
+# PYTHONPATH+system-python pattern.
 set -euo pipefail
 set -a
 source /workspace/.env
 set +a
 cd /workspace/write-introspection-main
-export PYTHONPATH="/workspace/venv/lib/python3.11/site-packages:${PYTHONPATH:-}"
 export PYTHONUNBUFFERED=1
-exec /usr/bin/python3.11 "$@"
+exec /workspace/.venv/bin/python "$@"

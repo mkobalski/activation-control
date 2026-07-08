@@ -26,11 +26,22 @@ import matplotlib.pyplot as plt
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.utils.io import load_results
+from src.utils.io import load_results, load_run_config, order_by_config
 
 
 def _compliant(results):
     return [r for r in results if r["is_compliant"]]
+
+
+def _concepts_ordered(compliant, out_dir):
+    """Concepts present, ordered by the run's config (config.yaml in out_dir's
+    parent); falls back to first-appearance for older runs without the list."""
+    present = []
+    for r in compliant:
+        if r["concept"] and r["concept"] not in present:
+            present.append(r["concept"])
+    canonical = load_run_config(Path(out_dir).parent).get("concepts")
+    return order_by_config(present, canonical)
 
 
 def _mean_over_tokens(trace):
@@ -228,10 +239,7 @@ def plot_layer_targeting_heatmap_by_concept(
     """One heatmap per concept (prompt_layer × analysis_layer), shared color
     scale so concepts are directly comparable."""
     compliant = _compliant(results)
-    concepts = []
-    for r in compliant:
-        if r["concept"] and r["concept"] not in concepts:
-            concepts.append(r["concept"])
+    concepts = _concepts_ordered(compliant, out_dir)
     if not concepts:
         print(f"{file_prefix}: no concepts found; skipping")
         return
@@ -325,10 +333,7 @@ def plot10_per_concept_diagonal(results, out_dir: Path, *,
     from matplotlib.lines import Line2D
 
     compliant = _compliant(results)
-    concepts = []
-    for r in compliant:
-        if r["concept"] and r["concept"] not in concepts:
-            concepts.append(r["concept"])
+    concepts = _concepts_ordered(compliant, out_dir)
 
     color_base = (0.5, 0.5, 0.5, 1.0)
     color_targ = plt.get_cmap("Reds")(0.75)
@@ -407,10 +412,7 @@ def plot11_per_concept_two_targeted(results, out_dir: Path, *,
     from matplotlib.lines import Line2D
 
     compliant = _compliant(results)
-    concepts = []
-    for r in compliant:
-        if r["concept"] and r["concept"] not in concepts:
-            concepts.append(r["concept"])
+    concepts = _concepts_ordered(compliant, out_dir)
 
     color_a = plt.get_cmap("Reds")(0.55)
     color_b = plt.get_cmap("Reds")(0.9)
@@ -478,14 +480,51 @@ def plot11_per_concept_two_targeted(results, out_dir: Path, *,
 
 # ─── entry ──────────────────────────────────────────────────────────────────
 
-def main():
-    p = argparse.ArgumentParser(description="Layer-targeting plots (7-12).")
-    p.add_argument("--run-dir", required=True)
-    args = p.parse_args()
+# Baseline conditions the layer-targeting plots subtract against. These are the
+# non-targeted references (think_about / think_intensely / ctrl_think_intensely /
+# no_instruction). They are IDENTICAL across runs (same greedy prompts), so a
+# layer_location run can omit them and borrow them from the main run instead --
+# see `baseline_results` below and load_baseline_trials(). dont_think_about is NOT
+# used by any layer-targeting plot.
+BASELINE_CONDITIONS = ("think_about", "think_intensely",
+                       "ctrl_think_intensely", "no_instruction")
 
-    run_dir = Path(args.run_dir)
-    results, _ = load_results(run_dir / "results")
-    out_dir = _ensure_dir(run_dir / "plots")
+
+def load_baseline_trials(run_dir, conditions=BASELINE_CONDITIONS):
+    """Return the given baseline conditions' trials from another run (traces only).
+
+    Layer-targeting reads ONLY the per-token `cosine_sim_anchored` /
+    `norms_anchored` traces, which live in the small results.json (arrays elided)
+    -- so we read the JSON and never unpickle that run's huge activation file.
+    Falls back to the pickle only if no JSON is present.
+    """
+    import json
+    run_dir = Path(run_dir)
+    conds = set(conditions)
+    js = run_dir / "results.json"
+    if js.exists():
+        with open(js) as f:
+            rows = json.load(f)["results"]
+        return [r for r in rows if r.get("condition_id") in conds]
+    rows, _ = load_results(run_dir / "results")
+    return [r for r in rows if r.get("condition_id") in conds]
+
+
+def make_layer_targeting_plots(results, out_dir, *, baseline_results=None, verbose=True):
+    """Render all layer-targeting plots (7-12) into `out_dir`.
+
+    Derives analysis_layers from the first trial and prompt_layers from the
+    trials' `prompt_layer` values. If the run has no layer-targeted prompt
+    data, prints an explanatory message and returns [] without raising.
+
+    `baseline_results` (optional) supplies the non-targeted baseline conditions
+    (BASELINE_CONDITIONS) from ANOTHER run -- so a layer_location run generated
+    WITHOUT its controls can borrow them from the main run. They are pooled with
+    `results` for baseline lookups only; analysis_layers/prompt_layers are still
+    derived from the targeted `results`. (The baselines must carry the same
+    analysis layers, i.e. append the front layers to main first.)
+    """
+    out_dir = _ensure_dir(Path(out_dir))
 
     actual_layers = tuple(results[0]["analysis_layers"]) if results else ()
     prompt_layers = tuple(sorted({
@@ -495,73 +534,104 @@ def main():
         print("This run has no layer-targeted prompt data (prompt_layers empty); "
               "nothing to plot. Use a config with prompt_layers set "
               "(e.g. experiment_layer_target_deep.yaml).")
-        return
-    print(f"Loaded {len(results)} trials. analysis_layers={actual_layers}, "
-          f"prompt_layers={prompt_layers}. Writing to {out_dir}")
+        return []
+    # Pool the borrowed baselines in for the per-plot lookups (targeted trials
+    # come from `results`; baselines may come from either).
+    pool = list(results) + list(baseline_results or [])
+    if verbose:
+        extra = f" + {len(baseline_results)} borrowed baseline trials" if baseline_results else ""
+        print(f"Loaded {len(results)} trials{extra}. analysis_layers={actual_layers}, "
+              f"prompt_layers={prompt_layers}. Writing to {out_dir}")
 
     # ---- Plots 7a/7b: concept-specific cosine, targeted vs non-targeted ----
-    plot_layer_targeting(results, out_dir, positive_id="think_at_layer",
+    plot_layer_targeting(pool, out_dir, positive_id="think_at_layer",
                          baseline_id="think_about", metric_key="cosine_sim_anchored",
                          metric_label="cos-sim", file_prefix="plot7a",
                          prompt_layers=prompt_layers, analysis_layers=actual_layers)
-    plot_layer_targeting(results, out_dir, positive_id="think_intensely_at_layer",
+    plot_layer_targeting(pool, out_dir, positive_id="think_intensely_at_layer",
                          baseline_id="think_intensely", metric_key="cosine_sim_anchored",
                          metric_label="cos-sim", file_prefix="plot7b",
                          prompt_layers=prompt_layers, analysis_layers=actual_layers)
 
     # ---- Plots 8a/8b: concept-less activation-norm layer-targeting ----
-    plot_layer_targeting(results, out_dir, positive_id="ctrl_think_intensely_at_layer",
+    plot_layer_targeting(pool, out_dir, positive_id="ctrl_think_intensely_at_layer",
                          baseline_id="ctrl_think_intensely", metric_key="norms_anchored",
                          metric_label="‖residual‖", file_prefix="plot8a",
                          prompt_layers=prompt_layers, analysis_layers=actual_layers)
-    plot_layer_targeting(results, out_dir, positive_id="ctrl_think_at_layer",
+    plot_layer_targeting(pool, out_dir, positive_id="ctrl_think_at_layer",
                          baseline_id="no_instruction", metric_key="norms_anchored",
                          metric_label="‖residual‖", file_prefix="plot8b",
                          prompt_layers=prompt_layers, analysis_layers=actual_layers)
 
     # ---- Plots 9a/9b: prompt_layer × analysis_layer Δ heatmap (+ by-concept) ----
-    plot_layer_targeting_heatmap(results, out_dir, positive_id="think_at_layer",
+    plot_layer_targeting_heatmap(pool, out_dir, positive_id="think_at_layer",
                                  baseline_id="think_about", metric_key="cosine_sim_anchored",
                                  metric_label="cos-sim", file_prefix="plot9a",
                                  prompt_layers=prompt_layers, analysis_layers=actual_layers)
-    plot_layer_targeting_heatmap(results, out_dir, positive_id="think_intensely_at_layer",
+    plot_layer_targeting_heatmap(pool, out_dir, positive_id="think_intensely_at_layer",
                                  baseline_id="think_intensely", metric_key="cosine_sim_anchored",
                                  metric_label="cos-sim", file_prefix="plot9b",
                                  prompt_layers=prompt_layers, analysis_layers=actual_layers)
     plot_layer_targeting_heatmap_by_concept(
-        results, out_dir, positive_id="think_at_layer", baseline_id="think_about",
+        pool, out_dir, positive_id="think_at_layer", baseline_id="think_about",
         metric_key="cosine_sim_anchored", metric_label="cos-sim",
         file_prefix="plot9a_by_concept",
         prompt_layers=prompt_layers, analysis_layers=actual_layers)
     plot_layer_targeting_heatmap_by_concept(
-        results, out_dir, positive_id="think_intensely_at_layer", baseline_id="think_intensely",
+        pool, out_dir, positive_id="think_intensely_at_layer", baseline_id="think_intensely",
         metric_key="cosine_sim_anchored", metric_label="cos-sim",
         file_prefix="plot9b_by_concept",
         prompt_layers=prompt_layers, analysis_layers=actual_layers)
 
     # ---- Plots 10a/10b: per-concept diagonal decomposition ----
     plot10_per_concept_diagonal(
-        results, out_dir, positive_id="think_at_layer", baseline_id="think_about",
+        pool, out_dir, positive_id="think_at_layer", baseline_id="think_about",
         metric_key="cosine_sim_anchored", metric_label="cos-sim",
         file_prefix="plot10a", layers=actual_layers)
     plot10_per_concept_diagonal(
-        results, out_dir, positive_id="think_intensely_at_layer", baseline_id="think_intensely",
+        pool, out_dir, positive_id="think_intensely_at_layer", baseline_id="think_intensely",
         metric_key="cosine_sim_anchored", metric_label="cos-sim",
         file_prefix="plot10b", layers=actual_layers)
 
     # ---- Plot 11: per-concept diagonal, two targeted variants overlaid ----
     plot11_per_concept_two_targeted(
-        results, out_dir, positive_id_a="think_at_layer",
+        pool, out_dir, positive_id_a="think_at_layer",
         positive_id_b="think_intensely_at_layer",
         metric_key="cosine_sim_anchored", metric_label="cos-sim",
         file_prefix="plot11", layers=actual_layers)
 
     # ---- Plot 12: activation-norm layer-targeting heatmap ----
     plot_layer_targeting_heatmap(
-        results, out_dir, positive_id="ctrl_think_intensely_at_layer",
+        pool, out_dir, positive_id="ctrl_think_intensely_at_layer",
         baseline_id="ctrl_think_intensely", metric_key="norms_anchored",
         metric_label="‖residual‖", file_prefix="plot12",
         prompt_layers=prompt_layers, analysis_layers=actual_layers)
+
+    return []
+
+
+def main():
+    p = argparse.ArgumentParser(description="Layer-targeting plots (7-12).")
+    p.add_argument("--run-dir", required=True)
+    p.add_argument("--baseline-run", default=None,
+                   help="another run dir to borrow the non-targeted baseline "
+                        "conditions from (e.g. the main run) when this run was "
+                        "generated without its controls. Reads that run's "
+                        "results.json (traces only; no big pickle load).")
+    p.add_argument("--baseline-conditions", default=",".join(BASELINE_CONDITIONS),
+                   help="comma list of baseline condition ids to borrow")
+    args = p.parse_args()
+
+    run_dir = Path(args.run_dir)
+    results, _ = load_results(run_dir / "results")
+    baseline_results = None
+    if args.baseline_run:
+        conds = tuple(c.strip() for c in args.baseline_conditions.split(",") if c.strip())
+        baseline_results = load_baseline_trials(args.baseline_run, conds)
+        print(f"Borrowed {len(baseline_results)} baseline trials "
+              f"({', '.join(conds)}) from {args.baseline_run}")
+    make_layer_targeting_plots(results, run_dir / "plots",
+                               baseline_results=baseline_results)
 
 
 if __name__ == "__main__":
