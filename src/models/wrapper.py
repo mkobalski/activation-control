@@ -97,13 +97,23 @@ class ModelWrapper:
         return self.get_decoder_layers()[layer_idx]
 
     def _apply_patches(self):
-        # Gemma rotary-emb shape fix (copied from introspection-master).
+        # Gemma rotary-emb shape fix (copied from introspection-master). Family
+        # detected from the short name; families whose modeling module is absent
+        # or already fixed upstream are skipped with a note instead of crashing.
         if self.model_name in GEMMA_MODELS:
-            mod_name = "gemma3" if "gemma3" in self.model_name else "gemma2"
-            gemma_module = __import__(
-                f"transformers.models.{mod_name}.modeling_{mod_name}",
-                fromlist=["apply_rotary_pos_emb"],
-            )
+            mod_name = next((m for m in ("gemma4", "gemma3", "gemma2")
+                             if m in self.model_name), "gemma2")
+            try:
+                gemma_module = __import__(
+                    f"transformers.models.{mod_name}.modeling_{mod_name}",
+                    fromlist=["apply_rotary_pos_emb"],
+                )
+                if not hasattr(gemma_module, "apply_rotary_pos_emb") \
+                        or not hasattr(gemma_module, "rotate_half"):
+                    raise ImportError("no rotary symbols to patch")
+            except ImportError as e:
+                print(f"[patch] skipping Gemma rotary fix for {self.model_name}: {e}")
+                return
 
             def fixed(q, k, cos, sin, position_ids=None, unsqueeze_dim=1):
                 cos = cos.unsqueeze(unsqueeze_dim)
@@ -146,11 +156,13 @@ class ModelWrapper:
                        max_new_tokens: int = 64,
                        temperature: float = 0.0,
                        max_record_tokens_per_row: Optional[List[int]] = None,
-                       record_prompt_last_token: bool = True):
+                       record_prompt_last_token: bool = True,
+                       prompt_special_layers: Optional[List[int]] = None):
         """Batched token-by-token generation with per-step activation recording.
 
         Returns a list of per-row dicts with keys:
             text, generated_ids, n_prompt_tokens, prompt_last_token_id
+            [+ prompt_special if `prompt_special_layers` is given]
         Recorder snapshots (one per row) are obtained via `recorder.get_snapshots()`.
 
         `max_record_tokens_per_row[i]` bounds how many generated-token steps
@@ -158,6 +170,12 @@ class ModelWrapper:
         `record_prompt_last_token`). Recording stops per-row once its budget
         is exhausted, but generation continues until all rows finish or hit
         `max_new_tokens`.
+
+        `prompt_special_layers`: if given, the PREFILL forward additionally
+        captures the residual stream at every prompt position holding a special
+        token (<start_of_turn>, BOS, ...) at those layers. Each row's dict then
+        carries prompt_special = {token_ids, positions (0-based within the
+        unpadded prompt), activations {layer: (n_special, d) float32}}.
         """
         self.model.eval()
         B = len(prompts)
@@ -172,6 +190,32 @@ class ModelWrapper:
         prompt_last_token_ids = [int(input_ids[i, -1].item()) for i in range(B)]
         # Per-row prompt token count (excluding left pad).
         n_prompt_per_row = attention_mask.sum(dim=1).tolist()
+
+        # ---- prompt-side special tokens: locate their (row, col) positions ----
+        ps_rows, ps_cols, ps_per_row, ps_captured, ps_handles = [], [], None, {}, []
+        if prompt_special_layers:
+            special_ids = set(self.tokenizer.all_special_ids or [])
+            L_pad = input_ids.shape[1]
+            ids_cpu = input_ids.cpu()
+            att_cpu = attention_mask.cpu()
+            ps_per_row = []
+            for i in range(B):
+                cols = [j for j in range(L_pad)
+                        if int(att_cpu[i, j]) == 1 and int(ids_cpu[i, j]) in special_ids]
+                ps_per_row.append(cols)
+                ps_rows.extend([i] * len(cols))
+                ps_cols.extend(cols)
+
+            def _make_ps_hook(li):
+                def hook(module, inp, out):
+                    h = out[0] if isinstance(out, tuple) else out
+                    if ps_rows:
+                        ps_captured[li] = (h[ps_rows, ps_cols, :]
+                                           .detach().float().cpu().numpy())
+                return hook
+            for li in prompt_special_layers:
+                ps_handles.append(
+                    self.get_layer_module(li).register_forward_hook(_make_ps_hook(li)))
 
         eos_id = self.tokenizer.eos_token_id
         pad_id = self.tokenizer.pad_token_id if self.tokenizer.pad_token_id is not None else eos_id
@@ -190,6 +234,8 @@ class ModelWrapper:
                                  use_cache=True)
             if record_prompt_last_token:
                 recorder.stop_recording()
+            for h in ps_handles:                    # prefill-only capture
+                h.remove()
             past = outputs.past_key_values
             next_logits = outputs.logits[:, -1, :]
 
@@ -265,12 +311,24 @@ class ModelWrapper:
             text = self.tokenizer.decode(ids_for_decode, skip_special_tokens=True)
             if self.model_name in GEMMA_MODELS and text.startswith("model\n"):
                 text = text[len("model\n"):]
-            results.append({
+            row = {
                 "text": text.strip(),
                 "generated_ids": ids,
                 "n_prompt_tokens": int(n_prompt_per_row[i]),
                 "prompt_last_token_id": prompt_last_token_ids[i],
-            })
+            }
+            if prompt_special_layers:
+                cols = ps_per_row[i]
+                off = sum(len(ps_per_row[r]) for r in range(i))
+                pad_off = input_ids.shape[1] - int(n_prompt_per_row[i])
+                row["prompt_special"] = {
+                    "token_ids": [int(input_ids[i, j].item()) for j in cols],
+                    "positions": [j - pad_off for j in cols],
+                    "activations": {li: ps_captured[li][off:off + len(cols)]
+                                    for li in prompt_special_layers
+                                    if li in ps_captured},
+                }
+            results.append(row)
         return results
 
     def cleanup(self):

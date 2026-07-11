@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Fig 6: ramp GAIN (magnitude change from lowest to highest instructed
+"""[Figure RETIRED to results/paper/Exploratory analysis -- script kept for its
+shared helpers and to render the exploratory figure on demand.]
+
+Fig 6: ramp GAIN (magnitude change from lowest to highest instructed
 intensity), by fractional sentence position, averaged across sentences.
 
 Identical to Fig 5 in every way EXCEPT the per-unit statistic: instead of the

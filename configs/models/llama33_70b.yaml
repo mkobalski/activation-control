@@ -1,0 +1,4 @@
+model_id: "meta-llama/Llama-3.3-70B-Instruct"
+torch_dtype: "bfloat16"              # ~140 GB at bf16; use 8bit/4bit on smaller boxes
+device_map: "auto"
+quantization: null

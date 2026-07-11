@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Fig 2: engagement / suppression heatmaps across depth (tokens x layers),
+"""[RETIRED as the paper's Fig 2 -- kept as the shared readout/baseline library
+and to render the exploratory per-token heatmap on demand.]
+
+Engagement / suppression heatmaps across depth (tokens x layers),
 with the controllability-suite significance machinery.
 
 2x2 grid for ONE sentence:
@@ -55,8 +58,25 @@ B = 5000                       # sign-flip permutations per cell (as in the suit
 # ---- data ---------------------------------------------------------------------
 
 def _load_json(run_dir):
-    with open(Path(run_dir) / "results.json") as f:
-        return json.load(f)["results"]
+    """Parsed results.json rows, memoized ON DISK: parsing the ~263MB JSON takes
+    several seconds and every figure script pays it, so the first call writes
+    results_rows.cache.pkl beside it and later calls (any script, any process)
+    load the pickle instead. Invalidated by results.json's mtime."""
+    src = Path(run_dir) / "results.json"
+    cache = Path(run_dir) / "results_rows.cache.pkl"
+    if cache.exists() and cache.stat().st_mtime >= src.stat().st_mtime:
+        with open(cache, "rb") as f:
+            return pickle.load(f)
+    with open(src) as f:
+        rows = json.load(f)["results"]
+    try:                                   # best-effort; atomic via tmp+rename
+        tmp = cache.with_suffix(".pkl.tmp")
+        with open(tmp, "wb") as f:
+            pickle.dump(rows, f, protocol=pickle.HIGHEST_PROTOCOL)
+        tmp.replace(cache)
+    except OSError:
+        pass
+    return rows
 
 
 def _baseline(run_dir, sentence):

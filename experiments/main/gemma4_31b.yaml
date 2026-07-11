@@ -1,0 +1,8 @@
+# MAIN experiment on gemma-4-31b-it. Inherits everything from config.yaml
+# (sentences, concepts, conditions, fraction-based layer sweeps — which resolve
+# against THIS model's layer count at runtime); only the model changes.
+extends: config.yaml
+
+model:
+  name: "gemma4_31b"
+  config_path: "configs/models/gemma4_31b.yaml"

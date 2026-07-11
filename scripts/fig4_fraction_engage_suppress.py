@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Fig 4: engagement / suppression heatmaps by FRACTIONAL sentence position,
+"""[Figure RETIRED to results/paper/Exploratory analysis -- script kept for its
+shared helpers and to render the exploratory figure on demand.]
+
+Fig 4: engagement / suppression heatmaps by FRACTIONAL sentence position,
 averaged across sentences (no clipping).
 
 Same 2x2 layout, metrics, and significance machinery as Fig 2 / Fig 3, but the

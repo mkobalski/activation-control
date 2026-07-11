@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fig 8: positional targeting of concept engagement (token_location conditions).
+"""Fig 6: positional targeting of concept engagement (token_location conditions).
 
 Line plots of the readout vs. fractional sentence position, 2x2:
                  Beginning of sentence            End of sentence
@@ -268,7 +268,7 @@ def render(run_dir, *, out, alpha=0.05, cos_delta=True, x_mode="fraction", **kw)
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Fig 8: positional targeting (token_location) line plots.")
+    ap = argparse.ArgumentParser(description="Fig 6: positional targeting (token_location) line plots.")
     ap.add_argument("--run-dir", required=True)
     ap.add_argument("--n-bins", type=int, default=10)
     ap.add_argument("--alpha", type=float, default=0.05)
@@ -279,7 +279,7 @@ def main():
                     help="plot raw cosine on the top row (default: Δcos vs no_instruction)")
     ap.add_argument("--x-mode", choices=["fraction", "position"], default="fraction",
                     help="x-axis: fractional progression (default) or absolute token position (clipped)")
-    ap.add_argument("--out", default="fig8_location_position.png")
+    ap.add_argument("--out", default="fig6_location_position.png")
     args = ap.parse_args()
     render(args.run_dir, out=args.out, n_bins=args.n_bins, alpha=args.alpha,
            vector_cache=args.vector_cache, method=args.method, model=args.model,

@@ -1,0 +1,4 @@
+model_id: "Qwen/Qwen3.6-27B"
+torch_dtype: "bfloat16"
+device_map: "auto"
+quantization: null

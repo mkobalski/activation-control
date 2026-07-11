@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Fig 5: RANK (signed-Spearman monotonicity with instructed intensity), by
+"""[Figure RETIRED to results/paper/Exploratory analysis -- script kept for its
+shared helpers and to render the exploratory figure on demand.]
+
+Fig 5: RANK (signed-Spearman monotonicity with instructed intensity), by
 fractional sentence position, averaged across sentences.
 
 Visually identical layout to Fig 4 (rows = readout metric cos / relnorm; y =

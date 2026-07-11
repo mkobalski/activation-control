@@ -142,23 +142,17 @@ def render(rows, concept, sentence, *, cos_layer, relnorm_layer, out):
                                    fontsize=8, family="monospace")
                 ax.set_xlabel("Token")
 
-    # per-column legends: anchored to each column's true horizontal center
-    # (computed after layout) and lightly framed, so each box unambiguously
-    # belongs to its column.
+    # per-column legends: frameless, stacked vertically, in the upper-left of
+    # each column's BOTTOM-row subplot. No suptitle — the concept is named in
+    # the figure description (results/paper/Fig1.md), not on the figure.
     def _handles(conds):
         return [Line2D([0], [0], color=STYLE[c][0], lw=LW, marker="o",
                        markersize=MS, label=STYLE[c][1]) for c in conds]
-    fig.suptitle(concept, fontsize=13)
-    fig.tight_layout(rect=[0, 0.06, 1, 0.96])
     for ci, conds in enumerate([LEFT, RIGHT]):
-        pos = axes[1][ci].get_position()          # bottom axes of this column
-        xc = (pos.x0 + pos.x1) / 2
-        leg = fig.legend(handles=_handles(conds), loc="upper center",
-                         ncol=min(len(conds), 3), bbox_to_anchor=(xc, 0.045),
-                         fontsize=9, frameon=True, borderpad=0.6,
-                         columnspacing=1.2, handletextpad=0.5)
-        leg.get_frame().set_edgecolor("0.8")
-        leg.get_frame().set_linewidth(0.8)
+        axes[1][ci].legend(handles=_handles(conds), loc="upper left",
+                           ncol=1, frameon=False, fontsize=9,
+                           handletextpad=0.5, labelspacing=0.35)
+    fig.tight_layout()
     fig.savefig(out, dpi=160, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {out}")

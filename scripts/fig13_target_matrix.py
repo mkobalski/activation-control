@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Fig 13: simple 8x8 layer-targeting matrices.
+"""[RETIRED as a paper figure 2026-07-10 -- kept runnable.]
+
+Fig 13: simple 8x8 layer-targeting matrices.
 
 y = TARGETED layer (named in the prompt, 40..61); x = ANALYSIS layer (same deep
 eight); cell = readout averaged over all tokens x 50 sentences x 10 concepts.

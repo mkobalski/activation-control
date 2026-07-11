@@ -135,6 +135,11 @@ class ExperimentConfig:
     num_repetitions: int = 1
     token_buffer: int = 10
     batch_size: int = 8
+    # Save residual-stream recordings for SPECIAL tokens too: (a) the generated
+    # tail after the sentence span (e.g. <end_of_turn>/EOS, already recorded but
+    # previously discarded at save) and (b) the prompt's special tokens
+    # (<start_of_turn> etc.), captured during prefill.
+    record_special_tokens: bool = True
     model: ModelConfig = field(default_factory=ModelConfig)
     analysis_layers: LayerSpec = field(default_factory=LayerSpec)
     prompt_layers: LayerSpec = field(default_factory=LayerSpec)
@@ -322,6 +327,7 @@ def _build_config(raw: Dict[str, Any]) -> ExperimentConfig:
         num_repetitions=exp.get("num_repetitions", 1),
         token_buffer=exp.get("token_buffer", 10),
         batch_size=exp.get("batch_size", 8),
+        record_special_tokens=exp.get("record_special_tokens", True),
         model=ModelConfig(**model_raw),
         analysis_layers=LayerSpec(**raw.get("analysis_layers", {"fractions": []})),
         prompt_layers=LayerSpec(**raw.get("prompt_layers", {"fractions": []})),
@@ -355,6 +361,11 @@ def parse_cli_args() -> argparse.Namespace:
     p.add_argument("--set", dest="sets", action="append", default=[],
                    help="Override config: --set experiment.seed=7")
     p.add_argument("--no-wandb", action="store_true")
+    p.add_argument("--no-pickle", action="store_true",
+                   help="skip saving the full results.pkl (per-trial activation "
+                        "arrays; tens-to-hundreds of GB). results.json (traces) "
+                        "and no_instruction_cache.pkl (baseline activations) are "
+                        "always saved and are all the score/figure pipeline needs.")
     p.add_argument("--no-analysis", action="store_true",
                    help="generate + save only; skip the end-of-run analyses/plots "
                         "(re-render later with scripts/replot_run.py). Automatic "

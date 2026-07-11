@@ -1,0 +1,10 @@
+# MAIN experiment on Qwen2.5-72B-Instruct (dense; the large-Qwen entry beside
+# the 70B Llama). Inherits everything from config.yaml; only the model changes.
+# NOTE: 72B at bf16 needs ~145 GB of GPU memory — set quantization: "8bit"
+# (or "4bit") below if the box is smaller.
+extends: config.yaml
+
+model:
+  name: "qwen_72b"
+  config_path: "configs/models/qwen25_72b.yaml"
+  quantization: null

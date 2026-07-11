@@ -68,8 +68,11 @@ def save_results_json(results: List[Dict], path: Path, metrics: Optional[Dict] =
         for k, v in r.items():
             # These two keys hold the big numpy activation tensors; replace the
             # value with a marker so the JSON stays small and readable.
-            if k in ("activations", "activations_anchored"):
-                rc[k] = "__stored_in_pickle__"
+            if k in ("activations", "activations_anchored",
+                     "activations_tail", "activations_prompt_special"):
+                # keep an honest placeholder: "__dropped__" if the run freed
+                # the arrays (--no-pickle), else the stored-in-pickle marker
+                rc[k] = v if isinstance(v, str) else "__stored_in_pickle__"
             else:
                 rc[k] = v
         clean.append(rc)

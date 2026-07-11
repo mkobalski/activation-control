@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Fig 3: engagement / suppression heatmaps by TOKEN POSITION, averaged across
+"""[Figure RETIRED to results/paper/Exploratory analysis -- script kept for its
+shared helpers and to render the exploratory figure on demand.]
+
+Fig 3: engagement / suppression heatmaps by TOKEN POSITION, averaged across
 sentences (the position-level generalization of Fig 2).
 
 Same 2x2 layout, metrics, and significance machinery as

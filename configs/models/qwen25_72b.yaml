@@ -1,0 +1,4 @@
+model_id: "Qwen/Qwen2.5-72B-Instruct"
+torch_dtype: "bfloat16"              # ~145 GB at bf16; use 8bit/4bit on smaller boxes
+device_map: "auto"
+quantization: null

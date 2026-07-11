@@ -1,0 +1,4 @@
+model_id: "google/gemma-4-31b-it"   # verify repo id on HF before the first run
+torch_dtype: "bfloat16"
+device_map: "auto"
+quantization: null

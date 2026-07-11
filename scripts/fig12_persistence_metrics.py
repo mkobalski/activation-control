@@ -4,7 +4,7 @@
 Frames each persistence instruction as an intended on-window [τ_on, τ_off] with
 off-regions before (B) and after (A), and scores how well the actual engagement
 profile matches it. Signal s_i = Δcos vs no_instruction @L61 (differenced within
-the (sentence, concept) unit — the channel where persistence shows, Fig 10).
+the (sentence, concept) unit — the channel where persistence shows, Fig 7).
 
 Intended windows (fractional position f_i = i/(n-1); after_fourth by token index):
   throughout   : W = all
@@ -106,15 +106,18 @@ def _detect(profile):
     return (above[0] + 0.5) / len(p), (above[-1] + 0.5) / len(p)
 
 
-def build(run_dir, *, vector_cache="results/vector_cache", method="baseline",
-          model="gemma3_27b", n_boot=2000, n_perm=5000, seed=0):
+def build(run_dir, *, metric="cos", layer=None, vector_cache="results/vector_cache",
+          method="baseline", model="gemma3_27b", n_boot=2000, n_perm=5000, seed=0):
+    """metric: 'cos' (default, layer 61) or 'relnorm' (layer 43 — the norm
+    channel's peak). Same windows/detection either way."""
+    L_SIG = layer if layer is not None else (COS_L if metric == "cos" else 43)
     rows = _load_json(run_dir)
     comp = [r for r in rows if r.get("is_compliant")]
     by_sent = defaultdict(list)
     for r in comp:
         by_sent[r["sentence"]].append(r)
     cache = pickle.load(open(Path(run_dir) / "no_instruction_cache.pkl", "rb"))
-    vecs = load_vectors(vector_cache, model, [COS_L], method)
+    vecs = load_vectors(vector_cache, model, [L_SIG], method)
     conds = [THROUGH, FIRST, ONCE, AFTER]
     wanted = set(conds) | {THINK}
 
@@ -134,10 +137,15 @@ def build(run_dir, *, vector_cache="results/vector_cache", method="baseline",
         classes = [classify(t) for t in toks]
         f = np.arange(n) / (n - 1)
         bins = _bins_for(n, N_BINS)
-        acos = np.asarray(ent["activations"][COS_L], np.float32)[:n]
-        acos = acos / (np.linalg.norm(acos, axis=1, keepdims=True) + 1e-8)
-        base_cos_all = acos @ vecs[COS_L][2].T if COS_L in vecs else None
-        concepts_cosL = vecs[COS_L][0] if COS_L in vecs else []
+        if metric == "cos":
+            acos = np.asarray(ent["activations"][L_SIG], np.float32)[:n]
+            acos = acos / (np.linalg.norm(acos, axis=1, keepdims=True) + 1e-8)
+            base_cos_all = acos @ vecs[L_SIG][2].T if L_SIG in vecs else None
+            base_rn = None
+        else:
+            base_cos_all = None
+            base_rn = _relnorm(np.asarray(ent["norms"][L_SIG], np.float32)[:n], classes)
+        concepts_cosL = vecs[L_SIG][0] if L_SIG in vecs else []
 
         byc = defaultdict(dict)
         concepts = set()
@@ -148,14 +156,23 @@ def build(run_dir, *, vector_cache="results/vector_cache", method="baseline",
                 concepts.add(c)
 
         def dcos(row, base_c):
-            tr = _trace(row, "cosine_sim", COS_L)
-            v = np.asarray(tr, np.float32)[:n] if tr is not None else None
+            if metric == "cos":
+                tr = _trace(row, "cosine_sim", L_SIG)
+                v = np.asarray(tr, np.float32)[:n] if tr is not None else None
+            else:
+                tr = _trace(row, "norms", L_SIG)
+                v = _relnorm(np.asarray(tr, np.float32)[:n], classes) if tr is not None else None
             return (v - base_c) if (v is not None and base_c is not None) else None
 
         for c in sorted(concepts):
-            if base_cos_all is None or c not in concepts_cosL:
-                continue
-            base_c = base_cos_all[:, concepts_cosL.index(c)]
+            if metric == "cos":
+                if base_cos_all is None or c not in concepts_cosL:
+                    continue
+                base_c = base_cos_all[:, concepts_cosL.index(c)]
+            else:
+                if base_rn is None:
+                    continue
+                base_c = base_rn
             think_sig = dcos(byc.get(THINK, {}).get(c), base_c) if c in byc.get(THINK, {}) else None
             for cond in conds:
                 B, W, A, toff, ton = _windows(cond, n, f)

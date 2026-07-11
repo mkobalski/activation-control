@@ -20,9 +20,13 @@ def _chat_wrap(model: ModelWrapper, msg: str) -> str:
     # the string ends ready for the assistant turn). Otherwise fall back to a
     # plain "User:/Assistant:" scaffold so base models still get a sane prompt.
     if getattr(model.tokenizer, "chat_template", None):
+        # enable_thinking=False: Qwen3-style templates default to a <think>
+        # scratchpad turn, which would break verbatim transcription; templates
+        # without the variable simply ignore the kwarg.
         return model.tokenizer.apply_chat_template(
             [{"role": "user", "content": msg}],
             tokenize=False, add_generation_prompt=True,
+            enable_thinking=False,
         )
     return f"User: {msg}\n\nAssistant:"
 

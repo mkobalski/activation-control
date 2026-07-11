@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Fig 10: temporal persistence of concept engagement (persistence conditions).
+"""Fig 7: temporal persistence of concept engagement (persistence conditions).
 
 Cosine-only (Δcos vs no_instruction @ layer 61). Each persistence condition is
 compared against `persist_throughout` (sustained engagement, the natural
 reference), plotted as two lines: throughout in GREY, the other condition in RED.
 
-Fig 10a (two subplots, x = fractional sentence position):
+Fig 7a (two subplots, x = fractional sentence position):
     left  : throughout  vs  persist_first_half   ("first half" = beginning)
     right : throughout  vs  persist_once          ("once mid-sentence")
-Fig 10b (separate, x = absolute token position, clipped to shortest sentence):
+Fig 7b (separate, x = absolute token position, clipped to shortest sentence):
     throughout  vs  persist_after_fourth  ("...starting after the fourth word")
     — absolute position because that instruction keys off a fixed word count.
 
@@ -43,10 +43,10 @@ COS_L = 61
 BASE, THROUGH = "no_instruction", "persist_throughout"
 GREY, RED = "#7f8c8d", "#c0392b"
 YLAB = "Δ cosine  (cond − no instruction, layer 61)"
-# Fig 10a panels (fractional x): (condition, label)
+# Fig 7a panels (fractional x): (condition, label)
 A_PANELS = [("persist_first_half", "First half (beginning)"),
             ("persist_once", "Once mid-sentence")]
-B_COND = ("persist_after_fourth", "After the 4th word")     # Fig 10b (position x)
+B_COND = ("persist_after_fourth", "After the 4th word")     # Fig 7b (position x)
 
 
 def build(run_dir, *, n_bins=10, vector_cache="results/vector_cache",
@@ -176,7 +176,7 @@ def render(run_dir, *, out_a, out_b, alpha=0.05, **kw):
             f"red markers = condition differs from Throughout there (paired sign-flip, BH-FDR q<{alpha:g}, "
             f"B=5000).  Δcos @ layer 61.")
 
-    # ---- Fig 10a ----
+    # ---- Fig 7a ----
     figa, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True, layout="constrained")
     for ax, (cond, lab) in zip(axes, A_PANELS):
         _panel(ax, xc_frac, stats[("fraction", THROUGH)], stats[("fraction", cond)],
@@ -190,7 +190,7 @@ def render(run_dir, *, out_a, out_b, alpha=0.05, **kw):
     figa.savefig(out_a, dpi=160, bbox_inches="tight"); plt.close(figa)
     print(f"wrote {out_a}")
 
-    # ---- Fig 10b ----
+    # ---- Fig 7b ----
     figb, ax = plt.subplots(1, 1, figsize=(6.6, 4.8), layout="constrained")
     _panel(ax, xc_pos, stats[("position", THROUGH)], stats[("position", B_COND[0])],
            stats.get(("q", "position", B_COND[0])), B_COND[1], alpha)
@@ -206,7 +206,7 @@ def render(run_dir, *, out_a, out_b, alpha=0.05, **kw):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Fig 10a/10b: temporal persistence (cosine).")
+    ap = argparse.ArgumentParser(description="Fig 7a/10b: temporal persistence (cosine).")
     ap.add_argument("--run-dir", required=True)
     ap.add_argument("--n-bins", type=int, default=10)
     ap.add_argument("--alpha", type=float, default=0.05)

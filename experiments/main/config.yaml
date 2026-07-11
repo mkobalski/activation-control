@@ -40,6 +40,10 @@ analysis_layers:
 
 experiment:
   name: "write_introspection_main"
+  # Record residual streams for SPECIAL tokens too: the generated tail after
+  # the sentence (<end_of_turn>/EOS, within the token_buffer) and the prompt's
+  # special tokens (<start_of_turn>, BOS, ...) captured at prefill.
+  record_special_tokens: true
   # First 50 baseline sentences (s0..s49 in sentences.txt; file labels match
   # these 0-based indices exactly).
   sentence_indices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,

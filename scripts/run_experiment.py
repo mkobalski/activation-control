@@ -258,6 +258,8 @@ def main():
             temperature=config.temperature,
             max_record_tokens_per_row=max_record_per_row,
             record_prompt_last_token=True,
+            prompt_special_layers=(analysis_layers
+                                   if config.record_special_tokens else None),
         )
         snapshots = recorder.get_snapshots()
         batch_gen_s = time.time() - t_batch
@@ -302,8 +304,37 @@ def main():
             sentence_norms = {li: snapshot.norms[li][snap_start:snap_end]
                               for li in snapshot.layer_indices}
 
+            # ---- SPECIAL TOKENS (config.record_special_tokens) ----
+            # (a) generated TAIL: everything the recorder captured AFTER the
+            #     aligned sentence span — trailing punctuation follow-ons and the
+            #     <end_of_turn>/EOS token (recorded before the finished flag,
+            #     within the sentence+token_buffer budget). Previously discarded.
+            # (b) PROMPT specials: <start_of_turn>/BOS etc., captured at prefill
+            #     by generate_batch (prompt_special_layers).
+            tail_ids, tail_strs, tail_acts, tail_norms = [], [], {}, {}
+            ps_ids, ps_strs, ps_pos, ps_acts, ps_norms = [], [], [], {}, {}
+            if config.record_special_tokens:
+                tail_ids = recorded_gen_ids[end:n_gen_recorded]
+                tail_strs = [wrapper.tokenizer.decode([tid], skip_special_tokens=False)
+                             for tid in tail_ids]
+                tail_acts = slice_activations(snapshot.activations,
+                                              end + 1, n_gen_recorded + 1)
+                tail_norms = {li: snapshot.norms[li][end + 1:n_gen_recorded + 1]
+                              for li in snapshot.layer_indices}
+                psp = out.get("prompt_special")
+                if psp is not None:
+                    ps_ids = psp["token_ids"]
+                    ps_pos = psp["positions"]
+                    ps_strs = [wrapper.tokenizer.decode([tid], skip_special_tokens=False)
+                               for tid in ps_ids]
+                    ps_acts = psp["activations"]
+                    ps_norms = {li: np.linalg.norm(a, axis=-1).astype(np.float32)
+                                for li, a in ps_acts.items()}
+
             cos_by_layer = {}
             cos_anchored_by_layer = {}
+            cos_tail_by_layer = {}
+            cos_ps_by_layer = {}
             if trial["concept"] is not None:
                 cv_for_concept = {
                     li: concept_vectors_np[li][trial["concept"]]
@@ -311,6 +342,9 @@ def main():
                 }
                 cos_by_layer = cosine_traces_per_layer(cv_for_concept, sentence_acts)
                 cos_anchored_by_layer = cosine_traces_per_layer(cv_for_concept, anchored_acts)
+                if config.record_special_tokens:
+                    cos_tail_by_layer = cosine_traces_per_layer(cv_for_concept, tail_acts)
+                    cos_ps_by_layer = cosine_traces_per_layer(cv_for_concept, ps_acts)
 
             is_compliant, compliance_score = check_compliance(
                 generated_text, trial["sentence"],
@@ -346,6 +380,35 @@ def main():
                 "cosine_sim": {int(k): v.tolist() for k, v in cos_by_layer.items()},
                 "cosine_sim_anchored": {int(k): v.tolist() for k, v in cos_anchored_by_layer.items()},
             }
+            if config.record_special_tokens:
+                result.update({
+                    "tail_token_ids": tail_ids,
+                    "tail_token_strs": tail_strs,
+                    "activations_tail": {int(k): v for k, v in tail_acts.items()},
+                    "norms_tail": {int(k): np.asarray(v).tolist()
+                                   for k, v in tail_norms.items()},
+                    "cosine_sim_tail": {int(k): np.asarray(v).tolist()
+                                        for k, v in cos_tail_by_layer.items()},
+                    "prompt_special_token_ids": ps_ids,
+                    "prompt_special_token_strs": ps_strs,
+                    "prompt_special_positions": ps_pos,
+                    "activations_prompt_special": {int(k): v for k, v in ps_acts.items()},
+                    "norms_prompt_special": {int(k): np.asarray(v).tolist()
+                                             for k, v in ps_norms.items()},
+                    "cosine_sim_prompt_special": {int(k): np.asarray(v).tolist()
+                                                  for k, v in cos_ps_by_layer.items()},
+                })
+            # --no-pickle: the per-trial activation arrays exist only for
+            # results.pkl, so drop them immediately to keep host RAM flat
+            # (~100-160 GB saved on a full sweep). EXCEPTION: no_instruction
+            # rows keep theirs until the end -- the baseline cache is built
+            # from them at save time (they are ~50 rows, a few hundred MB).
+            if getattr(args, "no_pickle", False) \
+                    and trial["condition_id"] != "no_instruction":
+                for k in ("activations", "activations_anchored",
+                          "activations_tail", "activations_prompt_special"):
+                    if k in result:
+                        result[k] = "__dropped__"
             all_results.append(result)
             global_step += 1
 
@@ -390,9 +453,38 @@ def main():
     save_results_json(all_results, run_dir / "results.json",
                       metrics={"compliance_rate": compliance_rate,
                                "elapsed_s": elapsed})
-    save_results_pickle(all_results, run_dir / "results.pkl",
-                        metrics={"compliance_rate": compliance_rate,
-                                 "elapsed_s": elapsed})
+    if getattr(args, "no_pickle", False):
+        print("--no-pickle: skipping results.pkl (per-trial activation arrays)")
+    else:
+        save_results_pickle(all_results, run_dir / "results.pkl",
+                            metrics={"compliance_rate": compliance_rate,
+                                     "elapsed_s": elapsed})
+
+    # no_instruction_cache.pkl: the per-sentence BASELINE activations/norms the
+    # whole analysis suite keys on (score_data.load_baseline, the figure
+    # scripts). Built here directly from the in-memory results, replacing the
+    # old extract-from-results.pkl step. Format matches the historical cache:
+    # {sentence: {anchored_token_strs, activations {L: (n_tok, d)},
+    #             norms {L: (n_tok,)}}}, sentence-window rows (no anchor row).
+    ni_cache = {}
+    for r in all_results:
+        if r["condition_id"] != "no_instruction" or not r["is_compliant"]:
+            continue
+        s = r["sentence"]
+        if s in ni_cache:
+            continue
+        ni_cache[s] = {
+            "anchored_token_strs": r["anchored_token_strs"],
+            "activations": {int(L): np.asarray(a, np.float32)
+                            for L, a in r["activations"].items()},
+            "norms": {int(L): np.asarray(v, np.float32)
+                      for L, v in r["norms"].items()},
+        }
+    if ni_cache:
+        import pickle as _pickle
+        with open(run_dir / "no_instruction_cache.pkl", "wb") as f:
+            _pickle.dump(ni_cache, f, protocol=_pickle.HIGHEST_PROTOCOL)
+        print(f"no_instruction_cache.pkl: {len(ni_cache)} sentences")
 
     with open(run_dir / "config.yaml", "w") as f:
         yaml.dump({

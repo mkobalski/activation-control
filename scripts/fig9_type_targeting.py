@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Fig 9: token-TYPE targeting (loc_punctuation, loc_adjectives) by POS category.
+"""[RETIRED as a paper figure 2026-07-10 -- kept runnable; the conditions feed
+the Addressability/CoM scorers (results/paper/SCORES.md).]
+
+Token-TYPE targeting (loc_punctuation, loc_adjectives) by POS category.
 
 Do "think about {concept} only on punctuation / only on adjectives" actually
 concentrate concept engagement on the targeted token type? 2x2 grid:
@@ -46,7 +49,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
 from controllability_heatmap import classify, load_vectors, bh_fdr       # noqa: E402
 from fig2_engage_suppress import _load_json, _trace, _relnorm            # noqa: E402
-from fig7_pos_categories import CATS, _pos_by_sentence, _token_upos      # noqa: E402
+from fig5_pos_categories import CATS, _pos_by_sentence, _token_upos      # noqa: E402
 
 COS_L, RN_L = 55, 46
 BASE, THINK = "no_instruction", "think_about"

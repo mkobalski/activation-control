@@ -117,6 +117,11 @@ python scripts/run_experiment.py --config experiments/main/config.yaml
 #    ... or a subset of sets:
 python scripts/run_experiment.py --config experiments/main/config.yaml \
     --set 'experiment.sets=[intensity,persistence]'
+#    ... or ANOTHER MODEL (see models.txt + src/models/registry.py; thin
+#    per-model configs inherit everything from config.yaml — layer sweeps are
+#    depth FRACTIONS, so they resolve against each model's own layer count):
+python scripts/run_experiment.py --config experiments/main/llama33_70b.yaml
+#    (equivalently: --config experiments/main/config.yaml --set model.name=llama33_70b)
 
 # 4. (Optional) re-render standalone -- a different sentence/layer/channel.
 #    No model load, but may read the run's results.pkl (large RAM).
@@ -143,6 +148,17 @@ Each run's `plots/` then contains:
 - **layer-targeting** (only if you run `plot_layer_targeting.py` on a
   layer-targeting run): `plot7*`–`plot12*`.
 
+**Special tokens are recorded too** (`experiment.record_special_tokens: true`,
+the default since 2026-07-10): each trial additionally saves (a) the generated
+**tail** after the aligned sentence span — trailing tokens and
+`<end_of_turn>`/EOS, previously recorded but discarded at save
+(`tail_token_*`, `activations_tail`, `norms_tail`, `cosine_sim_tail`) and
+(b) the **prompt-side special tokens** (`<start_of_turn>`, BOS, ...), captured
+during prefill at the analysis layers (`prompt_special_token_*`,
+`prompt_special_positions`, `activations_prompt_special`,
+`norms_prompt_special`, `cosine_sim_prompt_special`). Runs before 2026-07-10
+lack these fields.
+
 ### Environment note
 
 If your venv's `python` is not the interpreter whose site-packages hold the
@@ -158,45 +174,43 @@ per-run auto-plots above**. Each `scripts/figN_*.py` loads no model — it reads
 saved run's `results.json` (+ `no_instruction_cache.pkl`, cached concept vectors,
 and for some analyses the run's `results.pkl`) and renders one figure. Promoted PNGs plus a per-figure `.md` handoff
 (task, measures, exact statistics, draft caption) live in `results/paper/`
-(untracked — regenerate with the driver below).
+(untracked — regenerate with the driver below). Appendix figures use the
+`FigA#` series (sequential, independent of main numbering); each `FigA#.md`
+opens by naming the main-text claim it supports.
 
 | fig | script | what |
 |---|---|---|
 | 1 | see `Fig1.md` (`plot1_concept.py` / `fig1_*`) | prompted concept-modulation traces (single concept) |
-| 2 | `fig2_engage_suppress.py` | engage/suppress heatmap across depth, one sentence |
-| 3 | `fig3_position_engage_suppress.py` | …by absolute token position (length-clipped) |
-| 4 | `fig4_fraction_engage_suppress.py` | …by fractional sentence position |
-| 5 | `fig5_rank_intensity.py` | rank (signed Spearman vs intensity) by position |
-| 6 | `fig6_gain_intensity.py` | ramp gain by position |
-| 7 | `fig7_pos_categories.py` | four metrics by POS category (bars + CIs) |
-| 8 | `fig8_location_position.py` | positional targeting (beginning/end) profiles |
-| 9 | `fig9_type_targeting.py` | type targeting (punctuation/adjectives) by POS |
-| 10 | `fig10_persistence.py` | temporal persistence profiles (Fig 10a/10b) |
-| 11 | `fig11_localization_metrics.py` | localization metrics (inside gain / leakage / selectivity / center-of-mass) |
-| 12 | `fig12_persistence_metrics.py` | persistence timing metrics (onset/offset/persistence/rebound/leakage) — **draft, unpromoted** |
-| 13 | `fig13_target_matrix.py` | layer-targeting 8×8 matrices (+ supplementary demeaned); see the "significance dilemma" in `Fig13.md` |
+| 2 | `fig2_dprime.py` | d′ depth profiles: engage/suppress vs neutral (SDT sensitivity; two-way bootstrap) |
+| 3 | `fig3_dprime.py` | endpoint-gain d′ depth profiles: lexical vs numeric intensity (+ `Fig3_aux` adjacent-step AUROC resolution) |
+| 4 | `fig4_rank_depth.py` | intensity-rank depth profiles: lexical ("intensely") vs numeric (1→4) intensity |
+| 5 | `fig5_dprime.py` | engagement/suppression d′ by POS category |
+| 6 | `fig6_location_position.py` | positional targeting (beginning/end) profiles *(was Fig 8)* |
+| 7 | `fig7_persistence.py` | temporal persistence profiles (Fig 7a/7b) *(was Fig 10)* |
+| A1 | `figA1_position_auroc.py` | **appendix**: AUROC by fractional position (certifies Fig 2's position-collapse) |
+| retired | — | in `results/paper/Exploratory analysis/`, scripts still runnable: the original Figs 5–6 heatmap family (2026-07-08); type targeting (old Fig 9); the metric figures (old Figs 11–12, superseded by `results/paper/SCORES.md`); the layer-targeting 8×8 matrices incl. demeaned supplement (old Fig 13 — its "significance dilemma" writeup is in `Retired_Fig13_target_matrix.md`); the AUROC/max-normalized Figs 2, 3, 5a/5b and the `_alt` raw-Δ drafts (replaced by the d′ versions 2026-07-10) |
 
-Shared conventions (Figs 2–13): the "signal" is **Δ vs `no_instruction`,
+Shared conventions (remaining figures): the "signal" is **Δ vs `no_instruction`,
 differenced within each (sentence, concept) unit** (cancels the per-concept
 offset); averages are over **50 sentences × 10 concepts**; error bars/bands are
 **95% bootstrap CIs over units**; significance is a **paired sign-flip permutation
 with BH-FDR**. Layers are each channel's peak depth (cos deep, relnorm mid).
-`Fig11-12_explained.md` is a plain-language walkthrough of the two metric figures.
+The proposed cross-model scores (headline d′, the battery, Addressability S,
+spatial/timing precision) are specified in `results/paper/SCORES.md`.
 
 **Regenerate the whole suite with the driver** (analysis is fully decoupled from
 the experiment code; no model load, reads saved runs):
 
 ```bash
-python scripts/make_paper_figures.py           # Figs 1-13 (12 pending), ~5 min
-python scripts/make_paper_figures.py --only 4,7,13
+python scripts/make_paper_figures.py           # current set: Figs 1-7 + A1
+python scripts/make_paper_figures.py --only 5,6,A1
 python scripts/make_paper_figures.py --list
 ```
 
 > **Status: work in progress.** Figure content, layers, and some interpretations
-> (e.g. Fig 9) are still being finalized; Fig 12 is an unpromoted draft (skipped
-> by the driver, see the comment in `make_paper_figures.py`). Individual figures
+> are still being finalized. Individual figures
 > can still be run via their own scripts, e.g.
-> `python scripts/fig7_pos_categories.py --run-dir results/raw/<RUN> --out ...`
+> `python scripts/fig5_dprime.py --run-dir results/raw/<RUN> --out ...`
 
 ---
 
