@@ -3,8 +3,7 @@ torch>=2.6.0
 transformers>=4.55.0
 accelerate>=1.4.0        # needed by transformers for device_map="auto" loading
 numpy>=1.26.0
-pandas>=2.0.0            # run_analysis.py (cosine_summary.csv); not used elsewhere
-matplotlib>=3.5.0        # all plotting (plot_results.py, controllability_heatmap.py)
+matplotlib>=3.5.0        # figures: scripts/*_a3i.py (paper) + scripts/explore.py (per-run)
 tqdm>=4.60.0
 pyyaml>=6.0
 python-dotenv>=1.0.0     # loads .env (HF_TOKEN / optional WANDB_API_KEY)

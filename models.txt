@@ -1,10 +1,60 @@
-# Cross-model runs for the controllability battery (SCORES.md).
-# One HuggingFace repo id per line; short names live in src/models/registry.py.
-# Fixed protocol across models: same 50 sentences, 10 concepts, prompt frames;
-# analysis/prompt layers are specified as FRACTIONS of depth, so they adapt.
-# Per-model experiment configs: experiments/main/<short_name>.yaml
+# Cross-model runs for the controllability battery 
+#
+# Grouped by ArtificialAnalysis open-weights size bands (artificialanalysis.ai/
+# models/open-source, verified 2026-07-16).
+# Trailing comment gives TOTAL params (and active, for MoE).
+# Models already run commented out.
+#
+# Non-reasoning / instruct checkpoints only, except gpt-oss (low effort).
+#
+# HYBRID = ships thinking ON upstream; we want non-thinking. Usually automatic:
+# builder.py:29 / extraction.py:67 pass enable_thinking=False when unset, so the
+# Gemma 4, Qwen3.5 and GLM-5.2 hybrids are already off and stay out of
+# REASONING_MODELS. Exceptions:
+#  - Mistral Small 4: MUST set model.reasoning_effort: "none" in its YAML -- the
+#    builder passes that kwarg only when set (builder.py:34).
+#  - Kimi K2.6: toggle kwarg is `thinking` (not enable_thinking), so the builder
+#    default misses it -- MUST pass thinking=false. On by default otherwise.
+#  - DeepSeek V4 Flash / V3.2: no Jinja template; toggle via the repo's encoding/
+#    scripts. builder.py:40 falls back to bare "User:/Assistant:" without one.
+#  - GLM-4.6V / GLM-4.7-Flash: thinking-off switch unverified (4.6V's is
+#    documented only for GLM-4.5V); 4.7-Flash is reasoning/hybrid, not plain
+#    non-reasoning. Check both chat templates before running.
 
-google/gemma-4-31b-it              # short name: gemma4_31b  (verify repo id on HF before the run)
-meta-llama/Llama-3.3-70B-Instruct  # short name: llama33_70b
-Qwen/Qwen3.6-27B                   # short name: qwen36_27b  (dense; enable_thinking=false handled)
-Qwen/Qwen2.5-72B-Instruct          # short name: qwen_72b
+# ---------------------------------------------------------------- tiny (<= 4B)
+google/gemma-3-270m-it                        # 268M   short name: gemma3_270m
+mistralai/Ministral-3-3B-Instruct-2512        # 3.85B  short name: ministral3_3b  (~3.4B LM + 0.4B vision encoder)
+
+# --------------------------------------------------------------- small (4-40B)
+# google/gemma-2-9b-it                        # 9.24B  short name: gemma2_9b  [TESTED]
+# google/gemma-3-27b-it                       # 27.4B  short name: gemma3_27b  [TESTED]
+google/gemma-4-12B-it                         # 11.96B short name: gemma4_12b  (HYBRID: off by default)
+# google/gemma-4-31b-it                       # 31B    short name: gemma4_31b  [TESTED]
+zai-org/GLM-4.7-Flash                         # 31.2B total / ~3B active  short name: glm47_flash  (REASONING/hybrid, not plain non-reasoning; switch unverified -- see header)
+meta-llama/Llama-3.1-8B-Instruct              # 8.03B  short name: llama_8b
+mistralai/Mistral-Small-3.1-24B-Instruct-2503 # 24.0B  short name: mistral_small_31_24b
+allenai/Olmo-3-7B-Instruct                    # 7.30B  short name: olmo3_7b
+allenai/Olmo-3.1-32B-Instruct                 # 32.2B  short name: olmo31_32b
+openai/gpt-oss-20b                            # 21.5B total / 3.6B active  short name: gptoss_20b_low  (REASONING; low effort)
+Qwen/Qwen3.5-4B                               # 4.66B  short name: qwen35_4b  (HYBRID: off by default; dense despite MoE blurb)
+Qwen/Qwen3.5-9B                               # 9.65B  short name: qwen35_9b  (HYBRID: off by default; dense)
+# Qwen/Qwen3.6-27B                            # 27B    short name: qwen36_27b  [TESTED]
+
+# ------------------------------------------------------------ medium (40-150B)
+zai-org/GLM-4.6V                              # 106B total / ~12B active  short name: glm46v  (HYBRID: switch unverified -- see header)
+moonshotai/Kimi-Linear-48B-A3B-Instruct       # 48B total / 3B active  short name: kimi_linear_48b_a3b
+# meta-llama/Llama-3.3-70B-Instruct           # 70B    short name: llama33_70b  [TESTED]
+meta-llama/Llama-4-Scout-17B-16E-Instruct     # 109B total / 17B active  short name: llama4_scout
+mistralai/Mistral-Small-4-119B-2603           # 119B total / 6.5B active  short name: mistral_small_4  (HYBRID: needs reasoning_effort: "none" -- see header; NOT a 24B dense model)
+# openai/gpt-oss-120b                         # 117B total / 5.1B active  short names: gptoss_120b_low [TESTED] / gptoss_120b_high  (REASONING; low vs high effort)
+# Qwen/Qwen2.5-72B-Instruct                   # 72B    short name: qwen_72b  [TESTED]
+# Qwen/Qwen3.5-122B-A10B                      # 122B total / 10B active  short names: qwen35_122b_a10b [TESTED] / qwen35_122b_a10b_thinking
+
+# --------------------------------------------------------------- large (>150B)
+deepseek-ai/DeepSeek-V4-Flash                 # 284B total / 13B active  short name: deepseek_v4_flash  (HYBRID: no Jinja template -- see header)
+deepseek-ai/DeepSeek-V3.2                     # 685B total / ~37B active  short name: deepseek_v32  (HYBRID: no Jinja template -- see header)
+zai-org/GLM-5.2                               # ~744B total / ~39B active  short name: glm52  (HYBRID: off by default)
+moonshotai/Kimi-K2.6                          # 1.06T total / 32B active  short name: kimi_k26  (HYBRID: toggle is `thinking`, NOT enable_thinking -- MUST pass thinking=false; builder default does NOT cover it)
+mistralai/Mistral-Large-3-675B-Instruct-2512  # 675B total / 41B active  short name: mistral_large_3
+Qwen/Qwen3-235B-A22B-Instruct-2507            # 235B total / 22B active  short name: qwen3_235b_a22b_2507  (non-thinking only by design)
+Qwen/Qwen3.5-397B-A17B                        # 397B total / 17B active  short name: qwen35_397b_a17b  (HYBRID: off by default)

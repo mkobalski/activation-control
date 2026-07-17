@@ -103,6 +103,14 @@ class ModelWrapper:
         if self.model_name in GEMMA_MODELS:
             mod_name = next((m for m in ("gemma4", "gemma3", "gemma2")
                              if m in self.model_name), "gemma2")
+            # gemma4 rewrote apply_rotary_pos_emb to a per-tensor signature
+            # (x, cos, sin, ...) instead of gemma2/3's (q, k, cos, sin, ...);
+            # the legacy shape fix below matches only the old signature, and
+            # gemma4's upstream rotary is already correct, so skip patching it.
+            if mod_name == "gemma4":
+                print(f"[patch] skipping Gemma rotary fix for {self.model_name}: "
+                      "gemma4 uses upstream per-tensor apply_rotary_pos_emb")
+                return
             try:
                 gemma_module = __import__(
                     f"transformers.models.{mod_name}.modeling_{mod_name}",
@@ -217,8 +225,22 @@ class ModelWrapper:
                 ps_handles.append(
                     self.get_layer_module(li).register_forward_hook(_make_ps_hook(li)))
 
-        eos_id = self.tokenizer.eos_token_id
-        pad_id = self.tokenizer.pad_token_id if self.tokenizer.pad_token_id is not None else eos_id
+        # Stop on the model's FULL end-of-turn / eos set, not just the tokenizer's
+        # single eos_token_id. Chat models like gemma4 end a turn with a custom
+        # token (<turn|>=106) distinct from <eos>(=1); their generation_config
+        # lists them all (e.g. [1, 106, 50]). Recognizing only <eos> lets
+        # generation run past the turn end, where the model re-opens a thought
+        # channel and repeats the sentence -- which wrecks compliance.
+        gc_eos = getattr(getattr(self.model, "generation_config", None), "eos_token_id", None)
+        if isinstance(gc_eos, int):
+            gc_eos = [gc_eos]
+        eos_ids = {int(x) for x in (gc_eos or [])}
+        if self.tokenizer.eos_token_id is not None:
+            eos_ids.add(int(self.tokenizer.eos_token_id))
+        eos_ids_tensor = (torch.tensor(sorted(eos_ids), device=device)
+                          if eos_ids else None)
+        pad_id = self.tokenizer.pad_token_id if self.tokenizer.pad_token_id is not None \
+            else self.tokenizer.eos_token_id
         finished = torch.zeros(B, dtype=torch.bool, device=device)
         generated_ids: List[List[int]] = [[] for _ in range(B)]
         recorded_steps = [0] * B
@@ -294,8 +316,8 @@ class ModelWrapper:
                 next_logits = outputs.logits[:, -1, :]
 
                 # Update finished flags (post-record so EOS itself is captured).
-                if eos_id is not None:
-                    just_ended = (next_ids.squeeze(-1) == eos_id) & (~finished)
+                if eos_ids_tensor is not None:
+                    just_ended = torch.isin(next_ids.squeeze(-1), eos_ids_tensor) & (~finished)
                     finished = finished | just_ended
                 if bool(finished.all().item()):
                     break
@@ -304,7 +326,7 @@ class ModelWrapper:
         results = []
         for i in range(B):
             ids = generated_ids[i]
-            if ids and eos_id is not None and ids[-1] == eos_id:
+            if ids and ids[-1] in eos_ids:
                 ids_for_decode = ids[:-1]
             else:
                 ids_for_decode = ids

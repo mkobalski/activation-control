@@ -1,0 +1,13 @@
+model_id: "Qwen/Qwen3.5-122B-A10B"   # SAME weights as qwen35_122b_a10b; verify repo id on HF
+torch_dtype: "bfloat16"              # MoE 122B total / ~10B active; ~244 GB at bf16
+device_map: "auto"                   # multi-GPU or quantization for a smaller box
+quantization: null
+# NOTE: doc-only, like the other configs/models/*.yaml — nothing loads this file.
+# The real HF id comes from MODEL_NAME_MAP (src/models/registry.py); dtype/
+# quantization/enable_thinking are read from the experiment YAML's model: block.
+# Thinking mode: the experiment YAML sets enable_thinking=true, so the chat
+# template opens a <think>...</think> trace before the answer. The runner records
+# all generated steps and slices the post-</think> answer span for compliance /
+# activation alignment (src/utils/think_tags.py). Same weights as the non-thinking
+# entry; kept as a distinct short name so the two modes' run dirs / caches /
+# SCORES / comparison bars stay separate.

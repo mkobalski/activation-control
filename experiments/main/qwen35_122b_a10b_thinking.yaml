@@ -1,0 +1,40 @@
+# MAIN experiment on Qwen3.5-122B-A10B in THINKING mode (MoE: 122B total, ~10B
+# active). The reasoning sibling of experiments/main/qwen35_122b_a10b.yaml —
+# SAME weights (Qwen/Qwen3.5-122B-A10B via MODEL_NAME_MAP), only enable_thinking
+# differs. This is the battery's think-tag REASONING point (beside gpt-oss's
+# harmony points). Inherits everything from config.yaml.
+#
+# NOTES:
+#  - Thinking: enable_thinking=true opens a <think>...</think> chain-of-thought
+#    before the answer. The runner (this short name is in REASONING_MODELS ∩
+#    THINK_TAG_MODELS) records ALL generated steps, then locates the target
+#    sentence in the answer AFTER the last </think> and records/scores over that
+#    span only (src/utils/think_tags.py:final_answer_span). CoT is excluded from
+#    compliance and from the saved activation span; pickle size matches the
+#    non-thinking run (only the sentence span is saved).
+#  - MoE at bf16 is ~244 GB — set quantization "8bit"/"4bit" below, or rely on
+#    multi-GPU device_map="auto", if the box is smaller.
+#  - Layer count is discovered at load; the 20-fraction depth sweep resolves
+#    against it automatically.
+extends: config.yaml
+
+model:
+  name: "qwen35_122b_a10b_thinking"
+  config_path: "configs/models/qwen35_122b_a10b_thinking.yaml"
+  quantization: null
+  enable_thinking: true
+
+experiment:
+  # Thinking models need room for the CoT (<think>...</think>) AND the final
+  # sentence; the default 64 from config.yaml would truncate before the answer.
+  # 4096 is a deliberately GENEROUS ceiling — no Qwen3.5 thinking CoT length has
+  # been measured (this integration is CPU-only, unrun). Tune DOWN after a smoke/
+  # probe reports typical/max CoT length; watch for any trial that hits the cap
+  # (align_sim < 1.0 with the answer truncated is the symptom).
+  max_new_tokens: 4096
+  # COST/MEMORY: for reasoning models the recorder holds activations for EVERY
+  # generated step up to max_new_tokens (all analysis layers) in memory until the
+  # answer span is sliced out. At 4096 that transient buffer is large, on top of a
+  # longer KV cache. Drop the batch size so it fits; raise back toward 8 only if
+  # VRAM headroom allows.
+  batch_size: 4

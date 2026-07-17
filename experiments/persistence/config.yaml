@@ -14,7 +14,7 @@
 extends: ../_base.yaml
 
 experiment:
-  name: "write_introspection_persistence"
+  name: "activation_control_persistence"
 
 prompt_conditions:
   # ---- Reference poles ----
@@ -48,23 +48,3 @@ prompt_conditions:
     template: 'Write "{sentence}" exactly. While you write, think about {concept} starting after the fourth word of the sentence. Don''t write anything else.'
     kind: "positive"
     has_layer: false
-
-analysis:
-  # One controllability heatmap PER condition (all 20 layers x s6 tokens), each
-  # written to plots/<condition>/. No intensity ramp here, so the Rank/gain/
-  # Cohen's d panels auto-skip; each condition's engagement panel (condition -
-  # neutral) is its own heatmap, so the four are directly comparable.
-  - kind: controllability_heatmap
-    metrics: [cos, relnorm]
-    sentence: "She stacked the folders, labeled each tab, and shut the drawer."   # baseline s6
-    pos_conds: [persist_first_half, persist_throughout, persist_once, persist_after_fourth]
-    neg_cond: dont_think_about
-    baseline_cond: no_instruction
-  # Mean concept-cosine (Δ from neutral) vs normalized token position, per
-  # condition, scored against the instructed temporal template. layer 55 = the
-  # register-study depth; omit `layer` to use the deepest recorded layer instead.
-  - kind: temporal_profile
-    baseline_cond: no_instruction
-    layer: 55
-  - kind: trace_plots
-    condition_ids: [persist_first_half, persist_throughout, persist_once, persist_after_fourth, dont_think_about]

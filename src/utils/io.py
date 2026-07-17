@@ -82,17 +82,92 @@ def save_results_json(results: List[Dict], path: Path, metrics: Optional[Dict] =
         json.dump(data, f, indent=2, default=_json_default)
 
 
-def save_results_pickle(results: List[Dict], path: Path, metrics: Optional[Dict] = None):
+# ── bfloat16 activation codec ───────────────────────────────────────────────
+# The residual-stream activations are captured from a bf16 model and upcast to
+# fp32 at record time (recorder.py), so their low 16 mantissa bits are ZERO —
+# storing just the high 16 bits (the bf16 bit-pattern, carried in a uint16) is
+# EXACTLY lossless and halves the pickle (~117 GB -> ~58 GB on a full run).
+# NumPy has no native bfloat16, hence the uint16 carrier. Round-to-nearest-even
+# is applied so a genuinely-fp32 input (non-bf16 model) still degrades cleanly.
+# Only the four big activation tensors are coded; norms/cosines stay fp32.
+# The pickle carries an "activation_codec" marker so load_* auto-decodes and
+# LEGACY fp32 pickles (no marker) still load unchanged.
+BF16_CODEC = "bf16-uint16"
+_ACTIVATION_KEYS = ("activations", "activations_anchored",
+                    "activations_tail", "activations_prompt_special")
+
+
+def _pack_bf16(arr):
+    """fp32 ndarray -> uint16 ndarray of round-to-nearest-even bf16 bits."""
+    u32 = np.ascontiguousarray(arr, dtype=np.float32).view(np.uint32)
+    bias = ((u32 >> 16) & np.uint32(1)) + np.uint32(0x7FFF)
+    return ((u32 + bias) >> 16).astype(np.uint16)
+
+
+def _unpack_bf16(u16):
+    """uint16 bf16 bits -> fp32 ndarray."""
+    return (np.asarray(u16, dtype=np.uint32) << 16).view(np.float32)
+
+
+def _recode_activations_in_place(results: List[Dict], fn):
+    """Apply `fn` to every activation ndarray in-place across the result dicts
+    (string placeholders like '__dropped__' are skipped). In-place keeps host RAM
+    ~flat during (un)packing instead of doubling it with a second full copy."""
+    for r in results:
+        for k in _ACTIVATION_KEYS:
+            sub = r.get(k)
+            if isinstance(sub, dict):
+                for L, v in sub.items():
+                    if not isinstance(v, str):
+                        sub[L] = fn(v)
+
+
+def decode_results_payload(payload: Dict) -> Dict:
+    """Unpack bf16-coded activations back to fp32 (in place) when the payload was
+    saved with the codec; a no-op for legacy fp32 pickles. Returns the payload."""
+    if payload.get("activation_codec") == BF16_CODEC:
+        _recode_activations_in_place(payload["results"], _unpack_bf16)
+        payload["activation_codec"] = None
+    return payload
+
+
+def load_pickle_results(path: Path) -> List[Dict]:
+    """Load a results pickle and decode the activation codec; returns the results
+    list (activation arrays as fp32). Use this instead of a raw ``pickle.load(f)
+    ["results"]`` so bf16-coded pickles are transparently expanded."""
+    with open(path, "rb") as f:
+        return decode_results_payload(pickle.load(f))["results"]
+
+
+def save_results_pickle(results: List[Dict], path: Path,
+                        metrics: Optional[Dict] = None, bf16: bool = True):
     """Write the complete run (including activation arrays) as a pickle.
 
     This is the source of truth for the heavy data; the JSON is only a readable
     summary. Mirrors the JSON layout (results / metrics / n_samples) so either
     file can be loaded the same way.
+
+    ``bf16`` (default on): store the activation tensors in the lossless bf16
+    codec (see above) to halve the file. The arrays are packed to uint16
+    IN PLACE and restored to fp32 right after the dump (in a ``finally``), so
+    peak host RAM stays flat (no second full copy) and the caller's in-memory
+    results are unchanged for the end-of-run cache build / auto-analysis. Pass
+    ``bf16=False`` to write plain fp32.
     """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "wb") as f:
-        pickle.dump({"results": results, "metrics": metrics or {}, "n_samples": len(results)}, f)
+    payload = {"results": results, "metrics": metrics or {}, "n_samples": len(results)}
+    if not bf16:
+        with open(path, "wb") as f:
+            pickle.dump(payload, f)
+        return
+    payload["activation_codec"] = BF16_CODEC
+    _recode_activations_in_place(results, _pack_bf16)      # fp32 -> uint16
+    try:
+        with open(path, "wb") as f:
+            pickle.dump(payload, f)
+    finally:
+        _recode_activations_in_place(results, _unpack_bf16)  # restore fp32 for callers
 
 
 def load_results(path: Path):
@@ -100,14 +175,14 @@ def load_results(path: Path):
 
     `path` may carry any suffix; we try the .pkl sibling first because it
     contains the activation arrays, and fall back to the .json (arrays elided)
-    only if no pickle exists.
+    only if no pickle exists. Bf16-coded pickles are auto-decoded to fp32.
     """
     path = Path(path)
     pkl = path.with_suffix(".pkl")
     js = path.with_suffix(".json")
     if pkl.exists():
         with open(pkl, "rb") as f:
-            d = pickle.load(f)
+            d = decode_results_payload(pickle.load(f))
         return d["results"], d.get("metrics", {})
     if js.exists():
         with open(js) as f:

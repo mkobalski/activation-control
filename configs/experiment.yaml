@@ -1,5 +1,5 @@
 # =============================================================================
-# write-introspection — main experiment config (gemma3-27b, fractional depths).
+# activation-control — main experiment config (gemma3-27b, fractional depths).
 #
 # For each (concept, sentence, condition, repetition) the runner:
 #   1. Builds a prompt: "Write '<sentence>' exactly. <think-instruction>.
@@ -15,7 +15,7 @@
 # =============================================================================
 
 experiment:
-  name: "write_introspection_main"
+  name: "activation_control"
   seed: 42                 # shuffles the trial order (reproducible)
   temperature: 0.0         # 0.0 = greedy decoding
   max_new_tokens: 64
@@ -89,8 +89,8 @@ sentences:
 #          control  (concept-less variant)   | baseline (no concept, no thinking)
 #   has_layer: template contains "{layer}" -> instantiated once per prompt_layer.
 #
-# The intensity ramp think_intensity_{1..4}_of_4 is the graded knob that the
-# controllability analysis (scripts/controllability_heatmap.py) sweeps over.
+# The intensity ramp think_intensity_{1..4}_of_4 is the graded knob the Dial Rank /
+# Dial Resolution measures (scripts/compute_scores.py) score over.
 # =============================================================================
 prompt_conditions:
   # ---- Positives, no layer (the verb ladder + intensity ramp) ----
@@ -167,9 +167,9 @@ compliance:
   threshold: 0.85
 
 wandb:
-  project: "write-introspection-main"
+  project: "activation-control"
   entity: null
-  tags: ["write-introspection", "gemma3"]
+  tags: ["activation-control", "gemma3"]
 
 output:
   base_dir: "results"

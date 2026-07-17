@@ -1,0 +1,10 @@
+# gpt-oss-120b (OpenAI) — reasoning_effort=low variant. NOTE: like the other
+# model files here, this is documentation only — the loader resolves the HF id
+# from MODEL_NAME_MAP (src/models/registry.py) and reads dtype/quantization AND
+# reasoning_effort from the experiment YAML's `model:` block. The low/high split
+# lives in the experiment YAMLs (gptoss_120b_low/high.yaml), not here — both
+# point at the SAME weights. Kept for consistency with the other model configs.
+model_id: "openai/gpt-oss-120b"
+torch_dtype: "bfloat16"     # MXFP4 experts load natively; non-expert params bf16
+device_map: "auto"          # MoE; shards across GPUs if >1
+quantization: null          # native MXFP4 — do NOT add bitsandbytes on top

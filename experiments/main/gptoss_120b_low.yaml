@@ -1,0 +1,33 @@
+# MAIN experiment on gpt-oss-120b at reasoning_effort=LOW (OpenAI open-weight
+# MoE, harmony chat format, native MXFP4). One of the battery's two REASONING
+# points (the sibling is experiments/main/gptoss_120b_high.yaml — same weights,
+# effort=high). Both sit beside the non-thinking Qwen2.5-72B / Llama-3.3-70B.
+# Inherits everything from config.yaml.
+#
+# NOTES:
+#  - Short name gptoss_120b_low is deliberately distinct from _high so run dirs,
+#    the concept-vector cache, SCORES_*.json and the cross-model comparison keep
+#    the two efforts separate (the effort changes the system prompt, so their
+#    activations/concept vectors genuinely differ).
+#  - MXFP4 is the native weight format (~63 GB); leave quantization null and do
+#    NOT add bitsandbytes 8bit/4bit on top (that path is NF4 and wrong here).
+#  - reasoning_effort "low": harmony emits an `analysis` (CoT) channel before the
+#    `final` channel even at low. The recorder locates the target sentence in the
+#    FINAL channel and records over that span (see src/utils/harmony.py).
+#  - 36 layers; the 20-fraction depth sweep resolves against that automatically.
+extends: config.yaml
+
+model:
+  name: "gptoss_120b_low"
+  config_path: "configs/models/gptoss_120b_low.yaml"
+  quantization: null
+  reasoning_effort: "low"
+
+experiment:
+  # Reasoning models need room for the CoT (analysis channel) AND the final
+  # sentence; the default 64 would truncate before the final channel. At low
+  # effort the measured CoT is ~10 tokens (max 24), total gen ~31 (max 43), so
+  # 512 is comfortable headroom. (For reasoning models ALL generated steps up to
+  # this are activation-recorded in memory; only the aligned final-channel
+  # sentence span is saved to the pickle.)
+  max_new_tokens: 512

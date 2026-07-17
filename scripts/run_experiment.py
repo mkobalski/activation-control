@@ -32,9 +32,10 @@ from src.utils.io import get_run_dir, save_results_json, save_results_pickle
 from src.utils.compliance import check_compliance
 from src.utils.wandb_utils import init_wandb, log_metrics, log_summary, log_artifact, finish_wandb
 from src.utils.layers import resolve_layers
-from src.config import load_config, parse_cli_args, AnalysisStep
-from src.analysis.registry import run_analysis_steps
-from src.models.registry import BASE_MODELS
+from src.config import load_config, parse_cli_args
+from src.models.registry import BASE_MODELS, REASONING_MODELS, THINK_TAG_MODELS
+from src.utils.harmony import final_channel_span
+from src.utils.think_tags import final_answer_span
 from src.models.wrapper import load_model
 from src.activation.recorder import ActivationRecorder
 from src.vectors.extraction import extract_concept_vectors
@@ -43,53 +44,20 @@ from src.analysis.alignment import tokenize_sentence, align_sentence_span, slice
 from src.analysis.cosine import cosine_traces_per_layer
 
 
-# Default analyses for configs that don't declare an `analysis:` block -- the
-# historical auto-run behavior (direction + magnitude heatmaps and the per-concept
-# trace plots, on the default cat sentence).
-DEFAULT_ANALYSIS = [
-    AnalysisStep("controllability_heatmap", {"metrics": ["cos", "relnorm"]}),
-    AnalysisStep("trace_plots", {}),
-]
+LT_ONLY_SETS = {"layer_location"}
 
 
-def _import_experiment_analyze(config_path):
-    """Import an experiment-specific analyze.py sitting next to its config, if any.
+def _run_name(config):
+    """Run-dir label: config.name, plus an `_lt` tag for layer-targeting runs.
 
-    Importing it runs its @register decorators, making the experiment's custom
-    analysis `kind`s available to the dispatch below. No-op when the config has no
-    sibling analyze.py (e.g. the ramp-only experiments and the legacy configs).
+    The layer-targeting run and the main battery share ONE config (they differ
+    only in active_sets), so without this tag both land in identically-named
+    directories -- which is what made `--lt-run` auto-resolution unable to tell
+    them apart. Any run whose active_sets is exactly {layer_location} is an LT
+    run; everything else keeps config.name unchanged.
     """
-    analyze_py = Path(config_path).resolve().parent / "analyze.py"
-    if not analyze_py.exists():
-        return
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("experiment_analyze", analyze_py)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    print(f"Loaded experiment analyses from {analyze_py}")
-
-
-def run_analyses(results, config, run_dir, config_path):
-    """Register built-in + experiment analyses, then dispatch the config's steps."""
-    try:
-        # scripts/ on path so builtin_analyses can import the sibling scripts.
-        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-        import builtin_analyses  # noqa: F401 - import registers the built-in kinds
-        _import_experiment_analyze(config_path)
-    except Exception as e:
-        print(f"  [analysis] setup failed, skipping analyses: {e}")
-        return
-    steps = config.analysis or DEFAULT_ANALYSIS
-    # A step tagged with `set:` only runs when that condition set is active;
-    # untagged steps (set=None) always run.
-    active_steps = []
-    for step in steps:
-        if step.set is None or step.set in config.active_sets:
-            active_steps.append(step)
-        else:
-            print(f"  [analysis:{step.kind}] skipped: set '{step.set}' not active")
-    run_analysis_steps(active_steps, run_dir=run_dir, results=results,
-                       model_name=config.model.name, cfg=config)
+    sets = set(getattr(config, "active_sets", None) or [])
+    return f"{config.name}_lt" if sets == LT_ONLY_SETS else config.name
 
 
 def main():
@@ -98,7 +66,7 @@ def main():
     config = load_config(args.config, overrides=args.overrides)
 
     rng = random.Random(config.seed)
-    run_dir = get_run_dir(config.output_base_dir, config.name, config.model.name)
+    run_dir = get_run_dir(config.output_base_dir, _run_name(config), config.model.name)
     print(f"Output: {run_dir}")
 
     # Optional sentence subset: run only config.sentence_indices (global indices
@@ -119,12 +87,38 @@ def main():
         config.compliance.method = "prefix_normalized_levenshtein"
         print(f"Base model detected — using compliance method '{config.compliance.method}'")
 
+    # Reasoning models (gpt-oss/harmony) emit a chain-of-thought `analysis`
+    # channel before the `final` channel that holds the requested sentence. For
+    # them we record ALL generated steps (the sentence lands past the CoT, beyond
+    # the usual sentence+buffer window) and restrict sentence alignment +
+    # compliance to the final channel (see final_channel_span). Non-reasoning
+    # models are unchanged.
+    is_reasoning = config.model.name in REASONING_MODELS
+    # Which final-answer parser to use for reasoning models: think-tag (Qwen3
+    # <think>...</think>) vs harmony (gpt-oss channels). Both record all steps and
+    # slice the final span; only the span-locating parser differs.
+    is_think_tag = config.model.name in THINK_TAG_MODELS
+    if is_reasoning:
+        style = "think-tag (post-</think> answer)" if is_think_tag else "harmony final channel"
+        print(f"Reasoning model detected [{style}] — recording all generated steps "
+              f"up to max_new_tokens={config.max_new_tokens}")
+
     # ── Load model ────────────────────────────────────────────────────────
     print("Loading model...")
     t0 = time.time()
     wrapper = load_model(config.model.name, config.model.device,
                          config.model.dtype, config.model.quantization)
+    # Chat-template reasoning effort (harmony/gpt-oss); read by builder._chat_wrap
+    # and extraction.format_extraction_prompt off the wrapper.
+    wrapper.reasoning_effort = config.model.reasoning_effort
+    # Chat-template thinking toggle (Qwen3 enable_thinking); read by
+    # builder._chat_wrap and extraction.format_extraction_prompt off the wrapper.
+    wrapper.enable_thinking = config.model.enable_thinking
     print(f"Model ready in {time.time() - t0:.1f}s (n_layers={wrapper.n_layers})")
+    if config.model.reasoning_effort:
+        print(f"Reasoning effort: {config.model.reasoning_effort}")
+    if config.model.enable_thinking is not None:
+        print(f"enable_thinking: {config.model.enable_thinking}")
 
     # ── Resolve fractional depths + explicit indices → integer layer ids ─
     analysis_layers = resolve_layers(
@@ -246,10 +240,19 @@ def main():
             )
             for t in batch_trials
         ]
-        max_record_per_row = [
-            sentence_ntokens[t["sentence"]] + config.token_buffer
-            for t in batch_trials
-        ]
+        # Non-reasoning: record just the sentence span + a small buffer (the model
+        # writes the sentence immediately). Reasoning: record every generated step
+        # up to max_new_tokens, since the sentence sits after a variable-length CoT
+        # and we can't know its offset ahead of time. Only the aligned sentence
+        # span is ultimately saved either way, so the reasoning path costs transient
+        # memory, not pickle size.
+        if is_reasoning:
+            max_record_per_row = [config.max_new_tokens] * len(batch_trials)
+        else:
+            max_record_per_row = [
+                sentence_ntokens[t["sentence"]] + config.token_buffer
+                for t in batch_trials
+            ]
 
         t_batch = time.time()
         batch_out = wrapper.generate_batch(
@@ -281,10 +284,28 @@ def main():
             recorded_gen_ids = generated_ids[:n_gen_recorded]
             # Find [start, end) within the generated tokens that best matches the
             # target sentence (skips any leading space/quote/preamble the model
-            # emits before the sentence proper).
-            start, end, align_sim = align_sentence_span(
-                wrapper.tokenizer, recorded_gen_ids, trial["sentence"], n_sent_tok,
-            )
+            # emits before the sentence proper). For reasoning models, restrict the
+            # search to the harmony `final` channel span and offset the result back
+            # into full-sequence indices, so the recorded activations line up with
+            # the sentence as-written (after the CoT), not with the reasoning trace.
+            if is_reasoning:
+                # Locate the final ANSWER span (excluding the CoT): after the last
+                # </think> for think-tag models, or the harmony `final` channel for
+                # gpt-oss. Both return (start, end, text) as generated-token indices.
+                span_fn = final_answer_span if is_think_tag else final_channel_span
+                fin_start, fin_end, final_text = span_fn(
+                    wrapper.tokenizer, recorded_gen_ids)
+                rel_start, rel_end, align_sim = align_sentence_span(
+                    wrapper.tokenizer, recorded_gen_ids[fin_start:fin_end],
+                    trial["sentence"], n_sent_tok,
+                )
+                start, end = fin_start + rel_start, fin_start + rel_end
+                compliance_text = final_text
+            else:
+                start, end, align_sim = align_sentence_span(
+                    wrapper.tokenizer, recorded_gen_ids, trial["sentence"], n_sent_tok,
+                )
+                compliance_text = generated_text
             # Shift by +1 to convert generated-token indices into snapshot indices
             # (recall snapshot position 0 is the anchor). "anchored" windows keep
             # the anchor at index 0 (start..snap_end); "sentence" windows drop it
@@ -346,8 +367,10 @@ def main():
                     cos_tail_by_layer = cosine_traces_per_layer(cv_for_concept, tail_acts)
                     cos_ps_by_layer = cosine_traces_per_layer(cv_for_concept, ps_acts)
 
+            # For reasoning models `compliance_text` is the final-channel text only
+            # (CoT excluded); for others it's the full generation. See alignment above.
             is_compliant, compliance_score = check_compliance(
-                generated_text, trial["sentence"],
+                compliance_text, trial["sentence"],
                 method=config.compliance.method,
                 threshold=config.compliance.threshold,
             )
@@ -380,6 +403,14 @@ def main():
                 "cosine_sim": {int(k): v.tolist() for k, v in cos_by_layer.items()},
                 "cosine_sim_anchored": {int(k): v.tolist() for k, v in cos_anchored_by_layer.items()},
             }
+            if is_reasoning:
+                # `generated_text` keeps the full generation (CoT + final answer,
+                # specials stripped); record the isolated final-answer text + its
+                # token span (harmony `final` channel, or post-</think> answer for
+                # think-tag models) so downstream can see exactly what was
+                # scored/recorded over. Keys stay `final_channel_*` for both styles.
+                result["final_channel_text"] = compliance_text
+                result["final_channel_span"] = [int(fin_start), int(fin_end)]
             if config.record_special_tokens:
                 result.update({
                     "tail_token_ids": tail_ids,
@@ -458,7 +489,10 @@ def main():
     else:
         save_results_pickle(all_results, run_dir / "results.pkl",
                             metrics={"compliance_rate": compliance_rate,
-                                     "elapsed_s": elapsed})
+                                     "elapsed_s": elapsed},
+                            bf16=config.pickle_bf16)
+        if config.pickle_bf16:
+            print("results.pkl: activations stored in lossless bf16 (uint16 codec)")
 
     # no_instruction_cache.pkl: the per-sentence BASELINE activations/norms the
     # whole analysis suite keys on (score_data.load_baseline, the figure
@@ -466,6 +500,21 @@ def main():
     # old extract-from-results.pkl step. Format matches the historical cache:
     # {sentence: {anchored_token_strs, activations {L: (n_tok, d)},
     #             norms {L: (n_tok,)}}}, sentence-window rows (no anchor row).
+    #
+    # SPECIAL TOKENS (config.record_special_tokens): the baseline's tail
+    # (<end_of_turn>/EOS) and prompt-side specials (<bos>/<start_of_turn>/...)
+    # are added here too, so special-token analyses (the cos channel needs the
+    # baseline projected onto each concept vector) work from this SMALL cache
+    # WITHOUT unpickling the multi-GB results.pkl. The no_instruction rows keep
+    # their activation arrays in memory even under --no-pickle (they are never
+    # dropped), so the raw special-token vectors are available here.
+    def _acts(d):   # {L: (n_tok, d)} float32, skipping dropped placeholders
+        return {int(L): np.asarray(a, np.float32) for L, a in (d or {}).items()
+                if not isinstance(a, str)}
+
+    def _vecs(d):   # {L: (n_tok,)} float32
+        return {int(L): np.asarray(v, np.float32) for L, v in (d or {}).items()}
+
     ni_cache = {}
     for r in all_results:
         if r["condition_id"] != "no_instruction" or not r["is_compliant"]:
@@ -473,18 +522,28 @@ def main():
         s = r["sentence"]
         if s in ni_cache:
             continue
-        ni_cache[s] = {
+        ent = {
             "anchored_token_strs": r["anchored_token_strs"],
-            "activations": {int(L): np.asarray(a, np.float32)
-                            for L, a in r["activations"].items()},
-            "norms": {int(L): np.asarray(v, np.float32)
-                      for L, v in r["norms"].items()},
+            "activations": _acts(r["activations"]),
+            "norms": _vecs(r["norms"]),
         }
+        if config.record_special_tokens:
+            ent.update({
+                "tail_token_strs": r.get("tail_token_strs"),
+                "activations_tail": _acts(r.get("activations_tail")),
+                "norms_tail": _vecs(r.get("norms_tail")),
+                "prompt_special_token_strs": r.get("prompt_special_token_strs"),
+                "prompt_special_positions": r.get("prompt_special_positions"),
+                "activations_prompt_special": _acts(r.get("activations_prompt_special")),
+                "norms_prompt_special": _vecs(r.get("norms_prompt_special")),
+            })
+        ni_cache[s] = ent
     if ni_cache:
         import pickle as _pickle
         with open(run_dir / "no_instruction_cache.pkl", "wb") as f:
             _pickle.dump(ni_cache, f, protocol=_pickle.HIGHEST_PROTOCOL)
-        print(f"no_instruction_cache.pkl: {len(ni_cache)} sentences")
+        _sp = " (+special-token baseline)" if config.record_special_tokens else ""
+        print(f"no_instruction_cache.pkl: {len(ni_cache)} sentences{_sp}")
 
     with open(run_dir / "config.yaml", "w") as f:
         yaml.dump({
@@ -546,21 +605,9 @@ def main():
                  artifact_type="config")
     finish_wandb()
 
-    # ── Run the config-declared analyses (CPU-side; best-effort) ───────────────
-    # Each experiment's config lists its own `analysis:` steps; the runner just
-    # dispatches them through src/analysis/registry.py. Adding an experiment with a
-    # new analysis needs no change here -- it registers a new `kind` from an
-    # analyze.py next to its config (imported below). A config with no `analysis:`
-    # block falls back to the historical default (cos+relnorm heatmaps + trace
-    # plots on the cat sentence), so existing configs behave exactly as before.
-    # `--no-analysis` skips this step entirely (generate + save only); re-render
-    # later with scripts/replot_run.py once the plotting scripts are finalized.
-    if args.no_analysis:
-        print("\n[--no-analysis] skipping end-of-run analyses. Re-render later with:")
-        print(f"  python scripts/replot_run.py --run-dir {run_dir} --config {args.config}")
-    else:
-        run_analyses(all_results, config, run_dir, args.config)
-
+    # Generation only. All post-processing (scoring + figures + the cross-model
+    # superplot) is triggered AFTER completion by the orchestrator, not here --
+    # run_experiment.py stays a pure generate-and-save step.
     print(f"\nResults saved to: {run_dir}")
 
 

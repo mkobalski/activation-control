@@ -22,7 +22,7 @@
 # =============================================================================
 
 experiment:
-  name: "write_introspection_base"   # experiments override this
+  name: "activation_control_base"   # experiments override this
   seed: 42
   temperature: 0.0
   max_new_tokens: 64
@@ -80,9 +80,9 @@ compliance:
   threshold: 0.85
 
 wandb:
-  project: "write-introspection-main"
+  project: "activation-control"
   entity: null
-  tags: ["write-introspection", "gemma3"]
+  tags: ["activation-control", "gemma3"]
 
 output:
   base_dir: "results"

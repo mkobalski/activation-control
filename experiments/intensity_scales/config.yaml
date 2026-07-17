@@ -21,7 +21,7 @@ analysis_layers:
   layers: []
 
 experiment:
-  name: "write_introspection_intensity_scales"
+  name: "activation_control_intensity_scales"
   # First 50 baseline sentences (s0..s49), matching the main run.
   sentence_indices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
                      10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
@@ -83,20 +83,6 @@ prompt_conditions:
     kind: "positive"
     has_layer: false
 
-# NOTE: with no baseline/negative conditions in this run, the engagement/
-# suppression panels of controllability_heatmap auto-skip; the ramp measures
-# (Rank / gain / Cohen's d) still compute. Cross-run comparison against the
-# controls is done against the main experiment run in later analysis.
-analysis:
-  # Each ramp writes to its own plots/ subdir (`subdir:`) -- the heatmap
-  # filenames encode only the metric and would collide otherwise.
-  - kind: controllability_heatmap
-    metrics: [cos, relnorm]
-    subdir: "open_scale"
-    ramp: [think_intensity_open_1, think_intensity_open_2, think_intensity_open_3, think_intensity_open_4]
-    ramp_name: "intensity_open_1to4"
-  - kind: controllability_heatmap
-    metrics: [cos, relnorm]
-    subdir: "of_8"
-    ramp: [think_intensity_1_of_8, think_intensity_2_of_8, think_intensity_3_of_8, think_intensity_4_of_8, think_intensity_5_of_8, think_intensity_6_of_8, think_intensity_7_of_8, think_intensity_8_of_8]
-    ramp_name: "intensity_1to8"
+# NOTE: this run has no baseline/negative conditions -- only the open-scale ramp.
+# Engage/suppress-style contrasts need the main experiment's baseline; cross-run
+# comparison is done against the main run in later analysis.

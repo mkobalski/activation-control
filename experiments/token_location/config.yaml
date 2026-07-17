@@ -15,7 +15,7 @@
 extends: ../_base.yaml
 
 experiment:
-  name: "write_introspection_token_location"
+  name: "activation_control_token_location"
 
 prompt_conditions:
   # ---- Reference poles ----
@@ -58,23 +58,3 @@ prompt_conditions:
     template: 'Write "{sentence}" exactly. Do not think about {concept} at the end of the sentence while you write. Don''t write anything else.'
     kind: "negative"
     has_layer: false
-
-analysis:
-  # One controllability heatmap PER condition (all 20 layers x s6 tokens), each
-  # written to plots/<condition>/. No intensity ramp here, so the Rank/gain/
-  # Cohen's d panels auto-skip; each condition's engagement panel (condition -
-  # neutral) is its own heatmap, so the four are directly comparable.
-  - kind: controllability_heatmap
-    metrics: [cos, relnorm]
-    sentence: "She stacked the folders, labeled each tab, and shut the drawer."   # baseline s6
-    pos_conds: [loc_punctuation, loc_adjectives, loc_beginning, loc_end, loc_not_beginning, loc_not_end]
-    neg_cond: dont_think_about
-    baseline_cond: no_instruction
-  # Instructed-region x measured-region diagonal heatmap (Δ concept-cosine from
-  # the no_instruction baseline). layer 55 = where engagement saturates (the
-  # register-study depth); omit `layer` to use the deepest recorded layer instead.
-  - kind: location_targeting
-    baseline_cond: no_instruction
-    layer: 55
-  - kind: trace_plots
-    condition_ids: [loc_beginning, loc_end, loc_not_beginning, loc_not_end, dont_think_about]

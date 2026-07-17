@@ -20,13 +20,22 @@ def _chat_wrap(model: ModelWrapper, msg: str) -> str:
     # the string ends ready for the assistant turn). Otherwise fall back to a
     # plain "User:/Assistant:" scaffold so base models still get a sane prompt.
     if getattr(model.tokenizer, "chat_template", None):
-        # enable_thinking=False: Qwen3-style templates default to a <think>
-        # scratchpad turn, which would break verbatim transcription; templates
-        # without the variable simply ignore the kwarg.
+        # enable_thinking: Qwen3-style templates default to a <think> scratchpad
+        # turn, which would break verbatim transcription, so we pin it. Default
+        # False (transcribe directly); a reasoning model sets model.enable_thinking
+        # =True in its config to opt into the <think> trace. Templates without the
+        # variable simply ignore the kwarg. Read off the wrapper (set by the
+        # runner) so it stays consistent with the extraction prompt.
+        et = getattr(model, "enable_thinking", None)
+        kwargs = dict(tokenize=False, add_generation_prompt=True,
+                      enable_thinking=(False if et is None else et))
+        # reasoning_effort: harmony (gpt-oss) templates read this ("low"/"medium"/
+        # "high"); passed only when set so other templates keep their defaults.
+        effort = getattr(model, "reasoning_effort", None)
+        if effort:
+            kwargs["reasoning_effort"] = effort
         return model.tokenizer.apply_chat_template(
-            [{"role": "user", "content": msg}],
-            tokenize=False, add_generation_prompt=True,
-            enable_thinking=False,
+            [{"role": "user", "content": msg}], **kwargs,
         )
     return f"User: {msg}\n\nAssistant:"
 

@@ -39,7 +39,7 @@ analysis_layers:
   layers: []
 
 experiment:
-  name: "write_introspection_main"
+  name: "activation_control"
   # Record residual streams for SPECIAL tokens too: the generated tail after
   # the sentence (<end_of_turn>/EOS, within the token_buffer) and the prompt's
   # special tokens (<start_of_turn>, BOS, ...) captured at prefill.
@@ -168,63 +168,3 @@ condition_sets:
       template: 'Write "{sentence}" exactly. While you write, think only at layer {layer} of your {total} layers. Don''t write anything else.'
       kind: "control"
       has_layer: true
-
-# ---- Analyses: each step runs only when its `set:` is active ----------------
-analysis:
-  # -- intensity: intensity ramp measures + engagement/suppression --
-  - kind: controllability_heatmap
-    set: intensity
-    metrics: [cos, relnorm]
-    ramp: [think_intensity_1_of_4, think_intensity_2_of_4, think_intensity_3_of_4, think_intensity_4_of_4]
-    ramp_name: "intensity_1to4"
-    pos_cond: think_about
-    neg_cond: dont_think_about
-    baseline_cond: no_instruction
-  # No condition_ids -> defaults to the of_4 ramp + dont_think_about.
-  - kind: trace_plots
-    set: intensity
-  # plot1_{concept}: THE paper Fig-1 family (2x2 cos/relnorm per concept).
-  # Depth-fraction layers (0.90 / 0.75 -> L55 / L46 on gemma3-27b) keep the
-  # figures visually comparable when this suite runs on other models.
-  - kind: plot1_concepts
-    set: intensity
-    sentence: "The bus was crowded, but I found a seat near the back."   # s23, article-rich
-    cos_frac: 0.90
-    relnorm_frac: 0.75
-
-  # -- token_location: per-condition heatmaps + region-targeting diagonal --
-  - kind: controllability_heatmap
-    set: token_location
-    metrics: [cos, relnorm]
-    sentence: "She stacked the folders, labeled each tab, and shut the drawer."   # baseline s6
-    pos_conds: [loc_punctuation, loc_adjectives, loc_beginning, loc_end, loc_not_beginning, loc_not_end]
-    neg_cond: dont_think_about
-    baseline_cond: no_instruction
-  - kind: location_targeting
-    set: token_location
-    baseline_cond: no_instruction
-    layer: 55
-  - kind: trace_plots
-    set: token_location
-    condition_ids: [loc_beginning, loc_end, loc_not_beginning, loc_not_end, dont_think_about]
-
-  # -- persistence: per-condition heatmaps + temporal profiles --
-  - kind: controllability_heatmap
-    set: persistence
-    metrics: [cos, relnorm]
-    sentence: "She stacked the folders, labeled each tab, and shut the drawer."   # baseline s6
-    pos_conds: [persist_first_half, persist_throughout, persist_once, persist_after_fourth]
-    neg_cond: dont_think_about
-    baseline_cond: no_instruction
-  - kind: temporal_profile
-    set: persistence
-    baseline_cond: no_instruction
-    layer: 55
-  - kind: trace_plots
-    set: persistence
-    condition_ids: [persist_first_half, persist_throughout, persist_once, persist_after_fourth, dont_think_about]
-
-  # -- layer_location: instructed-layer x measured-layer diagonal --
-  # (registered in scripts/builtin_analyses.py)
-  - kind: layer_targeting
-    set: layer_location

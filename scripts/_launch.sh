@@ -12,6 +12,6 @@ set -euo pipefail
 set -a
 source /workspace/.env
 set +a
-cd /workspace/write-introspection-main
+cd /workspace/activation-control
 export PYTHONUNBUFFERED=1
 exec /workspace/.venv/bin/python "$@"

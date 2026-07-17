@@ -1,273 +1,84 @@
-# write-introspection
+# activation-control
 
-**Can a language model *control* where a concept appears in its own residual
-stream — and how reliably?**
+Measuring how much **intrinsic control** an instruction-tuned LLM has over its own
+activation space — using only natural-language instructions, no training or steering
+vectors. For a fixed sentence and a concept X, the model is told to *think about X*,
+*don't think about X*, *think about X at intensity k/4*, *think about X only at the
+end*, and so on, while we record the residual stream token-by-token. From those
+recordings a battery of measures asks how reliably each instruction moves X's
+representation, and a single conjunctive scalar **S ∈ [0, 1]** summarises them.
 
-We tell a model to transcribe a fixed sentence while *thinking about* (or *not
-thinking about*) a concept at varying intensity, record its residual stream
-token-by-token, and measure how the activations move relative to that concept's
-direction. On top of that data we build a suite of **controllability measures**
-that separate *how far* the model can push a concept (gain) from *how reliably*
-it can dial it (fidelity), per token and per layer, and split the effect into a
-**direction** channel and a **magnitude** channel.
+## Design in one screen
 
----
+- **Readout: projection.** Everything is scored on the projection of the residual
+  stream onto the (unit-normalised) concept vector, `⟨r, ĉ⟩ = ‖r‖·cos`. `cos` and
+  `relnorm` are still emitted for the appendix but the paper uses `proj`.
+- **The scalar S** is a measure-equal, **conjunctive** (geometric-mean) composite of
+  **five** capability measures — Engage, Dial Rank, Dial Resolution, Temporal
+  control, Coverage — each mapped to `[0, 1]` by a **linear-clip link** against a
+  per-measure ceiling `D_REF` (the score meaning "essentially perfect control"), then
+  `S = clip(2G − 1, 0, 1)`. It is *absolute* (a model's S doesn't depend on the panel)
+  and rewards broad competence over any single strong axis.
+- **Reported but excluded from S** (diagnostics, not capabilities): Suppress (a
+  white-bear rebound, not a suppression ability), Layer targeting (a designed null),
+  Onset/offset error, Token group.
+- **The maths and every calibration constant** (links, `D_REF`, exclusions, CIs) live
+  in **`METRICS_2026-07-16.md`** — read that for anything about *what a number means*.
 
-## The idea in one paragraph
+## Pipeline
 
-For each trial `(concept, sentence, condition)` the model is prompted:
-
-> `Write "<sentence>" exactly. Think intensely about <concept> while you write. Don't write anything else.`
-
-It transcribes the sentence; we capture the residual stream at chosen layers for
-every generated token. A **concept vector** (the baseline-subtracted activation
-of "Tell me about `<concept>`") gives a direction in activation space. The core
-per-token readout is the **cosine** between the residual and that direction —
-plus its **norm** for the magnitude channel. By comparing readouts across the
-prompt conditions (a neutral baseline, "don't think", "think", and an intensity
-ramp 1→4), we quantify control.
-
----
-
-## The controllability measures
-
-All live in **`scripts/controllability_heatmap.py`**, which renders one heatmap
-per measure: **x = layer, y = token**, averaged over concepts, for a single
-sentence (the register-rich "cat" sentence by default). These are **generated
-automatically at the end of `run_experiment.py`** (for the `cos` and `relnorm`
-channels); the script can also be run standalone on any run directory.
-
-Every heatmap uses a diverging **blue (below/negative) → white (0) → red
-(above/positive)** colormap with symmetric limits; significance is from
-permutation nulls with Benjamini–Hochberg FDR, and **numbers are printed only in
-significant cells**.
-
-Two **readouts** (`--metric`), giving two channels:
-
-| readout | channel | definition |
-|---|---|---|
-| `cos` (default) | **direction** | `cos(concept_vec, residual)` — magnitude-invariant |
-| `relnorm` / `norm` | **magnitude** | residual L2 norm (÷ trial's content-token mean for `relnorm`) |
-
-The measures built on a readout:
-
-| measure | question it answers | range | cross-model comparable? |
-|---|---|---|---|
-| **Rank** | graded "dial" control: does the readout track intensity 1→4 monotonically? (mean **signed** Spearman over concepts) | [-1, 1] | yes (rank-based) |
-| **gain** | effect size: how far does the readout swing across the ramp? (`Δreadout` = int4 − int1) | signed | **relnorm: yes**; cos: partial |
-| **engagement / suppression** | two-panel: each condition minus the neutral baseline (`think − neutral`, `dont − neutral`); red = above neutral, blue = below | signed | **relnorm: yes**; cos: partial |
-
-> **Cohen's d is disabled.** The standardized ramp gain (`meanΔ / sdΔ`) is no
-> longer computed or rendered — its methodology is still documented in
-> `MEASURES.md` §4 and the code is retained (commented) in
-> `controllability_heatmap.py` for easy restoration.
-
-`Rank` has a **`_specific`** variant on the direction channel that subtracts the
-mean off-concept readout, isolating control of *this* concept from a generic
-"think harder about everything" effect. The magnitude channel is concept-blind
-(no `_specific`).
-
-The two magnitude readouts differ in comparability:
-- **`relnorm`** (÷ trial's content-mean norm) is a *dimensionless ratio*, so its
-  gain `Δrelnorm` cancels both the model's norm scale *and* hidden-dimension — it
-  is **fully cross-model comparable**, so `gain` is reported.
-- **`norm`** (raw `‖r‖`) is in model-specific units, so `gain` is **suppressed**
-  for it — only the scale-invariant `Rank` is kept.
-
-On the direction side, `Δcos` is invariant to the norm scale but *drifts with
-hidden dimension* (cosines shrink ~1/√d), so cosine gains are only "comparable
-across models of similar width"; the fully comparable cosine option is the
-rank measures.
-
-**Gain vs consistency are different axes.** A token can move a lot but
-inconsistently across concepts (a large `gain` whose sign flips concept to
-concept — e.g. some register slots) or move a little but very consistently.
-`gain` gives the interpretable magnitude; `Rank` gives the sign-consistent,
-cross-model-comparable graded-control signal; read them together.
-
----
-
-## Install
-
-One machine: the **GPU box** generates the data (loads the model, runs the
-experiments) and also runs the **analysis**. The analysis never loads the model,
-but parts of it read a run's multi-GB `results.pkl` (activations), so it needs
-the box that holds the runs and enough host RAM (> pickle size, ~100 GB for the
-full-depth runs).
-
-```bash
-pip install -r requirements.txt          # torch pulls the CUDA build
+```
+run.sh <config>
+  └─ run_experiment.py         generate + save residual-stream recordings  (needs a GPU)
+  └─ postprocess.py            score + figures, on completion (CPU-only):
+       ├─ compute_scores.py    SCORES_<model>.json + PROFILES_<model>.json  (the battery)
+       ├─ scalar_ci.py         SCALAR_CI_<model>.json                        (S + joint CI)
+       ├─ explore.py           per-run exploratory figures                   (in the run dir)
+       └─ superplot.py         model_comparison.png + null_measures_...png   (cross-model)
 ```
 
-`bitsandbytes` (quantization) and `wandb` (logging) are optional — skip them for
-a lean install; pass `--no-wandb` to the runner if wandb isn't present.
+Each model is run twice: a **main** run (all condition sets) and a **layer-targeting**
+run (`experiment.sets=[layer_location]`, auto-tagged `_lt`). The scoring reads only the
+cheap stored artifacts (`results.json` + the small `no_instruction_cache.pkl` + concept
+vectors) — never the large `results.pkl` of raw activations.
 
-Then create a `.env` with `HF_TOKEN=...` (and optional `WANDB_API_KEY=...`).
+## Layout
 
-## Quick start
-
-```bash
-# 1-2. Install + .env (see above)
-
-# 3. Generate data (GPU). The MAIN experiment is the primary one: always-on
-#    controls + selectable condition sets (intensity / token_location / persistence /
-#    layer_location). Each active set's analyses auto-run at the end
-#    (heatmaps, trace plots, targeting/temporal figures).
-python scripts/run_experiment.py --config experiments/main/config.yaml
-#    ... or a subset of sets:
-python scripts/run_experiment.py --config experiments/main/config.yaml \
-    --set 'experiment.sets=[intensity,persistence]'
-#    ... or ANOTHER MODEL (see models.txt + src/models/registry.py; thin
-#    per-model configs inherit everything from config.yaml — layer sweeps are
-#    depth FRACTIONS, so they resolve against each model's own layer count):
-python scripts/run_experiment.py --config experiments/main/llama33_70b.yaml
-#    (equivalently: --config experiments/main/config.yaml --set model.name=llama33_70b)
-
-# 4. (Optional) re-render standalone -- a different sentence/layer/channel.
-#    No model load, but may read the run's results.pkl (large RAM).
-python scripts/controllability_heatmap.py \
-    --run-dir results/raw/<RUN_DIR> --model-name gemma3_27b --metric cos
-python scripts/plot_results.py --run-dir results/raw/<RUN_DIR> --layers 55 61
-
-# 5. (Optional) cosine summary CSV
-python scripts/run_analysis.py --run-dir results/raw/<RUN_DIR>
-
-# 6. (Layer-targeting runs ONLY) the plot7-12 target-layer diagonal figures
-python scripts/plot_layer_targeting.py --run-dir results/raw/<RUN_DIR>
-```
-
-Steps 3's plots come out automatically. Re-running the analysis scripts reads
-the saved `results.pkl` / `results.json` + cached concept vectors — no model
-load, but run them on the box holding the runs (results.pkl needs the RAM).
-
-Each run's `plots/` then contains:
-- **controllability heatmaps**, per channel (`cos`, `relnorm`):
-  `heatmap_rank_raw_*`, `heatmap_rank_specific_*` (cos only), `heatmap_gain_*`,
-  `heatmap_engage_suppress_*`, + `controllability_heatmap_<metric>.csv`.
-- **trace plots**: `plot1_cos_L<layer>_s<idx>.png`, `plot1_norms_L<layer>_s<idx>.png`.
-- **layer-targeting** (only if you run `plot_layer_targeting.py` on a
-  layer-targeting run): `plot7*`–`plot12*`.
-
-**Special tokens are recorded too** (`experiment.record_special_tokens: true`,
-the default since 2026-07-10): each trial additionally saves (a) the generated
-**tail** after the aligned sentence span — trailing tokens and
-`<end_of_turn>`/EOS, previously recorded but discarded at save
-(`tail_token_*`, `activations_tail`, `norms_tail`, `cosine_sim_tail`) and
-(b) the **prompt-side special tokens** (`<start_of_turn>`, BOS, ...), captured
-during prefill at the analysis layers (`prompt_special_token_*`,
-`prompt_special_positions`, `activations_prompt_special`,
-`norms_prompt_special`, `cosine_sim_prompt_special`). Runs before 2026-07-10
-lack these fields.
-
-### Environment note
-
-If your venv's `python` is not the interpreter whose site-packages hold the
-deps, call the interpreter directly and set `PYTHONPATH`, e.g.
-`PYTHONPATH=<venv>/lib/python3.11/site-packages /usr/bin/python3.11 scripts/...`.
-
----
-
-## Paper figures (`results/paper/`)
-
-A separate, hand-curated figure set for the write-up — **distinct from the
-per-run auto-plots above**. Each `scripts/figN_*.py` loads no model — it reads a
-saved run's `results.json` (+ `no_instruction_cache.pkl`, cached concept vectors,
-and for some analyses the run's `results.pkl`) and renders one figure. Promoted PNGs plus a per-figure `.md` handoff
-(task, measures, exact statistics, draft caption) live in `results/paper/`
-(untracked — regenerate with the driver below). Appendix figures use the
-`FigA#` series (sequential, independent of main numbering); each `FigA#.md`
-opens by naming the main-text claim it supports.
-
-| fig | script | what |
-|---|---|---|
-| 1 | see `Fig1.md` (`plot1_concept.py` / `fig1_*`) | prompted concept-modulation traces (single concept) |
-| 2 | `fig2_dprime.py` | d′ depth profiles: engage/suppress vs neutral (SDT sensitivity; two-way bootstrap) |
-| 3 | `fig3_dprime.py` | endpoint-gain d′ depth profiles: lexical vs numeric intensity (+ `Fig3_aux` adjacent-step AUROC resolution) |
-| 4 | `fig4_rank_depth.py` | intensity-rank depth profiles: lexical ("intensely") vs numeric (1→4) intensity |
-| 5 | `fig5_dprime.py` | engagement/suppression d′ by POS category |
-| 6 | `fig6_location_position.py` | positional targeting (beginning/end) profiles *(was Fig 8)* |
-| 7 | `fig7_persistence.py` | temporal persistence profiles (Fig 7a/7b) *(was Fig 10)* |
-| A1 | `figA1_position_auroc.py` | **appendix**: AUROC by fractional position (certifies Fig 2's position-collapse) |
-| retired | — | in `results/paper/Exploratory analysis/`, scripts still runnable: the original Figs 5–6 heatmap family (2026-07-08); type targeting (old Fig 9); the metric figures (old Figs 11–12, superseded by `results/paper/SCORES.md`); the layer-targeting 8×8 matrices incl. demeaned supplement (old Fig 13 — its "significance dilemma" writeup is in `Retired_Fig13_target_matrix.md`); the AUROC/max-normalized Figs 2, 3, 5a/5b and the `_alt` raw-Δ drafts (replaced by the d′ versions 2026-07-10) |
-
-Shared conventions (remaining figures): the "signal" is **Δ vs `no_instruction`,
-differenced within each (sentence, concept) unit** (cancels the per-concept
-offset); averages are over **50 sentences × 10 concepts**; error bars/bands are
-**95% bootstrap CIs over units**; significance is a **paired sign-flip permutation
-with BH-FDR**. Layers are each channel's peak depth (cos deep, relnorm mid).
-The proposed cross-model scores (headline d′, the battery, Addressability S,
-spatial/timing precision) are specified in `results/paper/SCORES.md`.
-
-**Regenerate the whole suite with the driver** (analysis is fully decoupled from
-the experiment code; no model load, reads saved runs):
-
-```bash
-python scripts/make_paper_figures.py           # current set: Figs 1-7 + A1
-python scripts/make_paper_figures.py --only 5,6,A1
-python scripts/make_paper_figures.py --list
-```
-
-> **Status: work in progress.** Figure content, layers, and some interpretations
-> are still being finalized. Individual figures
-> can still be run via their own scripts, e.g.
-> `python scripts/fig5_dprime.py --run-dir results/raw/<RUN> --out ...`
-
----
-
-## Configs
-
-| config | purpose |
+| path | what |
 |---|---|
-| **`experiments/main/config.yaml`** | **THE primary config**: always-on controls + 4 selectable condition sets, deep granular layers (40+), first 50 sentences — see `experiments/README.md` |
-| `experiments/intensity_scales/config.yaml` | one-off exploratory ramps (open-ceiling + 1..8); run AFTER the main experiment (controls sourced from it) |
-| `experiments/_base.yaml` | shared base (model, concepts, `sentences_file`, compliance) that the main experiment / one-offs `extends:` |
-| `configs/*.yaml` (legacy) | historical configs matching past runs (`experiment.yaml`, `experiment_layers*.yaml`, `experiment_layer_target_deep.yaml`, `experiment_attn.yaml`) — kept as records |
-| `configs/models/*.yaml` | per-model HF id + dtype |
+| `src/` | the experiment engine (model loading, prompting, recording, concept vectors) |
+| `experiments/` , `configs/` | experiment specifications (conditions, layers, models) |
+| `scripts/run_experiment.py` | the runner — pure generate-and-save |
+| `scripts/{compute_scores,aggregate_scalar,scalar_ci}.py` | the scoring layer |
+| `scripts/{explore,superplot,figstyle}.py` | figures |
+| `scripts/{run.sh,postprocess.py}` | the orchestrator |
+| `results/raw/<run>/` | one run's recordings (gitignored) |
+| `results/*.json` | the derived SCORES / PROFILES / SCALAR / CI artifacts (gitignored) |
 
-Override any value from the CLI with `--set dotted.key=value` (e.g.
-`--set 'experiment.sets=[intensity]'`, `--set 'experiment.sentence_indices=[0,6]'`,
-`--set 'analysis_layers.fractions=[0.75,0.90,1.0]'`).
+The paper's publication figures live in the **paper repo**
+(`activation-controllability/figure_scripts/`); they read these JSONs via
+`--data-root` / `$AC_DATA` and are not shipped here.
 
----
+## Running
 
-## Repo layout
+```bash
+pip install -r requirements.txt
+export AC_DATA=$PWD/results          # where the derived JSONs live
 
-```
-experiments/              THE experiment definitions (see experiments/README.md)
-  main/                   primary config: controls + 4 condition sets + analyses
-  intensity_scales/       one-off exploratory ramps (needs a main run first)
-  token_location/, persistence/   analyze.py register custom analysis kinds
-  _base.yaml              shared base (extends:)
-configs/                  legacy experiment configs (historical records) + models/
-sentences.txt             the 100 baseline sentences (s0..s99; labels = 0-based indices)
-exaggerated_phrases.txt   register-rich probes (p0..p6; hello x15, cat family, lists)
-pos_tags.json             word-level spaCy POS tags (UPOS+PTB) for both files; model-independent
-scripts/
-  run_experiment.py       main runner: prompt -> generate+record -> cosine -> save,
-                          then dispatches the config's analysis: steps (set-gated)
-  builtin_analyses.py     registers controllability_heatmap / trace_plots / layer_targeting
-  controllability_heatmap.py   THE controllability suite (per-token heatmaps)
-  plot_results.py         per-concept trace plots plot1_cos / plot1_norms
-  plot_layer_targeting.py layer-targeting plots 7-12 (also registered as an analysis kind)
-  make_paper_figures.py   THE analysis driver: regenerates results/paper/Fig1-13
-  fig{2..13}_*.py         paper-figure scripts (no model load) -- see "Paper figures"
-  run_analysis.py         cosine summary CSV by (condition, layer)
-  run_attn_experiment.py  per-layer attention-mass recording
-  analyze_attn.py         attention aggregation + plots
-src/
-  config.py               YAML + extends + condition_sets + CLI-override -> dataclasses;
-                          sentences_file loader; sentence_indices subsetting
-  analysis/registry.py    analysis-kind registry: config `analysis:` -> registered fns
-  models/{registry,wrapper}.py   short-name->HF id; loading; batched generation+recording
-  vectors/extraction.py   concept-vector extraction (baseline-subtracted, cached)
-  activation/recorder.py  forward hooks; per-token residual capture with per-row masking
-  prompts/builder.py      prompt formatting ({sentence}/{concept}/{layer}/{total},
-                          {total}=model layer count) + full-cross trial schedule
-  analysis/{alignment,cosine}.py   align recorded window to sentence span; cosine traces
-  utils/{env,io,compliance,layers,wandb_utils}.py
+# one model (main run, then its layer-targeting run):
+scripts/run.sh --config experiments/main/config.yaml --overrides model.name=<model>
+scripts/run.sh --config experiments/main/config.yaml --overrides model.name=<model> experiment.sets='[layer_location]'
 ```
 
-See also: **`experiments/README.md`** (the main experiment: sets, analysis kinds, indexing),
-**`experiments.md`** (every run + the hardware/timing record), and
-**`Update_5-14-26.md`** (the register/attention-sink investigation that motivated
-the channel split).
+Scoring/figure steps are also runnable standalone (see `--help` on each; `METRICS`
+§8). Selectable knobs on the collapse: `--channels {projection,legacy,all}` and
+`--link {linear,phi}` (defaults `projection`, `linear`).
+
+## Notes
+
+- σ in every d′ is **across-sentence baseline variability**, not measurement noise —
+  generation is deterministic. "d′ = 6" means 6 sentence-to-sentence SDs, not 6σ of
+  precision.
+- `D_REF` and the measure set are the scalar's calibration choices; they're dated and
+  documented in `METRICS` and recorded in each emitted JSON, and are meant to be
+  revisited as the model panel grows.

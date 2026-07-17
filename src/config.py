@@ -60,11 +60,24 @@ class ModelConfig:
     quantization: Optional[str] = None
     device: str = "cuda"
     attn_implementation: Optional[str] = None
+    # Reasoning effort for models whose chat template supports it (e.g. gpt-oss
+    # harmony: "low"/"medium"/"high"). None = don't pass the kwarg (templates
+    # that don't declare it ignore it anyway). Threaded into the chat template
+    # via ModelWrapper.reasoning_effort (see run_experiment + builder).
+    reasoning_effort: Optional[str] = None
+    # Chain-of-thought toggle for Qwen3-style templates that read `enable_thinking`.
+    # None keeps the codebase default (False — transcribe directly, no <think>
+    # turn); True opts a model into emitting a <think>...</think> trace before the
+    # answer (the reasoning path then records/aligns on the post-</think> answer;
+    # see src/utils/think_tags.py). Threaded into the chat template via
+    # ModelWrapper.enable_thinking (see run_experiment + builder). Templates
+    # without the variable ignore it.
+    enable_thinking: Optional[bool] = None
 
 
 @dataclass
 class WandbConfig:
-    project: str = "write-introspection-main"
+    project: str = "activation-control"
     entity: Optional[str] = None
     tags: List[str] = field(default_factory=list)
 
@@ -100,21 +113,6 @@ class PromptCondition:
     has_layer: bool = False
 
 
-# One declarative analysis step from the config's `analysis:` list. `kind` selects
-# a function registered in src/analysis/registry.py; `params` are the remaining
-# keys, splatted into that function as kwargs. This is what lets a new experiment
-# describe its own analysis (which ramp, which conditions, which custom plots)
-# without touching the runner -- see run_experiment.py's dispatch loop.
-# `set` (optional) gates the step on a condition set: the runner skips the step
-# unless that set is in cfg.active_sets. Popped out of the raw dict alongside
-# `kind`, so it never leaks into `params`.
-@dataclass
-class AnalysisStep:
-    kind: str
-    params: Dict[str, Any] = field(default_factory=dict)
-    set: Optional[str] = None
-
-
 @dataclass
 class LayerSpec:
     """Layer selection: fractional depths (0-1) and/or explicit integer indices.
@@ -128,7 +126,7 @@ class LayerSpec:
 
 @dataclass
 class ExperimentConfig:
-    name: str = "write_introspection_main"
+    name: str = "activation_control"
     seed: int = 42
     temperature: float = 0.0
     max_new_tokens: int = 64
@@ -140,6 +138,10 @@ class ExperimentConfig:
     # previously discarded at save) and (b) the prompt's special tokens
     # (<start_of_turn> etc.), captured during prefill.
     record_special_tokens: bool = True
+    # Store results.pkl activation tensors in the lossless bf16 codec (uint16
+    # carrier) instead of fp32 -- halves the pickle. Loaders auto-detect, so
+    # legacy fp32 pickles still load. Set false to force fp32.
+    pickle_bf16: bool = True
     model: ModelConfig = field(default_factory=ModelConfig)
     analysis_layers: LayerSpec = field(default_factory=LayerSpec)
     prompt_layers: LayerSpec = field(default_factory=LayerSpec)
@@ -163,7 +165,6 @@ class ExperimentConfig:
     active_sets: List[str] = field(default_factory=list)
     compliance: ComplianceConfig = field(default_factory=ComplianceConfig)
     wandb: WandbConfig = field(default_factory=WandbConfig)
-    analysis: List[AnalysisStep] = field(default_factory=list)
     output_base_dir: str = "results"
 
 
@@ -308,19 +309,8 @@ def _build_config(raw: Dict[str, Any]) -> ExperimentConfig:
             )
         seen_ids.add(c.id)
 
-    # analysis is a list of {kind: ..., set: ..., <params>}; split kind and the
-    # optional set gate out from the params so the runner can dispatch kind ->
-    # registered fn and splat params as kwargs.
-    analysis_steps = [
-        AnalysisStep(kind=a["kind"],
-                     params={k: v for k, v in a.items() if k not in ("kind", "set")},
-                     set=a.get("set"))
-        for a in (raw.get("analysis") or [])
-        if a.get("kind")
-    ]
-
     return ExperimentConfig(
-        name=exp.get("name", "write_introspection_main"),
+        name=exp.get("name", "activation_control"),
         seed=exp.get("seed", 42),
         temperature=exp.get("temperature", 0.0),
         max_new_tokens=exp.get("max_new_tokens", 64),
@@ -328,6 +318,7 @@ def _build_config(raw: Dict[str, Any]) -> ExperimentConfig:
         token_buffer=exp.get("token_buffer", 10),
         batch_size=exp.get("batch_size", 8),
         record_special_tokens=exp.get("record_special_tokens", True),
+        pickle_bf16=exp.get("pickle_bf16", True),
         model=ModelConfig(**model_raw),
         analysis_layers=LayerSpec(**raw.get("analysis_layers", {"fractions": []})),
         prompt_layers=LayerSpec(**raw.get("prompt_layers", {"fractions": []})),
@@ -341,7 +332,6 @@ def _build_config(raw: Dict[str, Any]) -> ExperimentConfig:
         active_sets=active_sets,
         compliance=ComplianceConfig(**comp_raw),
         wandb=WandbConfig(**wandb_raw),
-        analysis=analysis_steps,
         output_base_dir=raw.get("output", {}).get("base_dir", "results"),
     )
 
@@ -366,10 +356,6 @@ def parse_cli_args() -> argparse.Namespace:
                         "arrays; tens-to-hundreds of GB). results.json (traces) "
                         "and no_instruction_cache.pkl (baseline activations) are "
                         "always saved and are all the score/figure pipeline needs.")
-    p.add_argument("--no-analysis", action="store_true",
-                   help="generate + save only; skip the end-of-run analyses/plots "
-                        "(re-render later with scripts/replot_run.py). Automatic "
-                        "analysis remains the default when this flag is absent.")
     args = p.parse_args()
     overrides = {}
     for s in args.sets:

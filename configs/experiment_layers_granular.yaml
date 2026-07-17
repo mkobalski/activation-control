@@ -12,7 +12,7 @@
 # =============================================================================
 
 experiment:
-  name: "write_introspection_main_layers_granular"
+  name: "activation_control_layers_granular"
   seed: 42
   temperature: 0.0
   max_new_tokens: 64
@@ -125,9 +125,9 @@ compliance:
   threshold: 0.85
 
 wandb:
-  project: "write-introspection-main"
+  project: "activation-control"
   entity: null
-  tags: ["write-introspection", "gemma3", "layers_granular"]
+  tags: ["activation-control", "gemma3", "layers_granular"]
 
 output:
   base_dir: "results"

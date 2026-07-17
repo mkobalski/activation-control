@@ -1,0 +1,25 @@
+# MAIN experiment on Qwen3.5-122B-A10B in NON-THINKING mode (MoE: 122B total,
+# ~10B active). One of the battery's two Qwen3.5 points; the sibling is
+# experiments/main/qwen35_122b_a10b_thinking.yaml — SAME weights, thinking on.
+# Inherits everything from config.yaml; only the model changes.
+#
+# NOTES:
+#  - Non-thinking: the prompt builder passes enable_thinking=false to the chat
+#    template (the codebase default), so the model transcribes the sentence
+#    directly instead of opening a <think> turn. No reasoning parsing is applied
+#    (this short name is NOT in REASONING_MODELS), so the default recording window
+#    (sentence span + token_buffer) and max_new_tokens=64 from config.yaml apply.
+#  - Short name qwen35_122b_a10b is deliberately distinct from _thinking so run
+#    dirs, the concept-vector cache, SCORES_*.json and the cross-model comparison
+#    keep the two modes separate.
+#  - MoE at bf16 is ~244 GB — set quantization "8bit"/"4bit" below, or rely on
+#    multi-GPU device_map="auto", if the box is smaller.
+#  - Layer count is discovered at load; the 20-fraction depth sweep resolves
+#    against it automatically.
+extends: config.yaml
+
+model:
+  name: "qwen35_122b_a10b"
+  config_path: "configs/models/qwen35_122b_a10b.yaml"
+  quantization: null
+  enable_thinking: false

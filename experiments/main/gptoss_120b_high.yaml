@@ -1,0 +1,38 @@
+# MAIN experiment on gpt-oss-120b at reasoning_effort=HIGH (OpenAI open-weight
+# MoE, harmony chat format, native MXFP4). The high-effort sibling of
+# experiments/main/gptoss_120b_low.yaml — SAME weights (openai/gpt-oss-120b via
+# MODEL_NAME_MAP), only the harmony reasoning_effort differs. Kept as a separate
+# short name so run dirs / concept-vector cache / SCORES / cross-model bars treat
+# low vs high as distinct points. Inherits everything from config.yaml.
+#
+# NOTES:
+#  - MXFP4 is the native weight format (~63 GB); leave quantization null and do
+#    NOT add bitsandbytes 8bit/4bit on top (that path is NF4 and wrong here).
+#  - reasoning_effort "high": the harmony `analysis` (CoT) channel is MUCH longer
+#    than at low (low measured ~10 tokens; high is expected in the hundreds-to-
+#    low-thousands). The recorder still locates the target sentence in the FINAL
+#    channel and records only that span to disk (see src/utils/harmony.py), so
+#    pickle SIZE is unchanged vs low.
+#  - 36 layers; the 20-fraction depth sweep resolves against that automatically.
+extends: config.yaml
+
+model:
+  name: "gptoss_120b_high"
+  config_path: "configs/models/gptoss_120b_high.yaml"
+  quantization: null
+  reasoning_effort: "high"
+
+experiment:
+  # High effort produces a long CoT before the final sentence, so the cap must be
+  # generous or the `final` channel gets truncated and sentence alignment breaks.
+  # 4096 is a deliberately generous ceiling (no high-effort CoT length was
+  # measured before this config was written — tune DOWN after the smoke/probe
+  # reports typical/max CoT length; watch for any trial that prints `CAP!`).
+  max_new_tokens: 4096
+  # COST/MEMORY: for reasoning models the recorder holds activations for EVERY
+  # generated step up to max_new_tokens (all 20 analysis layers) in memory until
+  # the final-channel span is sliced out. At 4096 that transient buffer is ~8x
+  # the low run's (512), on top of a longer KV cache. Drop the batch size so the
+  # transient recording buffer + KV cache fit alongside the ~66 GB MXFP4 weights
+  # on an 80 GB H100. Raise back toward 8 only if VRAM headroom allows.
+  batch_size: 4

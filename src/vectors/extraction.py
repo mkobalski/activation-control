@@ -57,9 +57,20 @@ def format_extraction_prompt(model: ModelWrapper, word: str,
     # vector extraction has no dependency on the prompts package.
     msg = template.format(word=word)
     if getattr(model.tokenizer, "chat_template", None):
+        kwargs = dict(tokenize=False, add_generation_prompt=True)
+        # Match builder._chat_wrap exactly so the concept-vector prompt format is
+        # identical to the experiment prompts (same last-token context):
+        #  - enable_thinking: Qwen3-style templates default to a <think> turn;
+        #    pin it (default False) so the extraction prompt isn't silently in a
+        #    different mode than the experiment prompt.
+        #  - reasoning_effort: harmony (gpt-oss) templates read this.
+        et = getattr(model, "enable_thinking", None)
+        kwargs["enable_thinking"] = False if et is None else et
+        effort = getattr(model, "reasoning_effort", None)
+        if effort:
+            kwargs["reasoning_effort"] = effort
         return model.tokenizer.apply_chat_template(
-            [{"role": "user", "content": msg}],
-            tokenize=False, add_generation_prompt=True,
+            [{"role": "user", "content": msg}], **kwargs,
         )
     return f"User: {msg}\n\nAssistant:"
 
