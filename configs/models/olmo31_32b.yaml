@@ -1,0 +1,16 @@
+# Olmo-3.1-32B-Instruct (AI2) — dense, Apache-2.0, ungated. NOTE: like the other
+# files here, this is documentation only — the loader resolves the HF id from
+# MODEL_NAME_MAP (src/models/registry.py) and reads dtype/quantization from the
+# experiment YAML's `model:` block.
+#
+# Olmo3ForCausalLM: 64 layers, hidden 5120, vocab 100278, sliding/full attention
+# interleaved 3:1. Supported natively by transformers >= 4.57 (5.13.0 installed),
+# so no trust_remote_code. Standard model.model.layers, which is what
+# src/models/wrapper.py walks for the residual stream.
+#
+# This is the plain -Instruct checkpoint, not the -Think sibling: no reasoning
+# trace, no thinking toggle in the chat template, and it accepts a system role.
+model_id: "allenai/Olmo-3.1-32B-Instruct"
+torch_dtype: "bfloat16"     # ~64 GB of weights; fits one 80GB H100, but tightly
+device_map: "auto"
+quantization: null          # bf16 keeps it comparable to the rest of the panel

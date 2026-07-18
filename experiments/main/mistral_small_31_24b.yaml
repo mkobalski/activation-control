@@ -1,0 +1,10 @@
+# MAIN experiment on Mistral-Small-3.1-24B-Instruct-2503 (dense, non-reasoning;
+# the first Mistral in the cross-model battery). Inherits everything from
+# config.yaml, so it runs the SAME standardized protocol as the rest of the panel,
+# with the depth fractions resolved against the text model's 40 layers.
+extends: config.yaml
+
+model:
+  name: "mistral_small_31_24b"
+  config_path: "configs/models/mistral_small_31_24b.yaml"
+  quantization: null

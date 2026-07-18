@@ -34,12 +34,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 MODELS = [("gemma2_9b", "Gemma", 9), ("gemma3_27b", "Gemma", 27), ("gemma4_31b", "Gemma", 31),
           ("qwen36_27b", "Qwen", 27), ("qwen_72b", "Qwen", 72), ("qwen35_122b_a10b", "Qwen", 122),
-          ("llama33_70b", "Llama", 70), ("gptoss_120b_low", "GPT-OSS", 120)]
-FAMILY_ORDER = ["Gemma", "Qwen", "Llama", "GPT-OSS"]
-FAMILY_CMAP = {"Gemma": "Blues", "Qwen": "Purples", "Llama": "Greens", "GPT-OSS": "Oranges"}
+          ("llama33_70b", "Llama", 70), ("gptoss_120b_low", "GPT-OSS", 120),
+          ("olmo31_32b", "Olmo", 32), ("mistral_small_31_24b", "Mistral", 24)]
+FAMILY_ORDER = ["Gemma", "Qwen", "Llama", "GPT-OSS", "Olmo", "Mistral"]
+FAMILY_CMAP = {"Gemma": "Blues", "Qwen": "Purples", "Llama": "Greens", "GPT-OSS": "Oranges",
+               "Olmo": "Reds", "Mistral": "YlOrBr"}
 DETAIL = {"gemma2_9b": "Gemma 2 9B", "gemma3_27b": "Gemma 3 27B", "gemma4_31b": "Gemma 4 31B",
           "qwen36_27b": "Qwen 3.6 27B", "qwen_72b": "Qwen 2.5 72B", "qwen35_122b_a10b": "Qwen 3.5 122B",
-          "llama33_70b": "Llama 3.3 70B", "gptoss_120b_low": "GPT-OSS 120B"}
+          "llama33_70b": "Llama 3.3 70B", "gptoss_120b_low": "GPT-OSS 120B",
+          "olmo31_32b": "Olmo 3.1 32B", "mistral_small_31_24b": "Mistral Small 3.1 24B"}
 
 # (SCORES key, row label). Two figures, kept apart on purpose:
 #  - MAIN_ROWS: the six ↑-is-better measures that feed the scalar; the S row is

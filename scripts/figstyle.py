@@ -37,6 +37,27 @@ def depth_pcts(layers, n_total):
     return [int(round(100 * L / n_total / 5) * 5) for L in layers]
 
 
+# Provenance line for every band / error bar in the exploratory figures. They all
+# share ONE estimator: a joint two-way cluster bootstrap over sentences AND concepts
+# -- explore._cluster_band for the curve figures, compute_scores.dprime_stats for the
+# d' figures -- which is also what scalar_ci.py uses for the headline scalar S.
+#
+# Stating the resampling unit matters here because generation is deterministic
+# (temperature 0, fixed seed): there is no measurement noise to report, and the only
+# meaningful uncertainty is whether the result would survive a DIFFERENT sample of
+# sentences and concepts. A reader who assumes "error bar = measurement precision"
+# would read these backwards.
+BAND_NOTE = ("bands = 95% two-way cluster bootstrap over sentences x concepts "
+             "(unit = one sentence x concept pair); generation is deterministic, so "
+             "this is sampling variation over stimuli, not measurement noise")
+
+
+def note(fig, text=BAND_NOTE):
+    """Footnote under the axes stating what the uncertainty is over. `save` uses
+    bbox_inches='tight', so text placed below the axes is kept in the output."""
+    fig.text(0.5, -0.02, text, ha="center", va="top", fontsize=6.5, color="#666")
+
+
 def save(fig, path):
     """Write a figure (png; +pdf if path ends .pdf) and close it. Returns the path."""
     fig.savefig(str(path), bbox_inches="tight")

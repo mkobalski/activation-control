@@ -1,0 +1,16 @@
+# Mistral-Small-3.1-24B-Instruct-2503 -- the first Mistral entry in the panel.
+# NOTE: like the other files here, this is documentation only -- the loader resolves
+# the HF id from MODEL_NAME_MAP (src/models/registry.py) and reads dtype/quantization
+# from the experiment YAML's `model:` block.
+#
+# MULTIMODAL checkpoint: Mistral3ForConditionalGeneration = vision encoder +
+# projector around a 24B dense text model. The text side is what we record:
+# 40 layers, hidden 5120, vocab 131072 (config.text_config). The vision tower is
+# never exercised -- every prompt is text-only -- but its weights still load, so
+# the resident footprint is a little above the text model's own ~48 GB.
+#
+# Non-reasoning, accepts a system role, no thinking toggle in the chat template.
+model_id: "mistralai/Mistral-Small-3.1-24B-Instruct-2503"
+torch_dtype: "bfloat16"     # ~48 GB text + vision tower; needs the 80GB card
+device_map: "auto"
+quantization: null          # bf16 keeps it comparable to the rest of the panel

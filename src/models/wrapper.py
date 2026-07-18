@@ -15,7 +15,7 @@ from typing import List, Optional
 
 import numpy as np
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 from src.models.registry import MODEL_NAME_MAP, GEMMA_MODELS
 
@@ -37,6 +37,7 @@ class ModelWrapper:
         self.tokenizer.padding_side = "left"
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
+        self._ensure_chat_template()
 
         load_kwargs = {
             "pretrained_model_name_or_path": self.hf_path,
@@ -50,11 +51,30 @@ class ModelWrapper:
         if attn_implementation is not None:
             load_kwargs["attn_implementation"] = attn_implementation
 
+        # Pick the auto class by architecture. Vision-text checkpoints (Mistral-Small-3.1,
+        # Gemma-3 multimodal, Llama-4-Scout, GLM-4.6V ...) are registered ONLY under
+        # image-text-to-text, so AutoModelForCausalLM raises for them even though we
+        # drive them with text-only prompts. The vision tower loads and simply goes
+        # unused; the decoder layers we record are reached via language_model.layers
+        # (see _get_n_layers / get_decoder_layers).
+        auto_cls = AutoModelForCausalLM
         try:
-            self.model = AutoModelForCausalLM.from_pretrained(**load_kwargs)
+            from transformers.models.auto.modeling_auto import MODEL_FOR_CAUSAL_LM_MAPPING_NAMES
+            mt = AutoConfig.from_pretrained(self.hf_path, trust_remote_code=True).model_type
+            if mt not in MODEL_FOR_CAUSAL_LM_MAPPING_NAMES:
+                from transformers import AutoModelForImageTextToText
+                auto_cls = AutoModelForImageTextToText
+                print(f"[wrapper] {mt} is not a causal-LM architecture; "
+                      f"loading with AutoModelForImageTextToText")
+        except Exception as e:
+            print(f"[wrapper] auto-class probe failed ({type(e).__name__}); "
+                  f"falling back to AutoModelForCausalLM")
+
+        try:
+            self.model = auto_cls.from_pretrained(**load_kwargs)
         except Exception:
             load_kwargs["torch_dtype"] = load_kwargs.pop("dtype", dtype)
-            self.model = AutoModelForCausalLM.from_pretrained(**load_kwargs)
+            self.model = auto_cls.from_pretrained(**load_kwargs)
 
         if device != "cuda":
             self.model = self.model.to(device)
@@ -63,6 +83,39 @@ class ModelWrapper:
         self._apply_patches()
         self.n_layers = self._get_n_layers()
         print(f"Model loaded. Layers: {self.n_layers}")
+
+    def _ensure_chat_template(self):
+        """Attach the repo's chat template when the tokenizer ships without one.
+
+        MULTIMODAL checkpoints keep their template on the *processor*, in a separate
+        `chat_template.json`, so AutoTokenizer comes back with chat_template=None even
+        though the repo has one (Mistral-Small-3.1-24B is the panel's first such case;
+        Gemma-3 multimodal, Llama-4-Scout and GLM-4.6V are the same shape). That is
+        silently destructive here: src/prompts/builder.py falls back to a bare
+        "User:/Assistant:" scaffold when chat_template is missing -- the BASE-model
+        path -- so an instruct model would be prompted in the wrong format for the
+        whole run and score against the panel as if that were its real behaviour.
+
+        We read chat_template.json directly rather than loading AutoProcessor, which
+        would drag in torchvision for a vision tower we never touch (every prompt here
+        is text-only). Failing to find one is not an error: genuine base models (see
+        registry.BASE_MODELS) are meant to use the User:/Assistant: fallback.
+        """
+        if getattr(self.tokenizer, "chat_template", None):
+            return
+        try:
+            from huggingface_hub import hf_hub_download
+            import json as _json
+            raw = _json.load(open(hf_hub_download(self.hf_path, "chat_template.json")))
+            tmpl = raw.get("chat_template") if isinstance(raw, dict) else raw
+        except Exception as e:
+            print(f"[wrapper] no chat_template.json for {self.hf_path} ({type(e).__name__}); "
+                  f"prompts will use the bare User:/Assistant: fallback")
+            return
+        if tmpl:
+            self.tokenizer.chat_template = tmpl
+            print(f"[wrapper] chat template loaded from chat_template.json "
+                  f"({len(tmpl)} chars) — tokenizer shipped none")
 
     @property
     def _input_device(self):

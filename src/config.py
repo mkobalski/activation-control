@@ -295,6 +295,23 @@ def _build_config(raw: Dict[str, Any]) -> ExperimentConfig:
             )
         active_sets = [name for name in condition_sets if name in sets_requested]
 
+    # Some sets are SELF-CONTAINED: they carry their own controls and are scored
+    # against their own internal contrast, so the always-on controls would be dead
+    # weight. `experiment.standalone_sets` names them. When the active selection is
+    # exactly (a subset of) those, the always-on controls are dropped.
+    #
+    # This is what makes the layer-targeting run reproduce the cross-model panel
+    # without a CLI override: an LT run is `sets: [layer_location]`, which is
+    # standalone, so it generates its 4 layer-targeted conditions and nothing else
+    # (8800 trials, no no_instruction baseline -- exactly like the stored panel _lt
+    # runs, and compute_scores._latest_run passes needs_baseline=False for them).
+    #
+    # Keep in sync with run_experiment.LT_ONLY_SETS, which decides the `_lt` run-dir
+    # tag from the same idea; a set that is standalone here should be LT-only there.
+    standalone = set(exp.get("standalone_sets") or [])
+    if active_sets and set(active_sets) <= standalone:
+        prompt_conds = []
+
     # Final conditions = controls, then each active set's conditions in
     # declaration order. Condition ids must be globally unique after the merge.
     merged_conds = list(prompt_conds)

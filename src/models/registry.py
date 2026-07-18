@@ -15,6 +15,10 @@ MODEL_NAME_MAP = {
     "gemma2_9b": "google/gemma-2-9b-it",
     "gemma2_9b_base": "google/gemma-2-9b",
     "gemma2_27b": "google/gemma-2-27b-it",
+    # 270M: the panel's smallest model by two orders of magnitude, and the only one
+    # with FEWER layers (18) than the 20-fraction depth sweep asks for -- the
+    # fractions dedupe to all 18, so its depth axis has 18 points, not 20.
+    "gemma3_270m": "google/gemma-3-270m-it",
     "gemma3_27b": "google/gemma-3-27b-it",
     "gemma4_31b": "google/gemma-4-31b-it",
     # Qwen
@@ -39,6 +43,17 @@ MODEL_NAME_MAP = {
     # Llama
     "llama_8b": "meta-llama/Llama-3.1-8B-Instruct",
     "llama33_70b": "meta-llama/Llama-3.3-70B-Instruct",
+    # Olmo (AI2, Apache-2.0, fully open). Dense, standard Olmo3ForCausalLM with a
+    # system role and no thinking toggle -- the plain -Instruct checkpoint, NOT
+    # the -Think sibling -- so it joins none of the quirk sets below.
+    "olmo31_32b": "allenai/Olmo-3.1-32B-Instruct",
+    # Mistral. Dense, non-reasoning, has a system role -> no quirk sets. NOTE the
+    # checkpoint is MULTIMODAL (Mistral3ForConditionalGeneration: a vision encoder
+    # + projector wrapped around a 24B text model), so unlike every other panel
+    # entry the decoder layers live at model.model.language_model.layers and the
+    # layer count is config.text_config.num_hidden_layers (40), not the top level.
+    # wrapper.py already falls back to both -- see ModelWrapper.n_layers/_layers.
+    "mistral_small_31_24b": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
     # OpenAI gpt-oss (MoE, harmony chat format, native MXFP4). Two entries map to
     # the SAME weights but pin different harmony `reasoning_effort` levels via
     # their experiment YAMLs; kept as distinct short names so run dirs, concept-
@@ -56,7 +71,7 @@ MODEL_NAME_MAP = {
 #                             user turn instead. Aliased to GEMMA_MODELS today.
 #   BASE_MODELS             - non-instruct checkpoints lacking a chat template,
 #                             so prompt wrapping falls back to "User:/Assistant:".
-GEMMA_MODELS = {"gemma2_2b", "gemma2_9b", "gemma2_9b_base", "gemma2_27b", "gemma3_27b",
+GEMMA_MODELS = {"gemma2_2b", "gemma2_9b", "gemma2_9b_base", "gemma2_27b", "gemma3_270m", "gemma3_27b",
                 "gemma4_31b"}
 MODELS_WITHOUT_SYSTEM_ROLE = GEMMA_MODELS
 BASE_MODELS = {"gemma2_9b_base"}

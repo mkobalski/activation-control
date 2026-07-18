@@ -1,0 +1,13 @@
+# MAIN experiment on Olmo-3.1-32B-Instruct (AI2; dense, Apache-2.0, fully open —
+# the first Olmo entry in the cross-model battery). Inherits everything from
+# config.yaml; only the model changes, so it runs the SAME standardized protocol
+# as the rest of the panel, with the depth fractions resolved to Olmo's 64 layers.
+#
+# The chat template has no thinking toggle, so builder.py's enable_thinking=False
+# default is simply ignored — the model transcribes directly.
+extends: config.yaml
+
+model:
+  name: "olmo31_32b"
+  config_path: "configs/models/olmo31_32b.yaml"
+  quantization: null

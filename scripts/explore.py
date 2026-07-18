@@ -41,6 +41,10 @@ import compute_scores as cs                                               # noqa
 
 _PHI_INV = NormalDist().inv_cdf
 FOCAL_LABEL, FOCAL_CONCEPT = "s23", "Bread"
+# Minimum align_sentence_span similarity for a trial to supply the per-token axis
+# labels. 1.0 is an exact transcription; the botched spans seen in practice score
+# ~0.77, so this only admits near-verbatim ones. See focal_data.
+_AXIS_MIN_ALIGN = 0.98
 RAMP = sd.RAMP                                    # think_intensity_{1..4}_of_4
 POS, NEG, BASE = sd.POS, sd.NEG, sd.BASE          # think_about / dont_think_about / no_instruction
 LEX_HI = "think_intensely"                        # lexical high endpoint
@@ -86,7 +90,31 @@ def focal_data(run_dir, label=FOCAL_LABEL, concept=FOCAL_CONCEPT):
         return None
     rows = sd.load_rows(run_dir)
     sub = [r for r in rows if r["sentence"] == sent]
-    toks_row = next((r["anchored_token_strs"] for r in sub if r.get("anchored_token_strs")), None)
+    # Token-axis labels: these label per-token measurements taken from the tokens the
+    # model ACTUALLY generated, so they must come from a trial whose generation is a
+    # faithful transcription -- otherwise the axis shows the model's own interjections
+    # (a leaked concept word, a turn-end special token) instead of the sentence.
+    #
+    # Two traps this avoids, both previously live:
+    #  1. `next(r for r in sub ...)` took the FIRST row for this sentence regardless of
+    #     concept, so a Lightning trial could label a Bread figure.
+    #  2. Nothing filtered is_compliant / alignment_similarity (unlike score_data.py and
+    #     compute_scores.py, which both drop non-compliant rows), so a botched
+    #     transcription could supply the labels -- e.g. a span that slid off and read
+    #     [' crowded', ..., ' **', 'mol', 'ten', '**', ' back'] after the model injected
+    #     "**molten**" into the sentence while thinking about Volcanoes.
+    # Prefer the plotted concept; require compliance and a near-exact alignment.
+    def _label_row(rs):
+        ok = [r for r in rs if r.get("anchored_token_strs") and r.get("is_compliant")
+              and r.get("alignment_similarity", 0.0) >= _AXIS_MIN_ALIGN]
+        ok.sort(key=lambda r: -r.get("alignment_similarity", 0.0))
+        return ok[0]["anchored_token_strs"] if ok else None
+
+    toks_row = _label_row([r for r in sub if r.get("concept") == concept]) or _label_row(sub)
+    if toks_row is None:
+        # Better to emit nothing than a plausible-looking, silently mislabeled figure.
+        print(f"[focal_data] no compliant, well-aligned trial for {label}/{concept} "
+              f"(align >= {_AXIS_MIN_ALIGN}); skipping per-token figures")
     ent = sd.load_baseline(run_dir).get(sent)
     if not sub or toks_row is None or ent is None:
         return None
@@ -144,17 +172,48 @@ def _unit_table(run_dir, conds):
     return tab, layers, sids, cids
 
 
-def _cluster_band(U, sids, n_boot=1000, seed=0):
-    """95% band for a mean-over-units curve, cluster-resampling by sentence."""
+def _cluster_band(U, sids, cids, n_boot=1000, seed=0):
+    """95% band for a mean-over-units curve, JOINT TWO-WAY cluster bootstrap over
+    both sentences and concepts -- the same resampling scheme scalar_ci.py uses for
+    the headline scalar, so a figure's band and the number it illustrates answer the
+    same question.
+
+    Why two-way. A "unit" is one (sentence, concept) pair, so with 50 sentences x 10
+    concepts there are 500 rows -- but they are not 500 independent draws. The 10
+    concepts within a sentence share its baseline and token positions, and the 50
+    sentences within a concept share that concept's vector. Treating the 500 as
+    exchangeable (a plain SEM, or a bootstrap over rows) understates the spread: on
+    gemma3-27b, measured against this function, by ~1.4-2.4x if you ignore only the
+    sentence grouping and up to ~4.4x if you ignore both. Concept is the LARGER
+    cluster here and its share grows toward the end of the sentence, which is exactly
+    where the persistence/positional effects are read off.
+
+    Both axes are resampled with multinomial multiplicities (as in scalar_ci's Wsent /
+    Mconc) rather than by index concatenation, and a unit is weighted by the PRODUCT
+    of its sentence and concept multiplicity. One resample is shared across all
+    columns of U, so the band stays coherent along the curve instead of jittering
+    independently per point.
+    """
+    U = np.asarray(U, float)
     rng = np.random.default_rng(seed)
-    sents = np.asarray(sids)
-    uniq = np.unique(sents)
-    idx_by = {s: np.where(sents == s)[0] for s in uniq}
+    _, inv_s = np.unique(np.asarray(sids), return_inverse=True)
+    _, inv_c = np.unique(np.asarray(cids), return_inverse=True)
+    n_s, n_c = inv_s.max() + 1, inv_c.max() + 1
+    # Multiplicity of each sentence / concept in each replicate; expected count 1.
+    Wsent = rng.multinomial(n_s, np.full(n_s, 1 / n_s), size=n_boot).astype(float)
+    Mconc = rng.multinomial(n_c, np.full(n_c, 1 / n_c), size=n_boot).astype(float)
+    W = Wsent[:, inv_s] * Mconc[:, inv_c]              # (n_boot, n_units)
     reps = np.full((n_boot, U.shape[1]), np.nan)
-    for b in range(n_boot):
-        pick = rng.choice(uniq, size=len(uniq), replace=True)
-        idx = np.concatenate([idx_by[s] for s in pick])
-        reps[b] = np.nanmean(U[idx], axis=0)
+    for j in range(U.shape[1]):
+        col = U[:, j]
+        m = np.isfinite(col)
+        if not m.any():
+            continue
+        Wm = W[:, m]
+        den = Wm.sum(axis=1)
+        num = Wm @ col[m]
+        with np.errstate(invalid="ignore", divide="ignore"):
+            reps[:, j] = np.where(den > 0, num / den, np.nan)
     return np.nanpercentile(reps, 2.5, axis=0), np.nanpercentile(reps, 97.5, axis=0)
 
 
@@ -232,6 +291,7 @@ def engage_suppress(run_dir, out):
     ax.set_title("engage_suppress — sensitivity vs depth")
     ax.legend(frameon=False)
     fig.tight_layout()
+    fs.note(fig)
     return fs.save(fig, out)
 
 
@@ -241,7 +301,7 @@ def engage_suppress(run_dir, out):
 
 def intensity_gain(run_dir, out):
     conds = [POS, LEX_HI] + RAMP
-    tab, layers, sids, _ = _unit_table(run_dir, conds)
+    tab, layers, sids, cids = _unit_table(run_dir, conds)
     pcts = fs.depth_pcts(layers, sd.run_n_layers(run_dir))
     fig, ax = plt.subplots(figsize=(7, 4.4))
     for hi_c, lo_c, color, lab in ((LEX_HI, POS, fs.LEX_C, "think → intensely"),
@@ -249,7 +309,7 @@ def intensity_gain(run_dir, out):
         win = (tab[hi_c] > tab[lo_c]).astype(float) + 0.5 * (tab[hi_c] == tab[lo_c])
         auroc = np.nanmean(win, axis=0)
         dp = np.array([_d_from_auroc(a) for a in auroc])
-        blo, bhi = _cluster_band(win, sids)
+        blo, bhi = _cluster_band(win, sids, cids)
         ax.plot(pcts, dp, color=color, marker="o", ms=3, lw=1.6, label=lab)
         ax.fill_between(pcts, [_d_from_auroc(a) for a in blo],
                         [_d_from_auroc(a) for a in bhi], color=color, alpha=0.15)
@@ -259,6 +319,7 @@ def intensity_gain(run_dir, out):
     ax.set_title("intensity_gain — adjacent-endpoint resolution vs depth")
     ax.legend(frameon=False)
     fig.tight_layout()
+    fs.note(fig)
     return fs.save(fig, out)
 
 
@@ -268,7 +329,7 @@ def intensity_gain(run_dir, out):
 
 def intensity_rank(run_dir, out):
     conds = [POS, LEX_HI] + RAMP
-    tab, layers, sids, _ = _unit_table(run_dir, conds)
+    tab, layers, sids, cids = _unit_table(run_dir, conds)
     n_u, n_L = tab[POS].shape
     pcts = fs.depth_pcts(layers, sd.run_n_layers(run_dir))
     fig, ax = plt.subplots(figsize=(7, 4.4))
@@ -286,7 +347,7 @@ def intensity_rank(run_dir, out):
                                      ([1, 2, 3, 4], RAMP, fs.NUM_C, "intensity 1 → 4")):
         U = rho_curve(levels, cols)
         mean = np.nanmean(U, axis=0)
-        lo, hi = _cluster_band(U, sids)
+        lo, hi = _cluster_band(U, sids, cids)
         ax.plot(pcts, mean, color=color, marker="o", ms=3, lw=1.6, label=lab)
         ax.fill_between(pcts, lo, hi, color=color, alpha=0.15)
     ax.axhline(0, color="#888", lw=0.7)
@@ -296,6 +357,7 @@ def intensity_rank(run_dir, out):
     ax.set_title("intensity_rank — order tracking vs depth")
     ax.legend(frameon=False)
     fig.tight_layout()
+    fs.note(fig)
     return fs.save(fig, out)
 
 
@@ -328,6 +390,7 @@ def pos_coverage(run_dir, out):
     axes[0].set_ylabel(r"$d'$ vs no instruction")
     fig.suptitle("pos_coverage — breadth across parts of speech", fontweight="bold")
     fig.tight_layout()
+    fs.note(fig)
     return fs.save(fig, out)
 
 
@@ -349,7 +412,10 @@ def _position_profile(run_dir, conds, n_bins=10):
             idx[r["sentence"]].setdefault(r["condition_id"], {})[r["concept"]] = r
     edges = np.linspace(0, 1, n_bins + 1)
     centers = (edges[:-1] + edges[1:]) / 2
-    acc = {c: [[] for _ in range(n_bins)] for c in conds}
+    # cond -> list of per-unit (n_bins,) rows, plus that unit's sentence / concept.
+    acc = {c: [] for c in conds}
+    acc_s = {c: [] for c in conds}
+    acc_c = {c: [] for c in conds}
     for sent, ent in cache.items():
         if sent not in idx:
             continue
@@ -371,16 +437,29 @@ def _position_profile(run_dir, conds, n_bins=10):
                 if pt is None:
                     continue
                 delta = pt - base_cos[:, concepts_L.index(c)] * base_norm
+                # One ROW per (sentence, concept) unit: its mean delta in each bin,
+                # NaN where the unit has no token in that bin. Keeping the unit intact
+                # (rather than pooling loose numbers per bin) is what lets the band be
+                # a two-way cluster bootstrap with ONE resample shared across bins.
+                vec = np.full(n_bins, np.nan)
                 for bi in range(n_bins):
                     m = b == bi
                     if m.any() and np.isfinite(delta[m]).any():
-                        acc[cond][bi].append(float(np.nanmean(delta[m])))
+                        vec[bi] = float(np.nanmean(delta[m]))
+                acc[cond].append(vec)
+                acc_s[cond].append(sent)
+                acc_c[cond].append(c)
     out = {}
     for cond in conds:
-        mean = np.array([np.nanmean(v) if v else np.nan for v in acc[cond]])
-        sem = np.array([np.nanstd(v, ddof=1) / np.sqrt(len(v)) if len(v) > 1 else np.nan
-                        for v in acc[cond]])
-        out[cond] = (centers, mean, mean - 1.96 * sem, mean + 1.96 * sem)
+        if not acc[cond]:
+            continue
+        U = np.vstack(acc[cond])
+        mean = np.nanmean(U, axis=0)
+        # Two-way (sentence x concept) cluster bootstrap -- same scheme as scalar_ci.
+        # NOT 1.96*SEM over the pooled units: that treated 50x10 correlated units as
+        # 500 independent draws and drew bands up to ~4.4x too narrow on gemma3-27b.
+        lo, hi = _cluster_band(U, np.asarray(acc_s[cond]), np.asarray(acc_c[cond]))
+        out[cond] = (centers, mean, lo, hi)
     return out
 
 
@@ -405,6 +484,7 @@ def positional_targeting(run_dir, out):
     axes[0].set_ylabel(r"projection Δ vs baseline")
     fig.suptitle("positional_targeting — does the concept land where commanded?", fontweight="bold")
     fig.tight_layout()
+    fs.note(fig)
     return fs.save(fig, out)
 
 
@@ -433,6 +513,7 @@ def temporal_persistence(run_dir, out):
     ax.set_title("temporal_persistence — windowed vs throughout")
     ax.legend(frameon=False)
     fig.tight_layout()
+    fs.note(fig)
     return fs.save(fig, out)
 
 

@@ -37,8 +37,13 @@ run.sh <config>
        └─ superplot.py         model_comparison.png + null_measures_...png   (cross-model)
 ```
 
-Each model is run twice: a **main** run (all condition sets) and a **layer-targeting**
-run (`experiment.sets=[layer_location]`, auto-tagged `_lt`). The scoring reads only the
+Each model is run twice: a **main** run (the `intensity`, `token_location` and
+`persistence` sets — 8600 trials) and a **layer-targeting** run
+(`experiment.sets=[layer_location]`, auto-tagged `_lt` — 8800 trials). The two are
+disjoint: `layer_location` must NOT run inside the main run. It is scored from the
+separate `_lt` dir, so a main run that also generates it just computes it twice and
+throws one copy away. `experiments/main/config.yaml` pins `sets:` accordingly — do not
+delete that line to "run everything". The scoring reads only the
 cheap stored artifacts (`results.json` + the small `no_instruction_cache.pkl` + concept
 vectors) — never the large `results.pkl` of raw activations.
 
@@ -65,20 +70,54 @@ The paper's publication figures live in the **paper repo**
 pip install -r requirements.txt
 export AC_DATA=$PWD/results          # where the derived JSONs live
 
-# one model (main run, then its layer-targeting run):
-scripts/run.sh --config experiments/main/config.yaml --overrides model.name=<model>
-scripts/run.sh --config experiments/main/config.yaml --overrides model.name=<model> experiment.sets='[layer_location]'
+# one model (main run, then its layer-targeting run). The per-model YAML pins the
+# model; the main run needs no overrides, the LT run needs only the set selector.
+scripts/run.sh --config experiments/main/<model>.yaml
+scripts/run.sh --config experiments/main/<model>.yaml --set 'experiment.sets=[layer_location]'
 ```
+
+The override flag is `--set` (repeatable, `dotted.key=value`). Sanity-check a run by
+its trial count before letting it finish: **8600** for main, **8800** for `_lt`. Anything
+else means the set selection is wrong — 17400 is the classic one (all four sets active).
 
 Scoring/figure steps are also runnable standalone (see `--help` on each; `METRICS`
 §8). Selectable knobs on the collapse: `--channels {projection,legacy,all}` and
 `--link {linear,phi}` (defaults `projection`, `linear`).
+
+### Adding a model
+
+1. `src/models/registry.py` — short name -> HF id in `MODEL_NAME_MAP`, plus any quirk
+   set that applies (`MODELS_WITHOUT_SYSTEM_ROLE`, `BASE_MODELS`, and exactly one of
+   `HARMONY_MODELS` / `THINK_TAG_MODELS` if it emits a reasoning trace).
+2. `experiments/main/<short>.yaml` — `extends: config.yaml` + the `model:` block.
+   `configs/models/<short>.yaml` is documentation only; nothing loads it.
+3. `scripts/superplot.py` — add to `MODELS` / `DETAIL` (and `FAMILY_ORDER` /
+   `FAMILY_CMAP` for a new family) or it is scored but invisible in the comparison.
+
+Then run the two commands above and check the trial counts. `models.txt` records the
+per-model caveats (thinking toggles, missing chat templates) — read its header first.
+Two traps the loader now handles automatically, both worth knowing about:
+**multimodal checkpoints** keep their chat template in `chat_template.json` on the
+processor, so the tokenizer reports none and prompts would silently fall back to a
+base-model `User:/Assistant:` scaffold; and they are registered only under
+image-text-to-text, so `AutoModelForCausalLM` cannot load them. `ModelWrapper` detects
+both (`_ensure_chat_template`, the auto-class probe) and logs when it does.
 
 ## Notes
 
 - σ in every d′ is **across-sentence baseline variability**, not measurement noise —
   generation is deterministic. "d′ = 6" means 6 sentence-to-sentence SDs, not 6σ of
   precision.
+- **Every CI and figure band is a joint two-way cluster bootstrap over sentences AND
+  concepts** (`scalar_ci.joint_bootstrap`, `compute_scores.dprime_stats`,
+  `explore._cluster_band` — one shared resample, so covariance between measures
+  survives into the conjunctive S). Because generation is deterministic there is no
+  measurement noise to report: the only meaningful uncertainty is whether a result
+  would survive a *different sample of stimuli*, so the resampled unit is one
+  (sentence × concept) pair. Pooling those ~500 units as if independent understates
+  the spread by up to ~4x — concept is the larger cluster, and its share grows toward
+  the end of the sentence. With only 10 concepts that axis is coarse; treat CI
+  endpoints as approximate.
 - `D_REF` and the measure set are the scalar's calibration choices; they're dated and
   documented in `METRICS` and recorded in each emitted JSON, and are meant to be
   revisited as the model panel grows.

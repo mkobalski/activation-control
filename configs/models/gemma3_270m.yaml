@@ -1,0 +1,17 @@
+# Gemma-3-270M-it -- the panel's floor case (268M params, 18 layers, hidden 640).
+# NOTE: documentation only, like the rest of configs/models/*.yaml -- the loader
+# resolves the HF id from MODEL_NAME_MAP (src/models/registry.py) and reads
+# dtype/quantization from the experiment YAML's `model:` block.
+#
+# Text-only Gemma3ForCausalLM (NOT the multimodal Gemma-3 variants), so it loads
+# through AutoModelForCausalLM and its chat template is on the tokenizer.
+#
+# Two things make it unlike every other panel entry:
+#  - 18 layers < the 20 requested depth fractions, so resolve_layers dedupes to ALL
+#    18 layers. Its depth axis therefore has 18 points, not 20.
+#  - at 268M it may not transcribe reliably; expect low compliance, and read its
+#    scores as a floor/sanity case rather than a peer of the 9B+ models.
+model_id: "google/gemma-3-270m-it"
+torch_dtype: "bfloat16"     # ~0.5 GB -- runs on anything
+device_map: "auto"
+quantization: null

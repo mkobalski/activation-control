@@ -1,0 +1,10 @@
+# MAIN experiment on Gemma-3-270M-it -- the smallest model in the battery, run as a
+# floor/sanity case. Inherits everything from config.yaml so the protocol matches the
+# panel; note the depth sweep resolves to all 18 of its layers (the 20 requested
+# fractions dedupe), so its depth axis is 18 points wide instead of 20.
+extends: config.yaml
+
+model:
+  name: "gemma3_270m"
+  config_path: "configs/models/gemma3_270m.yaml"
+  quantization: null

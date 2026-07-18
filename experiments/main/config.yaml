@@ -33,13 +33,38 @@
 
 extends: ../_base.yaml
 
-# Deep granular sweep (>= ~65% depth; layer 40+ on gemma3-27b). Overrides _base.
+# Full granular depth sweep, every 5% of depth (20 layers) -- inherited from
+# _base.yaml and restated here explicitly. This MUST match the sweep the existing
+# cross-model panel was recorded with (see the stored config.yaml in any
+# results/raw/*_activation_control run dir): every model in the comparison is
+# recorded on the SAME analysis fractions, so changing them here silently makes
+# new runs non-comparable with the panel.
+#
+# (A deep-only 0.65..1.00 sweep was in place briefly in July 2026; it recorded 8
+# layers instead of 20 and was reverted -- the panel is 20.)
+#
+# Note prompt_layers below is a DIFFERENT, deliberately deep-only sweep
+# (0.65..1.00) and matches the panel as-is; do not "fix" it to match this list.
 analysis_layers:
-  fractions: [0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00]
+  fractions: [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50,
+              0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00]
   layers: []
 
 experiment:
   name: "activation_control"
+  # Which condition sets a MAIN run generates. Pinned explicitly, NOT left unset:
+  # unset means "all declared sets", which silently pulls layer_location into the
+  # main run. That run is then tagged as a plain main run (run_experiment._run_name
+  # only tags `_lt` when active_sets is exactly {layer_location}), so its
+  # layer_location trials are never scored -- compute_scores looks for a separate
+  # *_activation_control_lt dir -- and the LT half gets computed twice and used once.
+  # These three are what the cross-model panel's main runs used (8600 trials).
+  sets: [intensity, token_location, persistence]
+  # Sets that are self-contained and must NOT receive the always-on controls below.
+  # An LT run (`--set experiment.sets=[layer_location]`) is exactly this, so it
+  # generates 8800 trials like the panel's _lt runs instead of 9900. See the
+  # standalone_sets handling in src/config.py.
+  standalone_sets: [layer_location]
   # Record residual streams for SPECIAL tokens too: the generated tail after
   # the sentence (<end_of_turn>/EOS, within the token_buffer) and the prompt's
   # special tokens (<start_of_turn>, BOS, ...) captured at prefill.
