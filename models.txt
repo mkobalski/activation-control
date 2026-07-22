@@ -22,21 +22,21 @@
 #    non-reasoning. Check both chat templates before running.
 
 # ---------------------------------------------------------------- tiny (<= 4B)
-mistralai/Ministral-3-3B-Instruct-2512        # 3.85B  short name: ministral3_3b  (~3.4B LM + 0.4B vision encoder)
+# mistralai/Ministral-3-3B-Instruct-2512      # 3.85B  short name: ministral3_3b  [TESTED 2026-07-22]  (~3.4B LM + 0.4B vision encoder; FP8 static/tensor-mode -> auto-dequant shim in wrapper.py)
 
 # --------------------------------------------------------------- small (4-40B)
 # google/gemma-2-9b-it                        # 9.24B  short name: gemma2_9b  [TESTED]
 # google/gemma-3-27b-it                       # 27.4B  short name: gemma3_27b  [TESTED]
-google/gemma-4-12B-it                         # 11.96B short name: gemma4_12b  (HYBRID: off by default)
+# google/gemma-4-12B-it                       # 11.96B short name: gemma4_12b  [TESTED 2026-07-22]  (HYBRID: off by default)
 # google/gemma-4-31b-it                       # 31B    short name: gemma4_31b  [TESTED]
-zai-org/GLM-4.7-Flash                         # 31.2B total / ~3B active  short name: glm47_flash  (REASONING/hybrid, not plain non-reasoning; switch unverified -- see header)
-meta-llama/Llama-3.1-8B-Instruct              # 8.03B  short name: llama_8b
+# zai-org/GLM-4.7-Flash                       # 31.2B total / ~3B active  short name: glm47_flash  [TESTED 2026-07-22]  (HYBRID: enable_thinking=False verified to close the think block -> transcribes directly; smoke 93%)
+# meta-llama/Llama-3.1-8B-Instruct            # 8.03B  short name: llama_8b  [TESTED 2026-07-22]
 # mistralai/Mistral-Small-3.1-24B-Instruct-2503 # 24.0B  short name: mistral_small_31_24b
-allenai/Olmo-3-7B-Instruct                    # 7.30B  short name: olmo3_7b
+# allenai/Olmo-3-7B-Instruct                  # 7.30B  short name: olmo3_7b  [TESTED 2026-07-22]
 # allenai/Olmo-3.1-32B-Instruct                 # 32.2B  short name: olmo31_32b
-openai/gpt-oss-20b                            # 21.5B total / 3.6B active  short name: gptoss_20b_low  (REASONING; low effort)
-Qwen/Qwen3.5-4B                               # 4.66B  short name: qwen35_4b  (HYBRID: off by default; dense despite MoE blurb)
-Qwen/Qwen3.5-9B                               # 9.65B  short name: qwen35_9b  (HYBRID: off by default; dense)
+# openai/gpt-oss-20b                          # 21.5B total / 3.6B active  short name: gptoss_20b_low  [TESTED 2026-07-22]  (REASONING; low effort)
+# Qwen/Qwen3.5-4B                             # 4.66B  short name: qwen35_4b  [TESTED 2026-07-22]  (HYBRID: off by default; dense despite MoE blurb)
+# Qwen/Qwen3.5-9B                             # 9.65B  short name: qwen35_9b  [TESTED 2026-07-22]  (HYBRID: off by default; dense)
 # Qwen/Qwen3.6-27B                            # 27B    short name: qwen36_27b  [TESTED]
 
 # ------------------------------------------------------------ medium (40-150B)

@@ -24,7 +24,8 @@ class ModelWrapper:
     def __init__(self, model_name: str, device: str = "cuda",
                  dtype: torch.dtype = torch.bfloat16,
                  quantization_config: Optional[BitsAndBytesConfig] = None,
-                 attn_implementation: Optional[str] = None):
+                 attn_implementation: Optional[str] = None,
+                 max_memory: Optional[str] = None):
         self.model_name = model_name
         self.device = device
         self.dtype = dtype
@@ -44,12 +45,46 @@ class ModelWrapper:
             "trust_remote_code": True,
             "device_map": "auto" if device == "cuda" else None,
         }
+        # Cap GPU-0 weight placement so several runs can share one card. Give the
+        # CPU a large budget so a model that exceeds the cap spills to host RAM
+        # rather than OOMing at load. NOTE: this bounds WEIGHT placement only, not
+        # runtime KV/activation allocations -- size pods with headroom to spare.
+        if max_memory is not None and device == "cuda":
+            load_kwargs["max_memory"] = {0: max_memory, "cpu": "1500GiB"}
+            print(f"[wrapper] max_memory cap: GPU0={max_memory} (co-location mode)")
         if quantization_config is not None:
             load_kwargs["quantization_config"] = quantization_config
         else:
             load_kwargs["dtype"] = dtype
         if attn_implementation is not None:
             load_kwargs["attn_implementation"] = attn_implementation
+
+        # FP8 dequantize shim. Some checkpoints (e.g. Ministral-3-3B) ship
+        # fine-grained FP8 with STATIC, TENSOR-mode activation scaling
+        # (weight_block_size=null): the installed finegrained-fp8 kernel only
+        # supports static scales with BLOCK-wise weights and raises
+        # NotImplementedError at the first matmul. We can't run that kernel, but
+        # the checkpoint carries its weight/activation scales, so we ask
+        # transformers to DEQUANTIZE to bf16 at load (scales applied, no FP8
+        # kernel used). Only kicks in for that unsupported combo and only when the
+        # caller hasn't already forced a quantization_config. Logged, like the
+        # multimodal/auto-class shims below.
+        if quantization_config is None:
+            try:
+                _qc = getattr(AutoConfig.from_pretrained(self.hf_path, trust_remote_code=True),
+                              "quantization_config", None)
+                if isinstance(_qc, dict) and str(_qc.get("quant_method", "")).lower() == "fp8" \
+                        and _qc.get("weight_block_size") is None \
+                        and _qc.get("activation_scheme") == "static":
+                    from transformers import FineGrainedFP8Config
+                    load_kwargs["quantization_config"] = FineGrainedFP8Config(
+                        activation_scheme="static", weight_block_size=None, dequantize=True,
+                        modules_to_not_convert=_qc.get("modules_to_not_convert"))
+                    load_kwargs.pop("dtype", None)
+                    print("[wrapper] FP8 static/tensor-mode checkpoint -> dequantizing to bf16 "
+                          "(unsupported by the finegrained-fp8 kernel)")
+            except Exception as e:
+                print(f"[wrapper] FP8 dequantize probe skipped ({type(e).__name__})")
 
         # Pick the auto class by architecture. Vision-text checkpoints (Mistral-Small-3.1,
         # Gemma-3 multimodal, Llama-4-Scout, GLM-4.6V ...) are registered ONLY under
@@ -418,7 +453,8 @@ class ModelWrapper:
 
 def load_model(model_name: str, device: str = "cuda", dtype: str = "bfloat16",
                quantization: Optional[str] = None,
-               attn_implementation: Optional[str] = None) -> ModelWrapper:
+               attn_implementation: Optional[str] = None,
+               max_memory: Optional[str] = None) -> ModelWrapper:
     dtype_map = {"bfloat16": torch.bfloat16, "float16": torch.float16,
                  "float32": torch.float32}
     qconfig = None
@@ -431,4 +467,4 @@ def load_model(model_name: str, device: str = "cuda", dtype: str = "bfloat16",
             bnb_4bit_use_double_quant=True, bnb_4bit_quant_type="nf4",
         )
     return ModelWrapper(model_name, device, dtype_map.get(dtype, torch.bfloat16), qconfig,
-                        attn_implementation=attn_implementation)
+                        attn_implementation=attn_implementation, max_memory=max_memory)

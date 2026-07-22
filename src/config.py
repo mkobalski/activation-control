@@ -60,6 +60,14 @@ class ModelConfig:
     quantization: Optional[str] = None
     device: str = "cuda"
     attn_implementation: Optional[str] = None
+    # Per-GPU weight-placement cap for device_map="auto", e.g. "24GiB". None =
+    # let accelerate use all free VRAM (the default). Set it to co-locate several
+    # runs on one GPU: each process caps its own weights so their sum leaves room
+    # for the others (plus runtime KV/activation headroom). Purely a runtime/
+    # scheduling knob -- kept OUT of the committed per-model YAMLs so those stay
+    # provenance-clean; pass it at launch via `--set model.max_memory=24GiB`.
+    # Threaded into ModelWrapper -> from_pretrained(max_memory={0: ..., "cpu": ...}).
+    max_memory: Optional[str] = None
     # Reasoning effort for models whose chat template supports it (e.g. gpt-oss
     # harmony: "low"/"medium"/"high"). None = don't pass the kwarg (templates
     # that don't declare it ignore it anyway). Threaded into the chat template

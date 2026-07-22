@@ -1,0 +1,12 @@
+# MAIN experiment on Kimi-Linear-48B-A3B-Instruct (Moonshot). MoE 48B total /
+# 3B active with linear attention. Plain -Instruct: system role, no thinking
+# toggle -> builder's enable_thinking=False default is ignored, transcribes
+# directly. May log a missing fla/causal-conv1d fast path and fall back to the
+# torch attention impl (functional, slower). Inherits everything from config.yaml.
+# Fits a single B200 (~113 GB footprint bf16).
+extends: config.yaml
+
+model:
+  name: "kimi_linear_48b_a3b"
+  config_path: "configs/models/kimi_linear_48b_a3b.yaml"
+  quantization: null

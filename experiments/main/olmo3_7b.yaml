@@ -1,0 +1,10 @@
+# MAIN experiment on Olmo-3-7B-Instruct (AI2; dense, Apache-2.0, fully open).
+# The plain -Instruct checkpoint (NOT -Think): a system role, no thinking toggle,
+# so builder.py's enable_thinking=False default is simply ignored and the model
+# transcribes directly. Inherits everything from config.yaml.
+extends: config.yaml
+
+model:
+  name: "olmo3_7b"
+  config_path: "configs/models/olmo3_7b.yaml"
+  quantization: null

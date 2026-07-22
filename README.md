@@ -34,7 +34,7 @@ run.sh <config>
        ├─ compute_scores.py    SCORES_<model>.json + PROFILES_<model>.json  (the battery)
        ├─ scalar_ci.py         SCALAR_CI_<model>.json                        (S + joint CI)
        ├─ explore.py           per-run exploratory figures                   (in the run dir)
-       └─ superplot.py         model_comparison.png + null_measures_...png   (cross-model)
+       └─ superplot.py         model_comparison / null_measures / degenerate_measures .png (cross-model)
 ```
 
 Each model is run twice: a **main** run (the `intensity`, `token_location` and
@@ -55,7 +55,8 @@ vectors) — never the large `results.pkl` of raw activations.
 | `experiments/` , `configs/` | experiment specifications (conditions, layers, models) |
 | `scripts/run_experiment.py` | the runner — pure generate-and-save |
 | `scripts/{compute_scores,aggregate_scalar,scalar_ci}.py` | the scoring layer |
-| `scripts/{explore,superplot,figstyle}.py` | figures |
+| `scripts/onset_offset_word.py` | word-based onset/offset supersession (`ONSET_OFFSET_WORD_<model>.json`); run manually, not part of `postprocess` |
+| `scripts/{explore,superplot,figstyle,model_family_colors}.py` | figures (`model_family_colors` = the shared model-family palette, a verbatim copy of the paper repo's) |
 | `scripts/{run.sh,postprocess.py}` | the orchestrator |
 | `results/raw/<run>/` | one run's recordings (gitignored) |
 | `results/*.json` | the derived SCORES / PROFILES / SCALAR / CI artifacts (gitignored) |
@@ -91,8 +92,9 @@ Scoring/figure steps are also runnable standalone (see `--help` on each; `METRIC
    `HARMONY_MODELS` / `THINK_TAG_MODELS` if it emits a reasoning trace).
 2. `experiments/main/<short>.yaml` — `extends: config.yaml` + the `model:` block.
    `configs/models/<short>.yaml` is documentation only; nothing loads it.
-3. `scripts/superplot.py` — add to `MODELS` / `DETAIL` (and `FAMILY_ORDER` /
-   `FAMILY_CMAP` for a new family) or it is scored but invisible in the comparison.
+3. `scripts/superplot.py` — add to `MODELS` / `DETAIL` (and `FAMILY_ORDER` for a new
+   family) or it is scored but invisible in the comparison. Family colors come from
+   `scripts/model_family_colors.py` (add the family there too if it is new).
 
 Then run the two commands above and check the trial counts. `models.txt` records the
 per-model caveats (thinking toggles, missing chat templates) — read its header first.
@@ -121,3 +123,20 @@ both (`_ensure_chat_template`, the auto-class probe) and logs when it does.
 - `D_REF` and the measure set are the scalar's calibration choices; they're dated and
   documented in `METRICS` and recorded in each emitted JSON, and are meant to be
   revisited as the model panel grows.
+- **Onset/offset error — word-based supersession (2026-07-22).** The shipped
+  onset/offset error in `SCORES_<model>.json` (`compute_scores._persistence_edges`)
+  scores the `persist_after_fourth` ONSET gate against the **4th token** (requested
+  onset `4/(n-1)`). But the instruction is worded "after the fourth **word**", and
+  because `anchored_token_strs` are `tokenizer.decode()`d, a word boundary is a plain
+  leading space for every tokenizer — yet tokenizers that split words into multiple
+  sub-tokens (e.g. GPT-OSS, Mistral) place the 4th-word boundary a token or two after
+  the 4th token. `scripts/onset_offset_word.py` recomputes the onset gate against the
+  actual 4th-word boundary (requested onset = mean fractional position of the
+  5th-word-start token) and writes `ONSET_OFFSET_WORD_<model>.json`. The **original
+  score is left untouched** (frozen; still what the paper's prior numbers cite); the
+  word-based file supersedes it for the temporal figures. Because `req` enters
+  `_persistence_edges` only as a constant subtraction (`error = detected − req`), the
+  word-based onset is an exact constant shift of the token-based onset — the offset
+  gate ("first half" = 0.5) and all detection/bootstrap are unchanged — so the script
+  reuses `_persistence_edges` verbatim and asserts its replicated unit set matches.
+  Conditions are unchanged: onset = `persist_after_fourth`, offset = `persist_first_half`.

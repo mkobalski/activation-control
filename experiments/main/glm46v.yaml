@@ -1,0 +1,13 @@
+# MAIN experiment on GLM-4.6V (Z.ai). MoE 106B total / ~12B active, natively
+# MULTIMODAL (vision tower loads, unused; decoder reached via language_model.
+# layers). HYBRID: the builder passes enable_thinking=False (default when unset),
+# BUT the thinking-off switch is UNVERIFIED for 4.6V (documented only for 4.5V).
+# => After the first run, CHECK COMPLIANCE: if low, the toggle failed and it must
+# move to THINK_TAG_MODELS + enable_thinking handling + larger max_new_tokens.
+# Has a system role. Inherits everything from config.yaml. ~2x B200.
+extends: config.yaml
+
+model:
+  name: "glm46v"
+  config_path: "configs/models/glm46v.yaml"
+  quantization: null

@@ -107,7 +107,8 @@ def main():
     print("Loading model...")
     t0 = time.time()
     wrapper = load_model(config.model.name, config.model.device,
-                         config.model.dtype, config.model.quantization)
+                         config.model.dtype, config.model.quantization,
+                         max_memory=config.model.max_memory)
     # Chat-template reasoning effort (harmony/gpt-oss); read by builder._chat_wrap
     # and extraction.format_extraction_prompt off the wrapper.
     wrapper.reasoning_effort = config.model.reasoning_effort

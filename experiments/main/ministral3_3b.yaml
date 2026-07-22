@@ -1,0 +1,12 @@
+# MAIN experiment on Ministral-3-3B-Instruct-2512 (Mistral). MULTIMODAL
+# (~3.4B LM + 0.4B vision encoder), like mistral_small_31_24b: the chat template
+# ships in chat_template.json and the checkpoint is registered only under
+# image-text-to-text -- ModelWrapper auto-detects both and drives it text-only.
+# Dense, has a system role, non-reasoning -> no quirk sets. Inherits from
+# config.yaml.
+extends: config.yaml
+
+model:
+  name: "ministral3_3b"
+  config_path: "configs/models/ministral3_3b.yaml"
+  quantization: null

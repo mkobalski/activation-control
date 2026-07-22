@@ -1,0 +1,11 @@
+# MAIN experiment on Qwen3.5-4B (dense despite the family's MoE blurb). A HYBRID
+# checkpoint that ships thinking ON upstream, but the builder passes
+# enable_thinking=False whenever model.enable_thinking is unset (builder.py:29),
+# so this run is non-thinking automatically -- it is NOT in REASONING_MODELS and
+# transcribes directly. Inherits everything from config.yaml.
+extends: config.yaml
+
+model:
+  name: "qwen35_4b"
+  config_path: "configs/models/qwen35_4b.yaml"
+  quantization: null

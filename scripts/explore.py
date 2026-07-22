@@ -14,8 +14,8 @@ Figures (main runs only; LT runs get none):
   intensity_gain       endpoint-gain d' vs depth (lexical vs numeric)
   intensity_rank       signed Spearman rho vs depth (lexical vs numeric)
   pos_coverage         engage & suppress d' by POS category
-  positional_targeting concept concentration at sentence beginning / end
-  temporal_persistence where the concept is "on" across the sentence
+  temporal_control concept concentration at sentence beginning / mid / end
+  temporal_precision first-half / after-4th-word / throughout vs generic think
   engage_heatmap       cos / relnorm / projection engagement, tokens x layers
 
 Usage:
@@ -395,7 +395,7 @@ def pos_coverage(run_dir, out):
 
 
 # ======================================================================================
-# position-binned projection (shared by positional_targeting & temporal_persistence)
+# position-binned projection (shared by temporal_control & temporal_precision)
 # ======================================================================================
 
 def _position_profile(run_dir, conds, n_bins=10):
@@ -464,14 +464,24 @@ def _position_profile(run_dir, conds, n_bins=10):
 
 
 # ======================================================================================
-# 6. positional_targeting — begin / end
+# 6. temporal_control — begin / mid / end
 # ======================================================================================
 
-def positional_targeting(run_dir, out):
-    prof = _position_profile(run_dir, [POS, "loc_beginning", "loc_end"])
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.4), sharey=True)
-    for ax, (cond, lab, span) in zip(axes, (("loc_beginning", "think at beginning", (0, 1 / 3)),
-                                            ("loc_end", "think at end", (2 / 3, 1)))):
+def temporal_control(run_dir, out):
+    # Three targeted conditions vs generic think, each with its target span shaded:
+    # loc_beginning (first third), persist_once (middle third -- "think ... only once
+    # mid-sentence, then stop"), loc_end (last third). persist_once is the same
+    # condition Temporal control scores as the 'mid' span (score_data.TARGET_GROUPS).
+    prof = _position_profile(run_dir, [POS, "loc_beginning", "persist_once", "loc_end"])
+    panels = (("loc_beginning", "think at beginning", (0, 1 / 3)),
+              ("persist_once", "think once mid-sentence", (1 / 3, 2 / 3)),
+              ("loc_end", "think at end", (2 / 3, 1)))
+    fig, axes = plt.subplots(1, 3, figsize=(17, 4.4), sharey=True)
+    for ax, (cond, lab, span) in zip(axes, panels):
+        if cond not in prof:
+            ax.set_title(f"{lab}\n(no data)")
+            ax.set_xlabel("position in sentence")
+            continue
         for cc, color, cl in ((POS, fs.MED_GRAY, "generic think"), (cond, fs.ENGAGE_C, lab)):
             cx, m, lo, hi = prof[cc]
             ax.plot(cx, m, color=color, marker="o", ms=3, lw=1.5, label=cl)
@@ -482,37 +492,141 @@ def positional_targeting(run_dir, out):
         ax.set_title(lab)
         ax.legend(frameon=False)
     axes[0].set_ylabel(r"projection Δ vs baseline")
-    fig.suptitle("positional_targeting — does the concept land where commanded?", fontweight="bold")
+    fig.suptitle("temporal_control — does the concept land where commanded?", fontweight="bold")
     fig.tight_layout()
     fs.note(fig)
     return fs.save(fig, out)
 
 
 # ======================================================================================
-# 7. temporal_persistence — where the concept is "on"
+# 7. temporal_precision — where the concept is "on" (first half / after-4th / throughout)
 # ======================================================================================
 
-def temporal_persistence(run_dir, out):
-    conds = ["persist_throughout", "persist_once", "persist_first_half", "persist_after_fourth"]
-    labs = {"persist_throughout": "throughout", "persist_once": "once (mid)",
-            "persist_first_half": "first half", "persist_after_fourth": "after 4th token"}
-    prof = _position_profile(run_dir, conds)
-    fig, ax = plt.subplots(figsize=(7.5, 4.4))
-    cmap = plt.get_cmap("viridis")
-    ax.plot(*prof["persist_throughout"][:2], color="black", lw=2, marker="o", ms=3,
-            label=labs["persist_throughout"])
-    ax.fill_between(prof["persist_throughout"][0], prof["persist_throughout"][2],
-                    prof["persist_throughout"][3], color="black", alpha=0.08)
-    for i, cond in enumerate(conds[1:]):
-        cx, m, lo, hi = prof[cond]
-        ax.plot(cx, m, color=cmap(0.15 + 0.7 * i / 2), marker="o", ms=3, lw=1.4, label=labs[cond])
-        ax.fill_between(cx, lo, hi, color=cmap(0.15 + 0.7 * i / 2), alpha=0.10)
+def _word_start(i, tok):
+    """True if generated token `tok` (index i, anchor already stripped) begins a new
+    WORD: the first token, or a space-led token with alphanumeric content. Because
+    anchored_token_strs are tokenizer.decode()'d, the word marker is a plain leading
+    space for EVERY tokenizer family (SentencePiece / BPE / tiktoken), so this needs
+    no per-model handling -- only the resulting token index shifts (a tokenizer that
+    splits words into more subwords lands the boundary a token or two later)."""
+    return i == 0 or (tok[:1] == " " and any(ch.isalnum() for ch in tok))
+
+
+def _word_spans(toks):
+    """Token-index (start, end) range for each WORD in a generated-token list."""
+    starts = [i for i, t in enumerate(toks) if _word_start(i, t)]
+    bounds = starts + [len(toks)]
+    return [(bounds[k], bounds[k + 1]) for k in range(len(starts))]
+
+
+def _min_word_count(cache):
+    """Word count of the shortest sentence; the word axis is clipped here so every
+    unit contributes at every word index."""
+    return min(len(_word_spans(ent["anchored_token_strs"][1:])) for ent in cache.values())
+
+
+def _word_profile(run_dir, conds, max_words):
+    """Like `_position_profile` but on WORD index (1..max_words), clipped to the
+    shortest sentence's word count -- for the `after the fourth word` instruction,
+    which is word-based. Each word's value is the mean of its constituent tokens'
+    projection Δ (cond − no_instruction). Word index is tokenizer-invariant (word
+    count doesn't depend on how a tokenizer splits), so the 4th-word boundary is one
+    clean line (word 4→5) for every model. Same readout / depth / two-way band."""
+    L = sd._layer_for_fraction(run_dir, sd.PROJ_F_LOC)
+    rows = sd.load_rows(run_dir)
+    cache = sd.load_baseline(run_dir)
+    concepts_L, _, Vn = sd.load_vectors(VC, sd._resolve_model(run_dir, None), [L])[L]
+    idx = defaultdict(dict)
+    for r in rows:
+        if r["condition_id"] in conds and r.get("concept"):
+            idx[r["sentence"]].setdefault(r["condition_id"], {})[r["concept"]] = r
+    acc = {c: [] for c in conds}
+    acc_s = {c: [] for c in conds}
+    acc_c = {c: [] for c in conds}
+    for sent, ent in cache.items():
+        if sent not in idx:
+            continue
+        toks = ent["anchored_token_strs"][1:]
+        n = len(toks)
+        if n < 3:
+            continue
+        words = _word_spans(toks)
+        A = np.asarray(ent["activations"][L], np.float32)[:n]
+        An = A / (np.linalg.norm(A, axis=1, keepdims=True) + 1e-8)
+        base_cos = An @ Vn.T
+        base_norm = np.asarray(ent["norms"][L], np.float32)[:n]
+        for cond in conds:
+            for c, r in idx[sent].get(cond, {}).items():
+                if c not in concepts_L:
+                    continue
+                pt = _proj_tokens(r, L, n)
+                if pt is None:
+                    continue
+                delta = pt - base_cos[:, concepts_L.index(c)] * base_norm    # per token
+                vec = np.full(max_words, np.nan)
+                for wi in range(min(max_words, len(words))):
+                    a, b = words[wi]
+                    seg = delta[a:b]                                          # tokens in word wi
+                    if np.isfinite(seg).any():
+                        vec[wi] = float(np.nanmean(seg))
+                acc[cond].append(vec)
+                acc_s[cond].append(sent)
+                acc_c[cond].append(c)
+    out = {}
+    x = np.arange(1, max_words + 1)
+    for cond in conds:
+        if not acc[cond]:
+            continue
+        U = np.vstack(acc[cond])
+        lo, hi = _cluster_band(U, np.asarray(acc_s[cond]), np.asarray(acc_c[cond]))
+        out[cond] = (x, np.nanmean(U, axis=0), lo, hi)
+    return out
+
+
+def _persist_panel(ax, prof, cond, lab, span, xlabel):
+    for cc, color, cl in ((POS, fs.MED_GRAY, "generic think"), (cond, fs.ENGAGE_C, lab)):
+        if cc not in prof:
+            continue
+        cx, m, lo, hi = prof[cc]
+        ax.plot(cx, m, color=color, marker="o", ms=3, lw=1.4, label=cl)
+        ax.fill_between(cx, lo, hi, color=color, alpha=0.13)
+    ax.axvspan(span[0], span[1], color="#f0d000", alpha=0.12)
     ax.axhline(0, color="#888", lw=0.7)
-    ax.set_xlabel("position in sentence")
-    ax.set_ylabel(r"projection Δ vs baseline")
-    ax.set_title("temporal_persistence — windowed vs throughout")
+    ax.set_xlabel(xlabel)
+    ax.set_title(lab)
     ax.legend(frameon=False)
-    fig.tight_layout()
+
+
+def temporal_precision(run_dir, out):
+    """Three panels, each a persistence instruction vs generic think, with the
+    commanded 'on' region shaded. first-half / throughout are fractional instructions
+    (fraction-of-sentence x); after-the-4th-word is a WORD-based instruction, so it
+    uses a WORD-index x clipped at the shortest sentence's word count, with its 'on'
+    region shaded from word 5 on (persist_once is not shown here -- it is the mid panel
+    of temporal_control)."""
+    cache = sd.load_baseline(run_dir)
+    min_words = _min_word_count(cache)
+    prof_f = _position_profile(run_dir, [POS, "persist_first_half", "persist_throughout"])
+    prof_w = _word_profile(run_dir, [POS, "persist_after_fourth"], min_words)
+
+    fig = plt.figure(figsize=(13.5, 4.4))
+    ax0 = fig.add_subplot(1, 3, 1)
+    ax1 = fig.add_subplot(1, 3, 2, sharey=ax0)
+    ax2 = fig.add_subplot(1, 3, 3, sharey=ax0)
+    _persist_panel(ax0, prof_f, "persist_first_half", "first half", (0.0, 0.5),
+                   "position in sentence")
+    _persist_panel(ax1, prof_w, "persist_after_fourth", "after 4th word",
+                   (4.5, min_words + 0.5), "word number from sentence start")
+    _persist_panel(ax2, prof_f, "persist_throughout", "throughout", (0.0, 1.0),
+                   "position in sentence")
+    ax1.set_xlim(0.5, min_words + 0.5)
+    ax1.set_xticks(range(1, min_words + 1))
+    ax0.set_ylabel(r"projection Δ vs baseline")
+    fig.suptitle("temporal_precision — concept held to the commanded span "
+                 f"(after-4th by WORD; commanded on from word 5, clipped at shortest "
+                 f"sentence = {min_words} words)",
+                 fontweight="bold")
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
     fs.note(fig)
     return fs.save(fig, out)
 
@@ -562,8 +676,8 @@ RENDERERS = {
     "intensity_gain": intensity_gain,
     "intensity_rank": intensity_rank,
     "pos_coverage": pos_coverage,
-    "positional_targeting": positional_targeting,
-    "temporal_persistence": temporal_persistence,
+    "temporal_control": temporal_control,
+    "temporal_precision": temporal_precision,
     "engage_heatmap": engage_heatmap,
 }
 

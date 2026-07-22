@@ -1,0 +1,11 @@
+# MAIN experiment on gemma-4-12b-it (Google). Gemma family -> no system role
+# (folded into the user turn; see MODELS_WITHOUT_SYSTEM_ROLE). HYBRID (thinking
+# ON upstream) but off by default via builder.py's enable_thinking=False when
+# unset (builder.py:29), so it transcribes directly and is NOT in
+# REASONING_MODELS. Inherits everything from config.yaml.
+extends: config.yaml
+
+model:
+  name: "gemma4_12b"
+  config_path: "configs/models/gemma4_12b.yaml"
+  quantization: null

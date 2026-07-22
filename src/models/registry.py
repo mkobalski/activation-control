@@ -20,6 +20,7 @@ MODEL_NAME_MAP = {
     # fractions dedupe to all 18, so its depth axis has 18 points, not 20.
     "gemma3_270m": "google/gemma-3-270m-it",
     "gemma3_27b": "google/gemma-3-27b-it",
+    "gemma4_12b": "google/gemma-4-12B-it",
     "gemma4_31b": "google/gemma-4-31b-it",
     # Qwen
     "qwen_7b": "Qwen/Qwen2.5-7B-Instruct",
@@ -40,12 +41,59 @@ MODEL_NAME_MAP = {
     # genuinely differ).
     "qwen35_122b_a10b": "Qwen/Qwen3.5-122B-A10B",
     "qwen35_122b_a10b_thinking": "Qwen/Qwen3.5-122B-A10B",
+    # Qwen3.5 dense hybrids (thinking OFF by default via the builder's
+    # enable_thinking=False when unset -- see models.txt header; not in
+    # REASONING_MODELS, they transcribe directly).
+    "qwen35_4b": "Qwen/Qwen3.5-4B",
+    "qwen35_9b": "Qwen/Qwen3.5-9B",
+    # Qwen3-235B-A22B-2507: MoE 235B total / 22B active. Non-thinking ONLY by
+    # design (the -2507 Instruct split; there is no <think> turn to suppress), so
+    # the builder default is a no-op and it joins no reasoning set.
+    "qwen3_235b_a22b_2507": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     # Llama
     "llama_8b": "meta-llama/Llama-3.1-8B-Instruct",
     "llama33_70b": "meta-llama/Llama-3.3-70B-Instruct",
+    # Llama-4-Scout: MoE 109B total / 17B active, 16 experts, natively MULTIMODAL
+    # (registered only under image-text-to-text -> ModelWrapper's auto-class probe
+    # loads it with AutoModelForImageTextToText; decoder layers via
+    # language_model.layers). Has a system role, non-reasoning -> no quirk sets.
+    "llama4_scout": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+    # Mistral. Ministral-3-3B is MULTIMODAL (~3.4B LM + 0.4B vision encoder),
+    # like mistral_small_31_24b: registered only under image-text-to-text, chat
+    # template in chat_template.json -- ModelWrapper auto-detects both. Has a
+    # system role, dense, non-reasoning -> no quirk sets.
+    "ministral3_3b": "mistralai/Ministral-3-3B-Instruct-2512",
     # Olmo (AI2, Apache-2.0, fully open). Dense, standard Olmo3ForCausalLM with a
     # system role and no thinking toggle -- the plain -Instruct checkpoint, NOT
     # the -Think sibling -- so it joins none of the quirk sets below.
+    "olmo3_7b": "allenai/Olmo-3-7B-Instruct",
+    # GLM (Z.ai). GLM-4.7-Flash is a reasoning/hybrid whose chat template reads
+    # `enable_thinking`: with it False (the builder default when unset) the
+    # generation prompt ends "<|assistant|></think>" -- the think block is closed
+    # immediately, so the model transcribes directly. Verified 2026-07-22. Hence
+    # NOT in REASONING_MODELS (same treatment as the Gemma4/Qwen3.5 hybrids); has
+    # a system role, so no quirk sets.
+    "glm47_flash": "zai-org/GLM-4.7-Flash",
+    # GLM-4.6V: MoE 106B total / ~12B active, natively MULTIMODAL (vision). HYBRID:
+    # the thinking-off switch is UNVERIFIED for 4.6V (documented only for 4.5V) --
+    # the builder default (enable_thinking=False) is applied, but the smoke run's
+    # compliance MUST be checked before trusting it as non-thinking. Has a system
+    # role. Loaded via AutoModelForImageTextToText (auto-class probe).
+    "glm46v": "zai-org/GLM-4.6V",
+    # Moonshot Kimi-Linear-48B-A3B: MoE 48B total / 3B active with linear attention
+    # (may warn about a missing fla/causal-conv1d fast path and fall back to the
+    # torch impl -- functional, just slower, as seen with Qwen3.5-4B). Plain
+    # -Instruct, system role, non-reasoning -> no quirk sets.
+    "kimi_linear_48b_a3b": "moonshotai/Kimi-Linear-48B-A3B-Instruct",
+    # DeepSeek-V4-Flash: MoE 284B total / 13B active, native BLOCK-WISE FP8
+    # (weight_block_size=[128,128], e4m3, dynamic activation scale) -- transformers
+    # keeps it in FP8 via the finegrained-fp8 kernel with quantization:null, and
+    # the Ministral tensor-mode dequant shim does NOT fire (block_size is not None).
+    # Ships NO Jinja chat template, so builder._chat_wrap falls back to the bare
+    # "User:/Assistant:" scaffold automatically (no BASE_MODELS entry needed).
+    # HYBRID whose thinking toggle lives in DeepSeek's own encoding scripts, not a
+    # template kwarg -- verify the smoke compliance (a stray CoT would tank it).
+    "deepseek_v4_flash": "deepseek-ai/DeepSeek-V4-Flash",
     "olmo31_32b": "allenai/Olmo-3.1-32B-Instruct",
     # Mistral. Dense, non-reasoning, has a system role -> no quirk sets. NOTE the
     # checkpoint is MULTIMODAL (Mistral3ForConditionalGeneration: a vision encoder
@@ -54,6 +102,12 @@ MODEL_NAME_MAP = {
     # layer count is config.text_config.num_hidden_layers (40), not the top level.
     # wrapper.py already falls back to both -- see ModelWrapper.n_layers/_layers.
     "mistral_small_31_24b": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
+    # Mistral-Small-4-119B: MoE 119B total / 6.5B active (NOT a 24B dense model).
+    # HYBRID reasoning: the builder only passes reasoning_effort when set, so its
+    # YAML MUST pin model.reasoning_effort: "none" to suppress the CoT (see
+    # experiments/main/mistral_small_4.yaml and the models.txt header). Has a
+    # system role; non-thinking once effort=none -> no reasoning-set membership.
+    "mistral_small_4": "mistralai/Mistral-Small-4-119B-2603",
     # OpenAI gpt-oss (MoE, harmony chat format, native MXFP4). Two entries map to
     # the SAME weights but pin different harmony `reasoning_effort` levels via
     # their experiment YAMLs; kept as distinct short names so run dirs, concept-
@@ -62,6 +116,9 @@ MODEL_NAME_MAP = {
     # activations -- and thus concept vectors -- genuinely differ).
     "gptoss_120b_low": "openai/gpt-oss-120b",
     "gptoss_120b_high": "openai/gpt-oss-120b",
+    # gpt-oss-20b (MoE, harmony, native MXFP4). Same harmony reasoning path as
+    # the 120b; pinned to low effort via its YAML. -> HARMONY_MODELS below.
+    "gptoss_20b_low": "openai/gpt-oss-20b",
 }
 
 # Capability/quirk sets, all keyed by short name:
@@ -72,7 +129,7 @@ MODEL_NAME_MAP = {
 #   BASE_MODELS             - non-instruct checkpoints lacking a chat template,
 #                             so prompt wrapping falls back to "User:/Assistant:".
 GEMMA_MODELS = {"gemma2_2b", "gemma2_9b", "gemma2_9b_base", "gemma2_27b", "gemma3_270m", "gemma3_27b",
-                "gemma4_31b"}
+                "gemma4_12b", "gemma4_31b"}
 MODELS_WITHOUT_SYSTEM_ROLE = GEMMA_MODELS
 BASE_MODELS = {"gemma2_9b_base"}
 
@@ -90,6 +147,6 @@ BASE_MODELS = {"gemma2_9b_base"}
 #                      (Qwen3-style, enable_thinking=True) — parsed by
 #                      src/utils/think_tags.py:final_answer_span.
 # REASONING_MODELS is their union; add a model to exactly one sub-set.
-HARMONY_MODELS = {"gptoss_120b_low", "gptoss_120b_high"}
+HARMONY_MODELS = {"gptoss_120b_low", "gptoss_120b_high", "gptoss_20b_low"}
 THINK_TAG_MODELS = {"qwen35_122b_a10b_thinking"}
 REASONING_MODELS = HARMONY_MODELS | THINK_TAG_MODELS
