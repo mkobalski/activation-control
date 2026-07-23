@@ -11,3 +11,12 @@ model:
   name: "glm46v"
   config_path: "configs/models/glm46v.yaml"
   quantization: null
+  # Pin the toggle explicitly (template verified to honor it: appends /nothink +
+  # a pre-closed <think></think>); belt-and-suspenders with THINK_TAG_MODELS.
+  enable_thinking: false
+
+experiment:
+  # In THINK_TAG_MODELS now (smoke was 57.6% compliant -> stray CoT suspected):
+  # reasoning models need room for the CoT and the final sentence; the default
+  # 64 would truncate mid-CoT.
+  max_new_tokens: 512

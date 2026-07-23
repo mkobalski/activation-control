@@ -1,0 +1,10 @@
+# gpt-oss-20b (OpenAI) — all three effort variants. NOTE: like the other model
+# files here, this is documentation only — the loader resolves the HF id from
+# MODEL_NAME_MAP (src/models/registry.py) and reads dtype/quantization AND
+# reasoning_effort from the experiment YAML's `model:` block. The
+# low/medium/high split lives in the experiment YAMLs (gptoss_20b_*.yaml) —
+# all three point at the SAME weights.
+model_id: "openai/gpt-oss-20b"
+torch_dtype: "bfloat16"     # MXFP4 experts load natively; non-expert params bf16
+device_map: "auto"
+quantization: null          # native MXFP4 — do NOT add bitsandbytes on top

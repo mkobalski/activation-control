@@ -85,16 +85,23 @@ MODEL_NAME_MAP = {
     # torch impl -- functional, just slower, as seen with Qwen3.5-4B). Plain
     # -Instruct, system role, non-reasoning -> no quirk sets.
     "kimi_linear_48b_a3b": "moonshotai/Kimi-Linear-48B-A3B-Instruct",
-    # DeepSeek-V4-Flash: MoE 284B total / 13B active, native BLOCK-WISE FP8
-    # (weight_block_size=[128,128], e4m3, dynamic activation scale) -- transformers
-    # keeps it in FP8 via the finegrained-fp8 kernel with quantization:null, and
-    # the Ministral tensor-mode dequant shim does NOT fire (block_size is not None).
-    # Ships NO Jinja chat template, so builder._chat_wrap falls back to the bare
-    # "User:/Assistant:" scaffold automatically (no BASE_MODELS entry needed).
-    # HYBRID whose thinking toggle lives in DeepSeek's own encoding scripts, not a
-    # template kwarg -- verify the smoke compliance (a stray CoT would tank it).
-    "deepseek_v4_flash": "deepseek-ai/DeepSeek-V4-Flash",
     "olmo31_32b": "allenai/Olmo-3.1-32B-Instruct",
+    # Olmo 3 7B training snapshots (Experiment C, AblationPlan). Values are LOCAL
+    # paths, not HF ids: each snapshot is downloaded to /ckpts/<name> with
+    # `hf download <repo> [--revision <rev>] --local-dir /ckpts/<name>` and wiped
+    # after its battery run (see scripts/olmo_snapshot_lane.sh + the H100 runbook).
+    # name              repo                            revision
+    # s1_700k           allenai/Olmo-3-1025-7B          stage1-step700000
+    # s1_final          allenai/Olmo-3-1025-7B          stage1-step1413814
+    # base              allenai/Olmo-3-1025-7B          main (post stage2+3)
+    # sft               allenai/Olmo-3-7B-Instruct-SFT  main
+    # dpo               allenai/Olmo-3-7B-Instruct-DPO  main
+    # (final RLVR point = the existing `olmo3_7b` results; no new run.)
+    "olmo3_7b_s1_700k": "/ckpts/olmo3_7b_s1_700k",
+    "olmo3_7b_s1_final": "/ckpts/olmo3_7b_s1_final",
+    "olmo3_7b_base": "/ckpts/olmo3_7b_base",
+    "olmo3_7b_sft": "/ckpts/olmo3_7b_sft",
+    "olmo3_7b_dpo": "/ckpts/olmo3_7b_dpo",
     # Mistral. Dense, non-reasoning, has a system role -> no quirk sets. NOTE the
     # checkpoint is MULTIMODAL (Mistral3ForConditionalGeneration: a vision encoder
     # + projector wrapped around a 24B text model), so unlike every other panel
@@ -115,10 +122,13 @@ MODEL_NAME_MAP = {
     # high as separate points (the effort changes the system prompt, so their
     # activations -- and thus concept vectors -- genuinely differ).
     "gptoss_120b_low": "openai/gpt-oss-120b",
+    "gptoss_120b_medium": "openai/gpt-oss-120b",
     "gptoss_120b_high": "openai/gpt-oss-120b",
     # gpt-oss-20b (MoE, harmony, native MXFP4). Same harmony reasoning path as
     # the 120b; pinned to low effort via its YAML. -> HARMONY_MODELS below.
     "gptoss_20b_low": "openai/gpt-oss-20b",
+    "gptoss_20b_medium": "openai/gpt-oss-20b",
+    "gptoss_20b_high": "openai/gpt-oss-20b",
 }
 
 # Capability/quirk sets, all keyed by short name:
@@ -131,7 +141,11 @@ MODEL_NAME_MAP = {
 GEMMA_MODELS = {"gemma2_2b", "gemma2_9b", "gemma2_9b_base", "gemma2_27b", "gemma3_270m", "gemma3_27b",
                 "gemma4_12b", "gemma4_31b"}
 MODELS_WITHOUT_SYSTEM_ROLE = GEMMA_MODELS
-BASE_MODELS = {"gemma2_9b_base"}
+BASE_MODELS = {"gemma2_9b_base",
+               # Olmo pretraining/base snapshots: no chat template ->
+               # User:/Assistant: fallback + base-model compliance method.
+               # (sft/dpo have chat templates and are NOT base.)
+               "olmo3_7b_s1_700k", "olmo3_7b_s1_final", "olmo3_7b_base"}
 
 #   REASONING_MODELS - checkpoints that emit a chain-of-thought before the final
 #                      answer. Their generated text must be split into reasoning
@@ -147,6 +161,13 @@ BASE_MODELS = {"gemma2_9b_base"}
 #                      (Qwen3-style, enable_thinking=True) — parsed by
 #                      src/utils/think_tags.py:final_answer_span.
 # REASONING_MODELS is their union; add a model to exactly one sub-set.
-HARMONY_MODELS = {"gptoss_120b_low", "gptoss_120b_high", "gptoss_20b_low"}
-THINK_TAG_MODELS = {"qwen35_122b_a10b_thinking"}
+HARMONY_MODELS = {"gptoss_120b_low", "gptoss_120b_medium", "gptoss_120b_high",
+                  "gptoss_20b_low", "gptoss_20b_medium", "gptoss_20b_high"}
+THINK_TAG_MODELS = {"qwen35_122b_a10b_thinking",
+                    # GLM-4.6V: template's enable_thinking=False switch verified
+                    # (renders /nothink + a closed <think></think>), but the 2xB200
+                    # smoke still came back 57.6% compliant -> stray CoT suspected.
+                    # Routed through the think-tag parser, which degrades to
+                    # "everything is final" on trials with no think block.
+                    "glm46v"}
 REASONING_MODELS = HARMONY_MODELS | THINK_TAG_MODELS

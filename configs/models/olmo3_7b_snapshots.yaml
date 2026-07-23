@@ -1,0 +1,14 @@
+# Olmo 3 7B training snapshots (Experiment C) — shared doc file for the five
+# snapshot short names (olmo3_7b_{s1_700k,s1_final,base,sft,dpo}). Like the other
+# files here this is documentation only — the loader resolves each short name to
+# a LOCAL path under /ckpts via MODEL_NAME_MAP (src/models/registry.py, which
+# also documents the repo/revision each path must contain) and reads dtype from
+# the experiment YAML's `model:` block.
+#
+# Olmo3ForCausalLM, 7B dense, bf16 safetensors (~14.6 GB per snapshot). The
+# s1_*/base snapshots have NO chat template -> BASE_MODELS (User:/Assistant:
+# fallback, base compliance method). sft/dpo carry the instruct chat template.
+model_id: "(local path — see MODEL_NAME_MAP)"
+torch_dtype: "bfloat16"
+device_map: "auto"
+quantization: null

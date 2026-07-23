@@ -19,6 +19,51 @@ from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, BitsAn
 
 from src.models.registry import MODEL_NAME_MAP, GEMMA_MODELS
 
+# Compat shim for trust_remote_code checkpoints pinned against transformers 4.x:
+# OutputRecorder/check_model_inputs moved from utils.generic to
+# utils.output_capturing in v5 (Kimi-Linear's modeling file imports the old path).
+try:
+    import transformers.utils.generic as _tf_generic
+    from transformers.utils.output_capturing import OutputRecorder as _OR
+    if not hasattr(_tf_generic, "OutputRecorder"):
+        _tf_generic.OutputRecorder = _OR
+except Exception:
+    pass
+try:
+    # v5 renamed create_causal_mask's `input_embeds` kwarg to `inputs_embeds`;
+    # accept the old spelling. Patched pre-import so remote modules' from-imports
+    # bind the wrapped function.
+    import functools
+    import inspect
+    import transformers.masking_utils as _tf_mu
+    _orig_ccm = _tf_mu.create_causal_mask
+    _ccm_params = set(inspect.signature(_orig_ccm).parameters)
+    @functools.wraps(_orig_ccm)
+    def _ccm_compat(*a, **kw):
+        if "input_embeds" in kw and "inputs_embeds" not in kw:
+            kw["inputs_embeds"] = kw.pop("input_embeds")
+        # v4 callers also pass e.g. cache_position, which v5 derives internally
+        kw = {k: v for k, v in kw.items() if k in _ccm_params}
+        return _orig_ccm(*a, **kw)
+    _tf_mu.create_causal_mask = _ccm_compat
+except Exception:
+    pass
+try:
+    # fla-core 0.5 changed fused_kda_gate from (g, A_log, head_dim, g_bias=...)
+    # to (g, A_log, dt_bias=...); Kimi-Linear's remote code uses the old form.
+    import functools as _ft
+    import fla.ops.kda.gate as _fla_gate
+    _orig_fkg = _fla_gate.fused_kda_gate
+    @_ft.wraps(_orig_fkg)
+    def _fkg_compat(g, A_log, *args, **kw):
+        args = [x for x in args if not isinstance(x, int)]  # drop old head_dim arg
+        if "g_bias" in kw:
+            kw["dt_bias"] = kw.pop("g_bias")
+        return _orig_fkg(g, A_log, *args, **kw)
+    _fla_gate.fused_kda_gate = _fkg_compat
+except Exception:
+    pass
+
 
 class ModelWrapper:
     def __init__(self, model_name: str, device: str = "cuda",
@@ -81,6 +126,7 @@ class ModelWrapper:
                         activation_scheme="static", weight_block_size=None, dequantize=True,
                         modules_to_not_convert=_qc.get("modules_to_not_convert"))
                     load_kwargs.pop("dtype", None)
+                    self._fp8_dequant_requested = True
                     print("[wrapper] FP8 static/tensor-mode checkpoint -> dequantizing to bf16 "
                           "(unsupported by the finegrained-fp8 kernel)")
             except Exception as e:
@@ -95,8 +141,13 @@ class ModelWrapper:
         auto_cls = AutoModelForCausalLM
         try:
             from transformers.models.auto.modeling_auto import MODEL_FOR_CAUSAL_LM_MAPPING_NAMES
-            mt = AutoConfig.from_pretrained(self.hf_path, trust_remote_code=True).model_type
-            if mt not in MODEL_FOR_CAUSAL_LM_MAPPING_NAMES:
+            _cfg = AutoConfig.from_pretrained(self.hf_path, trust_remote_code=True)
+            mt = _cfg.model_type
+            # trust_remote_code text models (e.g. Kimi-Linear) have a model_type
+            # unknown to transformers but ship an auto_map with AutoModelForCausalLM
+            # -- those stay on the causal-LM path.
+            remote_causal = "AutoModelForCausalLM" in (getattr(_cfg, "auto_map", None) or {})
+            if mt not in MODEL_FOR_CAUSAL_LM_MAPPING_NAMES and not remote_causal:
                 from transformers import AutoModelForImageTextToText
                 auto_cls = AutoModelForImageTextToText
                 print(f"[wrapper] {mt} is not a causal-LM architecture; "
@@ -111,9 +162,51 @@ class ModelWrapper:
             load_kwargs["torch_dtype"] = load_kwargs.pop("dtype", dtype)
             self.model = auto_cls.from_pretrained(**load_kwargs)
 
+        # Kimi-Linear's remote code force-overrides the attn implementation to
+        # flash_attention_2; without the flash-attn package transformers falls
+        # back to the kernels-community/flash-attn2 hub kernel, which has no
+        # build for this system (B200). sdpa handles its MLA q/v head-dim
+        # mismatch fine, so flip back post-load.
+        import importlib.util as _ilu
+        if (getattr(self.model.config, "_attn_implementation", None) == "flash_attention_2"
+                and _ilu.find_spec("flash_attn") is None):
+            self.model.config._attn_implementation = "sdpa"
+            print("[wrapper] flash_attention_2 requested but flash-attn is not "
+                  "installed -> overriding to sdpa")
+
         if device != "cuda":
             self.model = self.model.to(device)
         self.model.eval()
+
+        # v5 masking calls Cache.get_mask_sizes(query_length: int, layer_idx);
+        # v4-era remote cache classes (e.g. Kimi-Linear's) expect a cache_position
+        # TENSOR and read .shape[0]. Wrap remote-module implementations to accept
+        # the int form.
+        import sys as _sys, inspect as _insp
+        _mod = _sys.modules.get(type(self.model).__module__)
+        if _mod is not None and "transformers_modules" in type(self.model).__module__:
+            def _wrap_gms(_gms):
+                def _inner(cself, cache_position, layer_idx):
+                    if isinstance(cache_position, int):
+                        cache_position = torch.empty(cache_position)  # only .shape[0] is read
+                    return _gms(cself, cache_position, layer_idx)
+                _inner._v5shim = True
+                return _inner
+            for _cls in vars(_mod).values():
+                if _insp.isclass(_cls) and "get_mask_sizes" in vars(_cls) \
+                        and not getattr(_cls.get_mask_sizes, "_v5shim", False):
+                    _cls.get_mask_sizes = _wrap_gms(_cls.get_mask_sizes)
+                    print(f"[wrapper] patched {_cls.__name__}.get_mask_sizes for v5 int query_length")
+
+        # transformers' dequantize=True path only matches `*.weight`-style keys, so
+        # fused MoE expert tensors (e.g. Mistral-Small-4 `experts.gate_up_proj`)
+        # keep raw FP8 weights while their `*_scale_inv` keys are dropped as
+        # UNEXPECTED -> first grouped_mm raises on the FP8 dtype. Fold the scales
+        # back in from the cached checkpoint shards. ONLY when we asked for
+        # dequantization: kernel-backed FP8 checkpoints (e.g. DeepSeek-V4-Flash's
+        # block-wise FP8) legitimately keep FP8 params and must not be touched.
+        if getattr(self, "_fp8_dequant_requested", False):
+            self._dequantize_leftover_fp8()
 
         self._apply_patches()
         self.n_layers = self._get_n_layers()
@@ -151,6 +244,65 @@ class ModelWrapper:
             self.tokenizer.chat_template = tmpl
             print(f"[wrapper] chat template loaded from chat_template.json "
                   f"({len(tmpl)} chars) — tokenizer shipped none")
+
+    def _dequantize_leftover_fp8(self):
+        """Dequantize any parameter left in FP8 after loading.
+
+        transformers' FP8 ``dequantize=True`` loader only pairs scales with
+        ``*.weight``-suffixed keys. Checkpoints that ship fused MoE expert
+        tensors under other names (``experts.gate_up_proj`` /
+        ``experts.down_proj`` + ``*_scale_inv``, e.g. Mistral-Small-4) come out
+        of load with raw FP8 expert weights and their scales dropped as
+        UNEXPECTED. Recover the scales from the cached checkpoint shards and
+        fold them in (same convention as Fp8Dequantize: ``w * scale_inv``,
+        block grid derived from the scale's shape).
+        """
+        fp8_params = [(n, p) for n, p in self.model.named_parameters()
+                      if p.dtype == torch.float8_e4m3fn]
+        if not fp8_params:
+            return
+        import json as _json
+        from huggingface_hub import hf_hub_download
+        from safetensors import safe_open
+        from transformers.integrations.finegrained_fp8 import Fp8Dequantize
+
+        idx_path = hf_hub_download(self.hf_path, "model.safetensors.index.json",
+                                   local_files_only=True)
+        weight_map = _json.load(open(idx_path))["weight_map"]
+
+        def _tail(name):
+            # param names and checkpoint keys differ in prefix order
+            # (model.language_model.* vs language_model.model.*); match on the
+            # stable suffix starting at "layers.<i>".
+            i = name.find("layers.")
+            return name[i:] if i >= 0 else name
+
+        ckpt_by_tail = {_tail(k): k for k in weight_map}
+        deq = Fp8Dequantize(None)
+        shard_cache = {}
+        n_done = 0
+        for name, p in fp8_params:
+            key = ckpt_by_tail.get(_tail(name))
+            scale_key = None
+            if key is not None:
+                cand = key[:-len(".weight")] + ".weight_scale_inv" \
+                    if key.endswith(".weight") else key + "_scale_inv"
+                if cand in weight_map:
+                    scale_key = cand
+            if scale_key is None:
+                raise RuntimeError(f"[wrapper] FP8 param {name} has no matching "
+                                   f"scale in the checkpoint; cannot dequantize")
+            shard = weight_map[scale_key]
+            if shard not in shard_cache:
+                shard_cache[shard] = hf_hub_download(self.hf_path, shard,
+                                                     local_files_only=True)
+            with safe_open(shard_cache[shard], framework="pt") as f:
+                scale = f.get_tensor(scale_key)
+            p.data = deq._dequantize_one(p.data, scale.to(p.device),
+                                         output_dtype=self.dtype)
+            n_done += 1
+        print(f"[wrapper] dequantized {n_done} leftover FP8 tensors "
+              f"(fused-expert scales recovered from checkpoint)")
 
     @property
     def _input_device(self):

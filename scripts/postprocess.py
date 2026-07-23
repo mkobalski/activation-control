@@ -2,10 +2,11 @@
 """Post-run orchestrator: score a finished run and refresh the cross-model figures.
 
 Runs the standalone steps in sequence -- each remains its own editable script:
-    compute_scores.py  -> SCORES_<model>.json + PROFILES_<model>.json
-    scalar_ci.py       -> SCALAR_CI_<model>.json   (projection)
-    explore.py         -> per-model exploratory figures (MAIN run only)
-    superplot.py       -> cross-model comparison, refreshed from all JSONs
+    compute_scores.py     -> SCORES_<model>.json + PROFILES_<model>.json
+    scalar_ci.py          -> SCALAR_CI_<model>.json   (projection)
+    onset_offset_word.py  -> ONSET_OFFSET_WORD_<model>.json (word-based onset gate)
+    explore.py            -> per-model exploratory figures (MAIN run only)
+    superplot.py          -> cross-model comparison, refreshed from all JSONs
 
 Resolves the model's MAIN + LT runs from results/raw/ and tolerates a missing LT
 (a main-only run still scores; layer_targeting fills in when the LT run lands).
@@ -76,6 +77,8 @@ def main():
     _step(cs, "compute_scores -> SCORES + PROFILES")
     _step([SCRIPTS / "scalar_ci.py", "--main-run", main_run,
            "--channels", "projection", "--json", ci], "scalar_ci -> SCALAR_CI")
+    _step([SCRIPTS / "onset_offset_word.py", "--models", model],
+          "onset_offset_word -> ONSET_OFFSET_WORD")
     _step([SCRIPTS / "explore.py", "--run-dir", main_run], "explore -> per-model figures")
     _step([SCRIPTS / "superplot.py", "--data-root", dr], "superplot -> comparison")
     print("\n[postprocess] done")

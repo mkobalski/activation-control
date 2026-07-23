@@ -15,6 +15,7 @@ Non-compliant trials (generated text doesn't reproduce the target sentence)
 are saved WITH a flag; analysis scripts filter on `is_compliant`.
 """
 
+import re
 import sys
 import time
 import random
@@ -370,8 +371,13 @@ def main():
 
             # For reasoning models `compliance_text` is the final-channel text only
             # (CoT excluded); for others it's the full generation. See alignment above.
+            # Strip special-token markers before scoring: some checkpoints wrap a
+            # verbatim transcription in decorative specials (GLM-4.6V answers as
+            # `<|begin_of_box|>...<|end_of_box|>`), which the whole-text similarity
+            # would wrongly punish. The stored generated_text stays untouched.
+            _compliance_clean = re.sub(r"<\|[^|]{1,32}\|>", "", compliance_text).strip()
             is_compliant, compliance_score = check_compliance(
-                compliance_text, trial["sentence"],
+                _compliance_clean, trial["sentence"],
                 method=config.compliance.method,
                 threshold=config.compliance.threshold,
             )
