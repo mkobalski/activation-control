@@ -46,6 +46,16 @@ MODEL_NAME_MAP = {
     # REASONING_MODELS, they transcribe directly).
     "qwen35_4b": "Qwen/Qwen3.5-4B",
     "qwen35_9b": "Qwen/Qwen3.5-9B",
+    # Qwen3.5-397B-A17B (MoE: 397B total, ~17B active). HYBRID thinking like the
+    # other Qwen3.5 entries: chat_template.jinja closes the think block
+    # ('<think>\n\n</think>') when enable_thinking=false, and the experiment YAML
+    # pins model.enable_thinking: false explicitly (same as qwen35_122b_a10b), so
+    # it transcribes directly and joins NO reasoning set. VLM checkpoint
+    # (image-text-to-text, Qwen3_5MoeForConditionalGeneration) -> ModelWrapper's
+    # auto-class probe loads AutoModelForImageTextToText; decoder layers via
+    # language_model.layers (60 text layers). bf16 ~807 GB. Verified 2026-07-23
+    # at revision 8472618112abcbd45acbcdc58436aff4233c23f7.
+    "qwen35_397b_a17b": "Qwen/Qwen3.5-397B-A17B",
     # Qwen3-235B-A22B-2507: MoE 235B total / 22B active. Non-thinking ONLY by
     # design (the -2507 Instruct split; there is no <think> turn to suppress), so
     # the builder default is a no-op and it joins no reasoning set.

@@ -16,7 +16,7 @@
 #    scripts. builder.py:40 falls back to bare "User:/Assistant:" without one.
 
 # =============================================================================
-# RUN (battery complete: 21 models in the cross-model comparison, +1 excluded)
+# RUN (battery complete: 22 models in the cross-model comparison, +1 excluded)
 # =============================================================================
 
 # --------------------------------------------------------------- small (4-40B)
@@ -45,6 +45,7 @@
 
 # --------------------------------------------------------------- large (>150B)
 # Qwen/Qwen3-235B-A22B-Instruct-2507          # 235B total / 22B active  short name: qwen3_235b_a22b_2507  [TESTED 2026-07-23]  (non-thinking only by design)
+# Qwen/Qwen3.5-397B-A17B                      # 397B total / 17B active  short name: qwen35_397b_a17b  [TESTED 2026-07-23]  (HYBRID: off by default, enable_thinking pinned false in its YAML; ran on 6x B200 via a staged shard-streaming loader -- job disk (~500 GiB) < the 807 GB bf16 checkpoint; smoke 99.88%, main 99.94%, LT 100% compliance)
 
 # ------------------------------------- tested but EXCLUDED from the comparison
 # mistralai/Ministral-3-3B-Instruct-2512      # 3.85B  short name: ministral3_3b  [TESTED 2026-07-22]  (~3.4B LM + 0.4B vision encoder; FP8 static/tensor-mode -> auto-dequant shim in wrapper.py. EXCLUDED from superplot: 43.6% compliance makes the baseline sigma near-degenerate and the d' bootstrap CIs explode)
@@ -61,5 +62,4 @@ deepseek-ai/DeepSeek-V4-Flash                 # 284B total / 13B active  short n
 deepseek-ai/DeepSeek-V3.2                     # 685B total / ~37B active  short name: deepseek_v32  (HYBRID: no Jinja template -- see header)
 zai-org/GLM-5.2                               # ~744B total / ~39B active  short name: glm52  (HYBRID: off by default)
 moonshotai/Kimi-K2.6                          # 1.06T total / 32B active  short name: kimi_k26  (HYBRID: toggle is `thinking`, NOT enable_thinking -- MUST pass thinking=false; builder default does NOT cover it)
-mistralai/Mistral-Large-3-675B-Instruct-2512  # 675B total / 41B active  short name: mistral_large_3
-Qwen/Qwen3.5-397B-A17B                        # 397B total / 17B active  short name: qwen35_397b_a17b  (HYBRID: off by default)
+mistralai/Mistral-Large-3-675B-Instruct-2512  # 675B total / 41B active  short name: mistral_large_3  (BLOCKED 2026-07-23: official FP8/BF16/NVFP4 repos ship params.json + tekken.json only, no config.json -- not transformers-loadable, vLLM-only; same integration-blocker class as DeepSeek V3.2 / Kimi K2.6. A third-party BF16 re-serialization exists but is unverified and lacks tokenizer/template files; not attempted)
