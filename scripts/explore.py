@@ -26,7 +26,6 @@ import argparse
 import sys
 from collections import defaultdict
 from pathlib import Path
-from statistics import NormalDist
 
 import numpy as np
 
@@ -39,7 +38,6 @@ import matplotlib.pyplot as plt                                          # noqa:
 import score_data as sd                                                   # noqa: E402
 import compute_scores as cs                                               # noqa: E402
 
-_PHI_INV = NormalDist().inv_cdf
 FOCAL_LABEL, FOCAL_CONCEPT = "s23", "Bread"
 # Minimum align_sentence_span similarity for a trial to supply the per-token axis
 # labels. 1.0 is an exact transcription; the botched spans seen in practice score
@@ -217,10 +215,6 @@ def _cluster_band(U, sids, cids, n_boot=1000, seed=0):
     return np.nanpercentile(reps, 2.5, axis=0), np.nanpercentile(reps, 97.5, axis=0)
 
 
-def _d_from_auroc(a):
-    return float(np.sqrt(2) * _PHI_INV(min(max(a, 1e-6), 1 - 1e-6)))
-
-
 # ======================================================================================
 # 1. raw_trace_example
 # ======================================================================================
@@ -300,23 +294,39 @@ def engage_suppress(run_dir, out):
 # ======================================================================================
 
 def intensity_gain(run_dir, out):
-    conds = [POS, LEX_HI] + RAMP
-    tab, layers, sids, cids = _unit_table(run_dir, conds)
+    # Same statistic as the battery's gain_lexical/gain_numeric depth profiles
+    # (compute_scores.rows_profiles) and hence Think_Intensity_A3I panel (d):
+    # concept-averaged standardized mean difference (mean_hi - mean_lo) / SD_lo
+    # across sentences, NOT the earlier paired win-rate AUROC (magnitude-blind,
+    # inflated near AUROC 1 -- it disagreed visibly with panel (d) on gemma3_27b).
+    layers, vals, _ = sd.unit_layer_readouts(run_dir, [POS, LEX_HI] + RAMP)
     pcts = fs.depth_pcts(layers, sd.run_n_layers(run_dir))
+    rng = np.random.default_rng(0)
     fig, ax = plt.subplots(figsize=(7, 4.4))
+    n_curves = 0
     for hi_c, lo_c, color, lab in ((LEX_HI, POS, fs.LEX_C, "think → intensely"),
                                    (RAMP[3], RAMP[0], fs.NUM_C, "intensity 1 → 4")):
-        win = (tab[hi_c] > tab[lo_c]).astype(float) + 0.5 * (tab[hi_c] == tab[lo_c])
-        auroc = np.nanmean(win, axis=0)
-        dp = np.array([_d_from_auroc(a) for a in auroc])
-        blo, bhi = _cluster_band(win, sids, cids)
-        ax.plot(pcts, dp, color=color, marker="o", ms=3, lw=1.6, label=lab)
-        ax.fill_between(pcts, [_d_from_auroc(a) for a in blo],
-                        [_d_from_auroc(a) for a in bhi], color=color, alpha=0.15)
+        order = sorted(vals[("proj", lo_c)])
+        blocks, S = cs.per_concept_blocks(vals[("proj", hi_c)], vals[("proj", lo_c)], order)
+        if not blocks:   # no concept with >=3 shared compliant sentences (low-compliance model)
+            print(f"[intensity_gain] no usable concept blocks for '{lab}'; skipping curve")
+            continue
+        n_curves += 1
+        st = cs.dprime_stats(blocks, S, len(layers), rng, n_perm=0)
+        lo = np.nanpercentile(st["bavg"], 2.5, axis=0)
+        hi = np.nanpercentile(st["bavg"], 97.5, axis=0)
+        ax.plot(pcts, st["dp"], color=color, marker="o", ms=3, lw=1.6, label=lab)
+        ax.fill_between(pcts, lo, hi, color=color, alpha=0.15)
     ax.axhline(0, color="#888", lw=0.7)
     ax.set_xlabel("depth (%)")
     ax.set_ylabel(r"endpoint-gain $d'$")
-    ax.set_title("intensity_gain — adjacent-endpoint resolution vs depth")
+    ax.set_title("intensity_gain — endpoint gain vs depth")
+    if not n_curves:
+        # Better no figure than an empty pair of axes (matches the battery, which
+        # also emits no gain profiles for such runs).
+        plt.close(fig)
+        print("[intensity_gain] no curves plottable; figure not written")
+        return None
     ax.legend(frameon=False)
     fig.tight_layout()
     fs.note(fig)
