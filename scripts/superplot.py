@@ -46,6 +46,7 @@ MODELS = [("gemma2_9b", "Gemma", 9), ("gemma4_12b", "Gemma", 12), ("gemma3_27b",
           ("gemma4_31b", "Gemma", 31),
           ("qwen35_4b", "Qwen", 4), ("qwen35_9b", "Qwen", 9), ("qwen36_27b", "Qwen", 27),
           ("qwen_72b", "Qwen", 72), ("qwen35_122b_a10b", "Qwen", 122),
+          ("qwen3_235b_a22b_2507", "Qwen", 235),
           ("llama_8b", "Llama", 8), ("llama33_70b", "Llama", 70),
           ("llama4_scout", "Llama", 109),
           ("gptoss_20b_low", "GPT-OSS", 20), ("gptoss_120b_low", "GPT-OSS", 120),
@@ -61,6 +62,7 @@ DETAIL = {"gemma2_9b": "Gemma 2 9B", "gemma4_12b": "Gemma 4 12B", "gemma3_27b": 
           "gemma4_31b": "Gemma 4 31B",
           "qwen35_4b": "Qwen 3.5 4B", "qwen35_9b": "Qwen 3.5 9B", "qwen36_27b": "Qwen 3.6 27B",
           "qwen_72b": "Qwen 2.5 72B", "qwen35_122b_a10b": "Qwen 3.5 122B",
+          "qwen3_235b_a22b_2507": "Qwen 3 235B",
           "llama_8b": "Llama 3.1 8B", "llama33_70b": "Llama 3.3 70B",
           "llama4_scout": "Llama 4 Scout 109B",
           "gptoss_20b_low": "GPT-OSS 20B", "gptoss_120b_low": "GPT-OSS 120B",
@@ -177,6 +179,7 @@ def _bar_row(ax, bars, order, pos, colors, getter, ylab):
 
 def render(bars, rows, out, channel, title):
     """Render one stacked bar-grid (one row per (key, label) in `rows`) to `out`."""
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
     pos, colors, labels, order, fam_pos = _layout(bars)
     n = len(rows)
     fig, axes = plt.subplots(n, 1, figsize=(7.4, 1.35 * n), sharex=True, squeeze=False)
