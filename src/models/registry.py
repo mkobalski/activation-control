@@ -46,10 +46,27 @@ MODEL_NAME_MAP = {
     # REASONING_MODELS, they transcribe directly).
     "qwen35_4b": "Qwen/Qwen3.5-4B",
     "qwen35_9b": "Qwen/Qwen3.5-9B",
+    # Qwen3.5-397B-A17B (MoE: 397B total, ~17B active). HYBRID thinking like the
+    # other Qwen3.5 entries: chat_template.jinja closes the think block
+    # ('<think>\n\n</think>') when enable_thinking=false, and the experiment YAML
+    # pins model.enable_thinking: false explicitly (same as qwen35_122b_a10b), so
+    # it transcribes directly and joins NO reasoning set. VLM checkpoint
+    # (image-text-to-text, Qwen3_5MoeForConditionalGeneration) -> ModelWrapper's
+    # auto-class probe loads AutoModelForImageTextToText; decoder layers via
+    # language_model.layers (60 text layers). bf16 ~807 GB. Verified 2026-07-23
+    # at revision 8472618112abcbd45acbcdc58436aff4233c23f7.
+    "qwen35_397b_a17b": "Qwen/Qwen3.5-397B-A17B",
     # Qwen3-235B-A22B-2507: MoE 235B total / 22B active. Non-thinking ONLY by
     # design (the -2507 Instruct split; there is no <think> turn to suppress), so
     # the builder default is a no-op and it joins no reasoning set.
     "qwen3_235b_a22b_2507": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    # Qwen3-Coder-480B: MoE 480B total / 35B active, 160 experts, 62 text layers
+    # -- the coding-specialist sibling of qwen3_235b_a22b_2507 (same
+    # Qwen3MoeForCausalLM class). Non-thinking BY DESIGN: the chat template has
+    # no think handling at all (verified render 2026-07-23), so the builder
+    # default is a no-op and it joins no reasoning set. bf16 ~960 GB. Verified
+    # 2026-07-23 at revision 9d90cf8fca1bf7b7acca42d3fc9ae694a2194069.
+    "qwen3_coder_480b": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
     # Llama
     "llama_8b": "meta-llama/Llama-3.1-8B-Instruct",
     "llama33_70b": "meta-llama/Llama-3.3-70B-Instruct",
@@ -58,6 +75,15 @@ MODEL_NAME_MAP = {
     # loads it with AutoModelForImageTextToText; decoder layers via
     # language_model.layers). Has a system role, non-reasoning -> no quirk sets.
     "llama4_scout": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+    # Llama-4-Maverick: MoE 400B total / 17B active, 128 experts (vs Scout's 16),
+    # natively MULTIMODAL with the same handling as Scout (registered only under
+    # image-text-to-text -> ModelWrapper's auto-class probe loads
+    # AutoModelForImageTextToText; decoder layers via language_model.layers,
+    # 48 text layers). GATED repo: the Meta license must be accepted on HF before
+    # the checkpoint downloads (403 otherwise). Has a system role, non-reasoning
+    # -> no quirk sets. bf16 ~803 GB. Verified 2026-07-23 at revision
+    # 73d14711bcc77c16df3470856949c3764056b617.
+    "llama4_maverick": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
     # Mistral. Ministral-3-3B is MULTIMODAL (~3.4B LM + 0.4B vision encoder),
     # like mistral_small_31_24b: registered only under image-text-to-text, chat
     # template in chat_template.json -- ModelWrapper auto-detects both. Has a
@@ -80,6 +106,17 @@ MODEL_NAME_MAP = {
     # compliance MUST be checked before trusting it as non-thinking. Has a system
     # role. Loaded via AutoModelForImageTextToText (auto-class probe).
     "glm46v": "zai-org/GLM-4.6V",
+    # GLM-5.2, OFFICIAL FP8 repo: MoE ~745B total / ~39B active with MLA + DSA
+    # sparse attention (GlmMoeDsaForCausalLM; 78 text layers -- index 78 is the
+    # MTP head, skipped at load like stock does). HYBRID: with
+    # enable_thinking=false the template renders '<|assistant|><think></think>'
+    # (a closed think block, verified 2026-07-23 in render and behaviorally),
+    # pinned false in its experiment YAML -> NOT in REASONING_MODELS. The FP8
+    # checkpoint (block-wise e4m3, 755.6 GB) is used because the bf16 repo
+    # (zai-org/GLM-5.2, 1.51 TB) does not fit one 8-GPU node; mind the precision
+    # difference vs the bf16 panel. Has a system role. Verified 2026-07-23 at
+    # revision ba978f7d347eaf65d22f1a86833408afdb953541.
+    "glm52": "zai-org/GLM-5.2-FP8",
     # Moonshot Kimi-Linear-48B-A3B: MoE 48B total / 3B active with linear attention
     # (may warn about a missing fla/causal-conv1d fast path and fall back to the
     # torch impl -- functional, just slower, as seen with Qwen3.5-4B). Plain

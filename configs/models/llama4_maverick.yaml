@@ -1,0 +1,11 @@
+model_id: "meta-llama/Llama-4-Maverick-17B-128E-Instruct"  # revision 73d14711bcc77c16df3470856949c3764056b617 verified 2026-07-23
+torch_dtype: "bfloat16"              # MoE 400B total / ~17B active, 128 experts; 803.2 GB at bf16 (text-only causal path)
+device_map: "auto"                   # 8x B200 (6x fits the weights but leaves one device at 0.8% free at batch-24 peaks)
+quantization: null
+# NOTE: doc-only, like the other configs/models/*.yaml — nothing loads this file.
+# The real HF id comes from MODEL_NAME_MAP (src/models/registry.py); dtype/
+# quantization/enable_thinking are read from the experiment YAML's model: block.
+# GATED repo: accept the Meta license on HF before the run (403 otherwise).
+# Multimodal checkpoint (same handling as llama4_scout): loaded via
+# AutoModelForImageTextToText, decoder layers via language_model.layers
+# (48 text layers). Non-reasoning; transcribes directly.

@@ -1,0 +1,15 @@
+# MAIN experiment on Qwen3-Coder-480B-A35B-Instruct (Qwen). MoE 480B total /
+# ~35B active, 160 experts -- the coding-specialist sibling of
+# qwen3_235b_a22b_2507 (same Qwen3MoeForCausalLM class; 62 text layers, the
+# 20-fraction sweep resolves to 20 distinct depths). NON-THINKING BY DESIGN:
+# the chat template has no think handling at all (verified render 2026-07-23),
+# so the builder default is a no-op and it transcribes directly; NOT in
+# REASONING_MODELS. bf16 ~960 GB -> 8x B200 (6x fits the weights but not the
+# ~30 GB fused-expert conversion transient at load). Inherits everything from
+# config.yaml.
+extends: config.yaml
+
+model:
+  name: "qwen3_coder_480b"
+  config_path: "configs/models/qwen3_coder_480b.yaml"
+  quantization: null

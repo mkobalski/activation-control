@@ -1,0 +1,14 @@
+model_id: "zai-org/GLM-5.2-FP8"      # revision ba978f7d347eaf65d22f1a86833408afdb953541 verified 2026-07-23
+torch_dtype: null                    # OFFICIAL pre-quantized FP8 (block-wise e4m3, weight_block_size [128,128]); 755.6 GB
+device_map: "auto"                   # 6x B200 (~66% weights); MLA keeps the KV cache small
+quantization: null                   # nothing to quantize at runtime -- the checkpoint ships FP8 (transformers' FineGrainedFP8 path)
+# NOTE: doc-only, like the other configs/models/*.yaml — nothing loads this file.
+# The real HF id comes from MODEL_NAME_MAP (src/models/registry.py); dtype/
+# quantization/enable_thinking are read from the experiment YAML's model: block.
+# The FP8 repo is used because the bf16 repo (zai-org/GLM-5.2, 1.51 TB) does not
+# fit one 8-GPU node; every other panel model except native-MXFP4 gpt-oss runs
+# bf16, so mind the precision difference when comparing across the panel.
+# Non-thinking mode: the experiment YAML pins enable_thinking: false, which
+# renders '<|assistant|><think></think>' (a closed think block, verified
+# 2026-07-23 in render and behaviorally); the default template would instead
+# render 'Reasoning Effort: Max' + an OPEN <think>.

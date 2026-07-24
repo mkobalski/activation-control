@@ -46,13 +46,14 @@ MODELS = [("gemma2_9b", "Gemma", 9), ("gemma4_12b", "Gemma", 12), ("gemma3_27b",
           ("gemma4_31b", "Gemma", 31),
           ("qwen35_4b", "Qwen", 4), ("qwen35_9b", "Qwen", 9), ("qwen36_27b", "Qwen", 27),
           ("qwen_72b", "Qwen", 72), ("qwen35_122b_a10b", "Qwen", 122),
-          ("qwen3_235b_a22b_2507", "Qwen", 235),
+          ("qwen3_235b_a22b_2507", "Qwen", 235), ("qwen35_397b_a17b", "Qwen", 397),
+          ("qwen3_coder_480b", "Qwen", 480),
           ("llama_8b", "Llama", 8), ("llama33_70b", "Llama", 70),
-          ("llama4_scout", "Llama", 109),
+          ("llama4_scout", "Llama", 109), ("llama4_maverick", "Llama", 400),
           ("gptoss_20b_low", "GPT-OSS", 20), ("gptoss_120b_low", "GPT-OSS", 120),
           ("olmo3_7b", "Olmo", 7), ("olmo31_32b", "Olmo", 32),
           ("mistral_small_31_24b", "Mistral", 24), ("mistral_small_4", "Mistral", 119),
-          ("glm47_flash", "GLM", 31), ("glm46v", "GLM", 106)]
+          ("glm47_flash", "GLM", 31), ("glm46v", "GLM", 106), ("glm52", "GLM", 745)]
 # ministral3_3b (Ministral 3 3B) is intentionally OMITTED: at 43.6% compliance its
 # across-sentence baseline σ is near-degenerate, so the Engage/Coverage d′ bootstrap
 # CIs explode (~1e12) and dominate those rows' axes. Left out of the comparison like
@@ -62,14 +63,16 @@ DETAIL = {"gemma2_9b": "Gemma 2 9B", "gemma4_12b": "Gemma 4 12B", "gemma3_27b": 
           "gemma4_31b": "Gemma 4 31B",
           "qwen35_4b": "Qwen 3.5 4B", "qwen35_9b": "Qwen 3.5 9B", "qwen36_27b": "Qwen 3.6 27B",
           "qwen_72b": "Qwen 2.5 72B", "qwen35_122b_a10b": "Qwen 3.5 122B",
-          "qwen3_235b_a22b_2507": "Qwen 3 235B",
+          "qwen3_235b_a22b_2507": "Qwen 3 235B", "qwen35_397b_a17b": "Qwen 3.5 397B",
+          "qwen3_coder_480b": "Qwen 3 Coder 480B",
           "llama_8b": "Llama 3.1 8B", "llama33_70b": "Llama 3.3 70B",
-          "llama4_scout": "Llama 4 Scout 109B",
+          "llama4_scout": "Llama 4 Scout 109B", "llama4_maverick": "Llama 4 Maverick 400B",
           "gptoss_20b_low": "GPT-OSS 20B", "gptoss_120b_low": "GPT-OSS 120B",
           "olmo3_7b": "Olmo 3 7B", "olmo31_32b": "Olmo 3.1 32B",
           "mistral_small_31_24b": "Mistral Small 3.1 24B",
           "mistral_small_4": "Mistral Small 4 119B",
-          "glm47_flash": "GLM 4.7 Flash 31B", "glm46v": "GLM 4.6V 106B"}
+          "glm47_flash": "GLM 4.7 Flash 31B", "glm46v": "GLM 4.6V 106B",
+          "glm52": "GLM 5.2 745B (FP8)"}
 
 # (SCORES key, row label). Three figures, kept apart on purpose:
 #  - MAIN_ROWS: every measure that FEEDS the scalar S (as of 2026-07-23 this includes
@@ -99,13 +102,23 @@ DEGENERATE_ROWS = [("onset_offset_error", "Onset/offset  ($\\downarrow$)"),
 SCALAR_ROW = ("scalar", r"Controllability  $S$")
 
 
+def _panel_file(root, name, fname):
+    """Locate a per-model JSON either flat in `root` (the results/ layout) or in
+    `root/<name>/` (the tracked results-panel/ layout, one directory per model).
+    Returns the first existing path, else None."""
+    for cand in (root / fname, root / name / fname):
+        if cand.exists():
+            return cand
+    return None
+
+
 def load_bars(data_root, channel="proj"):
     """{model: {metric: (score,lo,hi) or None, 'scalar': (S,lo,hi), fam, size}}."""
     root = Path(data_root)
     bars = {}
     for name, fam, size in MODELS:
-        sp = root / f"SCORES_{name}.json"
-        if not sp.exists():
+        sp = _panel_file(root, name, f"SCORES_{name}.json")
+        if sp is None:
             continue
         meas = json.load(open(sp))["measures"]
         row = {"fam": fam, "size": size}
@@ -117,8 +130,8 @@ def load_bars(data_root, channel="proj"):
         # (ONSET_OFFSET_WORD_<model>.json), not the frozen 4th-TOKEN value in SCORES.
         # The onset gate is scored against the actual 4th-WORD boundary; offset gate
         # unchanged. See README / METRICS (2026-07-22). Falls back to SCORES if absent.
-        wp = root / f"ONSET_OFFSET_WORD_{name}.json"
-        if wp.exists():
+        wp = _panel_file(root, name, f"ONSET_OFFSET_WORD_{name}.json")
+        if wp is not None:
             wc = (json.load(open(wp)).get("channels", {}) or {}).get(channel)
             if wc and wc.get("score") is not None:
                 row["onset_offset_error"] = (wc.get("score"), wc.get("lo"), wc.get("hi"))
@@ -129,8 +142,8 @@ def load_bars(data_root, channel="proj"):
                                 if e and e.get("mean") is not None else None)
             else:
                 row["onset_offset_error"] = row["oo_onset"] = row["oo_offset"] = None
-        cp = root / f"SCALAR_CI_{name}.json"
-        if cp.exists():
+        cp = _panel_file(root, name, f"SCALAR_CI_{name}.json")
+        if cp is not None:
             d = json.load(open(cp))
             row["scalar"] = (d.get("scalar"), d.get("ci_lo"), d.get("ci_hi"))
         else:

@@ -1,0 +1,20 @@
+# MAIN experiment on GLM-5.2 (Z.ai), OFFICIAL FP8 checkpoint. MoE ~745B total /
+# ~39B active with MLA + DSA sparse attention (GlmMoeDsaForCausalLM; 78 text
+# layers -- index 78 is the MTP head, skipped at load like stock; the
+# 20-fraction sweep resolves to 20 distinct depths). HYBRID reasoning: with
+# enable_thinking=false the template renders '<|assistant|><think></think>'
+# (a closed think block, verified 2026-07-23 in render and behaviorally --
+# production compliance 99.9% with zero think tags), so the model transcribes
+# directly and is NOT in REASONING_MODELS. The FP8 repo (755.6 GB, block-wise
+# e4m3) is used because the bf16 repo (zai-org/GLM-5.2, 1.51 TB) does not fit
+# one 8-GPU node; mind the precision difference vs the bf16 panel. 6x B200.
+# Inherits everything from config.yaml.
+extends: config.yaml
+
+model:
+  name: "glm52"
+  config_path: "configs/models/glm52.yaml"
+  quantization: null
+  # Pin the toggle explicitly (same belt-and-suspenders as glm46v); the default
+  # template otherwise renders 'Reasoning Effort: Max' + an OPEN <think>.
+  enable_thinking: false

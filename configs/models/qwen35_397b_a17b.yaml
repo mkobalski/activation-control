@@ -1,0 +1,10 @@
+model_id: "Qwen/Qwen3.5-397B-A17B"   # revision 8472618112abcbd45acbcdc58436aff4233c23f7 verified 2026-07-23
+torch_dtype: "bfloat16"              # MoE 397B total / ~17B active; 806.8 GB at bf16 (safetensors index)
+device_map: "auto"                   # 6x B200 (~1.1 TB) leaves ~26% free after load
+quantization: null
+# NOTE: doc-only, like the other configs/models/*.yaml — nothing loads this file.
+# The real HF id comes from MODEL_NAME_MAP (src/models/registry.py); dtype/
+# quantization/enable_thinking are read from the experiment YAML's model: block.
+# Non-thinking mode: the experiment YAML pins enable_thinking: false, so the chat
+# template renders a closed <think></think> block and the model transcribes
+# directly with no reasoning turn.

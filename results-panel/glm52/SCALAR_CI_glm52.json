@@ -1,0 +1,56 @@
+{
+  "model": "glm52",
+  "main_run": "/tmp/actctrl-scoring-43h6tadg/results/raw/20260724_015723_glm52_activation_control",
+  "channel_set": "projection",
+  "channels": [
+    "proj"
+  ],
+  "link": "linear",
+  "d_ref": {
+    "engage": 8.0,
+    "suppress": 1.0,
+    "dial_resolution": 3.0,
+    "temporal_control": 5.0,
+    "coverage": 1.5
+  },
+  "scalar": 0.6248647199470361,
+  "ci_lo": 0.4993986556332005,
+  "ci_hi": 0.7027666584800177,
+  "n_boot": 2000,
+  "seed": 0,
+  "n_sentences": 50,
+  "n_concepts": 10,
+  "dropped_replicates": 0,
+  "components": {
+    "engage|proj": {
+      "obs": 7.112080915548515,
+      "p_obs": 0.9445050572217821,
+      "lo": 6.523090254723186,
+      "hi": 8.946877295385624
+    },
+    "coverage|proj": {
+      "obs": 1.3479504720073099,
+      "p_obs": 0.9493168240024366,
+      "lo": 0.6493593025966161,
+      "hi": 1.800772060780661
+    },
+    "dial_rank|proj": {
+      "obs": 0.498,
+      "p_obs": 0.749,
+      "lo": 0.3359900000000001,
+      "hi": 0.6440100000000002
+    },
+    "dial_resolution|proj": {
+      "obs": 0.6247355966801027,
+      "p_obs": 0.6041225994466838,
+      "lo": 0.38023298093778357,
+      "hi": 0.8895742950327054
+    },
+    "temporal_control|proj": {
+      "obs": 3.7239607280764275,
+      "p_obs": 0.8723960728076428,
+      "lo": 3.182522037439405,
+      "hi": 4.328546044390231
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "model": "qwen3_coder_480b",
+  "main_run": "/tmp/actctrl-scoring-rfpct0d2/results/raw/20260723_225436_qwen3_coder_480b_activation_control",
+  "channel_set": "projection",
+  "channels": [
+    "proj"
+  ],
+  "link": "linear",
+  "d_ref": {
+    "engage": 8.0,
+    "suppress": 1.0,
+    "dial_resolution": 3.0,
+    "temporal_control": 5.0,
+    "coverage": 1.5
+  },
+  "scalar": 0.8311392982864418,
+  "ci_lo": 0.7390882556889223,
+  "ci_hi": 0.9086543906661538,
+  "n_boot": 2000,
+  "seed": 0,
+  "n_sentences": 50,
+  "n_concepts": 10,
+  "dropped_replicates": 0,
+  "components": {
+    "engage|proj": {
+      "obs": 10.928645749501083,
+      "p_obs": 0.999999,
+      "lo": 9.25211431533233,
+      "hi": 2672596740728.168
+    },
+    "coverage|proj": {
+      "obs": 2.336810303175883,
+      "p_obs": 0.999999,
+      "lo": 1.563690048535349,
+      "hi": 3.3967837558751572
+    },
+    "dial_rank|proj": {
+      "obs": 0.7845,
+      "p_obs": 0.89225,
+      "lo": 0.6213576888034015,
+      "hi": 0.9138321605239326
+    },
+    "dial_resolution|proj": {
+      "obs": 1.3410233008849095,
+      "p_obs": 0.7235038834808183,
+      "lo": 0.855384912360891,
+      "hi": 1.9832545523140106
+    },
+    "temporal_control|proj": {
+      "obs": 4.966218006479512,
+      "p_obs": 0.9966218006479511,
+      "lo": 4.409185190889984,
+      "hi": 5.444560254117636
+    }
+  }
+}
