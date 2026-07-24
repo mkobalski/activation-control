@@ -70,20 +70,23 @@ DETAIL = {"gemma2_9b": "Gemma 2 9B", "gemma4_12b": "Gemma 4 12B", "gemma3_27b": 
           "glm47_flash": "GLM 4.7 Flash 31B", "glm46v": "GLM 4.6V 106B"}
 
 # (SCORES key, row label). Three figures, kept apart on purpose:
-#  - MAIN_ROWS: the ↑-is-better measures that feed the scalar; the S row is appended
-#    when rendering -> model_comparison.png
-#  - NULL_ROWS: suppress/rebound and layer_targeting (a designed null ≈ 0), which
-#    don't share the others' "higher = better, ~0 = chance" reading
+#  - MAIN_ROWS: every measure that FEEDS the scalar S (as of 2026-07-23 this includes
+#    suppress and layer_targeting, folded back in); the S row is appended when
+#    rendering -> model_comparison.png. suppress is shown at its raw signed d' (a
+#    below-baseline outlier and rebounders read directly); layer_targeting ≈ 0.
+#  - NULL_ROWS: token_group -- the one measure still EXCLUDED from S (near-universal
+#    failure: models cannot steer the concept onto a target token type)
 #    -> null_measures_model_comparison.png
 #  - DEGENERATE_ROWS: the word-based onset/offset error (combined aggregate + the
 #    separate signed onset & offset edges) -> degenerate_measures_model_comparison.png
 MAIN_ROWS = [("engage", "Engage  $d'$"),
+             ("suppress", "Suppress  $d'$"),
              ("dial_rank", r"Dial rank  $\rho$"),
              ("dial_resolution", "Dial resolution  $d'$"),
              ("temporal_control", "Temporal control"),
-             ("coverage", "Coverage  $d'$")]
-NULL_ROWS = [("suppress", "Suppress / rebound  $d'$"),
+             ("coverage", "Coverage  $d'$"),
              ("layer_targeting", r"Layer targeting  ($\approx$0)")]
+NULL_ROWS = [("token_group", r"Token group  ($\approx$0)")]
 # DEGENERATE_ROWS -> its own figure (degenerate_measures_model_comparison.png): the
 # word-based onset/offset error. Row 1 = combined aggregate (↓-is-better, no CI);
 # rows 2-3 = the SIGNED per-edge errors (0 = on-time) with their per-edge CIs, which

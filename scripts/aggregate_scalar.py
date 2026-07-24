@@ -3,10 +3,17 @@
 
 Method (agreed 2026-07-14; full rationale in results/paper/SCALAR.md):
 
-  1. Keep six measures (drop Layer targeting = designed null, Token group =
-     near-universal failure): engage, suppress, dial_rank, dial_resolution,
-     temporal_control, coverage. Both readout channels (cos, relnorm) are kept
-     as SEPARATE components (coverage is cos-only).
+  1. Keep seven measures (drop Token group = near-universal failure, and
+     onset/offset = coarse ↓-error): engage, suppress, dial_rank,
+     dial_resolution, temporal_control, coverage, layer_targeting. Both readout
+     channels (cos, relnorm) are kept as SEPARATE components (coverage is
+     cos-only). suppress and layer_targeting were folded back in on 2026-07-23
+     (mentor sign-off): the point of the score is to show control is IMPERFECT,
+     so an axis models mostly fail (suppress below baseline; layer targeting, a
+     designed null) belongs in it and drags the composite down. The conjunctive
+     geometric mean keeps a lone large suppress outlier from being rescued by one
+     strong axis, and suppress's D_REF is set high enough (3) that the outlier
+     does not saturate to full credit.
 
   2. Map each (measure, channel) score to a probability p in [0,1] where
      0.5 = "no effect / chance", via a measure-appropriate, pre-registered link:
@@ -67,17 +74,20 @@ _PHI = NormalDist().cdf
 _SQRT2 = math.sqrt(2.0)
 _EPS = 1e-6
 
-# The FIVE kept measures, in report order. Excluded from S by design and reported
-# as diagnostics only: layer_targeting (designed null), onset_offset_error (coarse
-# ↓-error), token_group (near-universal failure), and -- as of 2026-07-17 --
-# SUPPRESS: it measures `dont_think_about − no_instruction`, but no_instruction is
-# already the concept's resting floor, so there is essentially nothing to suppress
-# below it; the only signal is the white-bear rebound (wrong-way), which makes it a
-# rebound diagnostic, not a control capability. (A proper suppression task -- suppress
-# from an ELEVATED baseline -- would need new runs; deferred.)
-KEPT_MEASURES = ["engage", "dial_rank", "dial_resolution", "temporal_control", "coverage"]
+# The SEVEN kept measures, in report order. suppress measures
+# `dont_think_about − no_instruction`: no_instruction is already the concept's
+# resting floor, so success is bounded and most models sit near chance -- which is
+# exactly why it belongs in S (it shows models cannot suppress on command) rather
+# than being hidden as a diagnostic; the white-bear rebound (wrong-way) reads as
+# p < 0.5 and penalizes. layer_targeting is a designed null (~0 for every model),
+# folded in as a near-uniform drag. Excluded from S by design and reported as
+# diagnostics only: onset_offset_error (coarse ↓-error) and token_group
+# (near-universal failure).
+KEPT_MEASURES = ["engage", "suppress", "dial_rank", "dial_resolution",
+                 "temporal_control", "coverage", "layer_targeting"]
 SHORT = {"engage": "enga", "suppress": "supp", "dial_rank": "rank",
-         "dial_resolution": "res", "temporal_control": "temp", "coverage": "cove"}
+         "dial_resolution": "res", "temporal_control": "temp", "coverage": "cove",
+         "layer_targeting": "layr"}
 # Selectable channel sets. 'projection' (default) collapses the single proj
 # readout -> each measure is one component at full 1/N weight; 'legacy' is the
 # original two-channel (cos, relnorm) scalar; 'all' keeps all three.
@@ -100,11 +110,18 @@ CHANNEL_SETS = {"projection": ("proj",),
 # GPT-OSS), projection channel. Rationale (Engage/Temporal = "magnitude" reading of
 # control, i.e. a bigger commanded push counts, capped below runaway/sigma-inflated
 # values; the rest anchored on d'~3 = "reliably separable" given each axis's headroom):
-#   engage 8, suppress 1.0, dial_resolution 3, temporal_control 5, coverage 1.5.
+#   engage 8, suppress 3.0, dial_resolution 3, temporal_control 5, coverage 1.5,
+#   layer_targeting 5.0.
+# suppress raised 1.0->3.0 on 2026-07-23: at 1.0 any suppress d' >= 1 saturated to
+# full credit, so the lone below-baseline outlier (Gemma 4 31B, d'~1.45, wide CI)
+# earned MORE credit than the honest ~0.5 suppressors; 3.0 keeps it off the ceiling
+# and preserves the informative ordering. layer_targeting shares temporal's
+# standardized-contrast scale (5.0); since every model scores ~0 there, its p ~ 0.5
+# for all -> a uniform drag that does not reorder models.
 # These are the metric's calibration constants ("the whole ballgame") -- REVISIT and
 # re-run all models if the panel grows or the notion of "perfect" per axis changes.
-D_REF = {"engage": 8.0, "suppress": 1.0, "dial_resolution": 3.0,
-         "temporal_control": 5.0, "coverage": 1.5}
+D_REF = {"engage": 8.0, "suppress": 3.0, "dial_resolution": 3.0,
+         "temporal_control": 5.0, "coverage": 1.5, "layer_targeting": 5.0}
 LINKS = ("linear", "phi")
 
 
@@ -207,8 +224,8 @@ def main():
     print("=" * 96)
     print("p in [0,1], 0.5 = chance; S in [0,1], 0 = at-chance/no control, 1 = perfect.")
     print("Kept: " + ", ".join(KEPT_MEASURES) + ".")
-    print("Excluded (diagnostics): suppress (rebound), layer_targeting (null), "
-          "onset_offset_error (coarse), token_group (near-universal failure).")
+    print("Excluded (diagnostics): onset_offset_error (coarse ↓-error), "
+          "token_group (near-universal failure).")
 
     if args.json:
         with open(args.json, "w") as f:

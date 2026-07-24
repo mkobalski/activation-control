@@ -4,10 +4,14 @@
 The per-measure CIs in SCORES_<model>.json are drawn INDEPENDENTLY, so they
 cannot be combined component-wise into an interval for S (that would ignore the
 covariance between measures). This module draws ONE two-way cluster resample of
-the shared (sentence x concept) population per replicate, recomputes ALL six kept
+the shared (sentence x concept) population per replicate, recomputes ALL kept
 measures on that same resample, aggregates them into S exactly as
 scripts/aggregate_scalar.py does, and reports the 2.5/97.5 percentiles of the
-resulting S distribution.
+resulting S distribution. The kept set is agg.KEPT_MEASURES (as of 2026-07-23:
+engage, suppress, dial_rank, dial_resolution, temporal_control, coverage,
+layer_targeting). suppress reuses the engage dprime kernel; layer_targeting needs
+the LT (layer-sweep) run and is recomputed with the same twoway kernel as
+temporal_control -- pass --lt-run (auto-discovered as the sibling *_lt run).
 
 How the single resample is shared. Every measure reuses the *frozen* bootstrap
 kernels in compute_scores.py (dprime_stats for engage/suppress/coverage, twoway
@@ -135,6 +139,15 @@ def _dial_units(run):
             for ch in ("cos", "relnorm", "proj")}
 
 
+def _layer_targeting_block(lt_run, main_run):
+    """{ch: (D, sid, cid)} standardized column-demeaned diagonal-contrast units for
+    layer targeting -- the same features compute_scores.row_9 scores. Needs the LT
+    run (the layer-sweep); raises if it has no usable think_at_layer data."""
+    data = sd.layer_targeting_units(lt_run, main_run)
+    return {ch: (D, np.asarray(sid), np.asarray(cid))
+            for ch, (D, sid, cid, _layers_lt) in data.items()}
+
+
 def _temporal_blocks(run):
     """s_block[ch][cond] = (su, sids, cids) for the temporal conds (copied
     standardized-contrast construction from compute_scores.rows_targeting)."""
@@ -186,10 +199,14 @@ def _temp_stat(ms):
     return float(np.nanmean([m[0] for m in ms]))
 
 
+def _layer_stat(ms):                                     # mean diagonal contrast over target layers
+    return float(np.nanmean(ms[0]))
+
+
 COVERAGE_CH = ("cos", "proj")     # coverage exists only on these channels
 
 
-def joint_bootstrap(run, *, channels, n_boot=2000, seed=0):
+def joint_bootstrap(run, *, channels, n_boot=2000, seed=0, lt_run=None):
     """Return (S_obs, S_lo, S_hi, detail) for the given channel set. detail
     carries per-component observed scores and marginal CIs for validation against
     the JSON. Weights follow the measure-equal / split-within scheme of
@@ -201,6 +218,19 @@ def joint_bootstrap(run, *, channels, n_boot=2000, seed=0):
     valsCov, basesCov = sd.pos_category_readouts(run, [POS])
     dial = _dial_units(run)
     temporal = _temporal_blocks(run)
+    # layer targeting (a kept measure as of 2026-07-23): needs the LT run. Absent
+    # LT data we skip the component -- and warn, because dropping it silently would
+    # make S_obs disagree with aggregate_scalar's JSON-based value.
+    layer = None
+    if "layer_targeting" in agg.KEPT_MEASURES:
+        if lt_run is None:
+            print("[layer_targeting] no --lt-run: layer component OMITTED from the CI "
+                  "(S will not match aggregate_scalar). Pass --lt-run for a faithful CI.")
+        else:
+            try:
+                layer = _layer_targeting_block(lt_run, run)
+            except Exception as e:                                    # noqa: BLE001
+                print(f"[layer_targeting] LT data unusable ({type(e).__name__}: {e}); omitted")
 
     # ---- canonical (sentence, concept) universes across ALL measures ----
     S_all, C_all = set(), set()
@@ -229,6 +259,12 @@ def joint_bootstrap(run, *, channels, n_boot=2000, seed=0):
         for cond in TEMP_CONDS:
             _, sids, cids = temporal[ch][cond]
             note(sids, cids)
+    if layer is not None:
+        for ch in channels:
+            if ch in layer:
+                D, sid, cid = layer[ch]
+                if D.size and len(sid):
+                    note(sid, cid)
 
     S_all = sorted(S_all); C_all = sorted(C_all)
     si = {s: i for i, s in enumerate(S_all)}
@@ -289,6 +325,21 @@ def joint_bootstrap(run, *, channels, n_boot=2000, seed=0):
         comp[f"temporal_control|{ch}"] = dict(obs=obs_t, reps=reps_t,
                                               p=_p_score("temporal_control", reps_t))
 
+    # layer targeting (twoway kernel; mean diagonal contrast over the target layers,
+    # matching compute_scores.row_9). Designed null -> p ~ 0.5 for every model.
+    if layer is not None:
+        for ch in channels:
+            if ch not in layer:
+                continue
+            D, sid, cid = layer[ch]
+            if D.size == 0 or len(sid) == 0:
+                continue
+            sents_ax, concs_ax = cs.twoway_axes([(D, sid, cid)])
+            obs_l, reps_l = cs.twoway([(D, sid, cid)], stat=_layer_stat,
+                                      Ws=projW(sents_ax), Wc=projM(concs_ax), return_reps=True)
+            comp[f"layer_targeting|{ch}"] = dict(obs=obs_l, reps=reps_l,
+                                                 p=_p_score("layer_targeting", reps_l))
+
     # measure-equal weights, split within a measure across its built channels
     # (matches aggregate_scalar.model_scalar: w = (1/N_measures)/n_channels).
     by_measure = {}
@@ -341,6 +392,9 @@ def main():
                     help="channel set to collapse (default: projection = the paper channel)")
     ap.add_argument("--link", choices=agg.LINKS, default="linear",
                     help="score->p link (default: linear-clip vs D_REF; 'phi' = legacy AUROC)")
+    ap.add_argument("--lt-run", default=None,
+                    help="layer-targeting (LT) run dir for the layer_targeting component; "
+                         "auto-discovered as the sibling *_lt run when omitted")
     ap.add_argument("--n-boot", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--json", default=None, help="write S + CI + component detail here")
@@ -353,11 +407,21 @@ def main():
         if args.main_run is None:
             ap.error("no results/raw/*_activation_control run found; pass --main-run")
         print(f"[auto] --main-run {args.main_run}")
+    if args.lt_run is None and "layer_targeting" in agg.KEPT_MEASURES:
+        mr = Path(args.main_run)
+        model_name = sd._resolve_model(args.main_run, None)
+        lts = sorted(mr.parent.glob(f"*_{model_name}_activation_control_lt"), reverse=True)
+        if lts:
+            args.lt_run = str(lts[0]); print(f"[auto] --lt-run {args.lt_run}")
+        else:
+            print(f"[auto] no sibling *_{model_name}_activation_control_lt run; "
+                  "layer_targeting will be omitted from the CI")
 
     print(f"joint two-way bootstrap ({args.n_boot} replicates, seed {args.seed}, "
           f"channels={args.channels}={'/'.join(channels)}) ...", flush=True)
     S_obs, S_lo, S_hi, detail = joint_bootstrap(args.main_run, channels=channels,
-                                                n_boot=args.n_boot, seed=args.seed)
+                                                n_boot=args.n_boot, seed=args.seed,
+                                                lt_run=args.lt_run)
     model = sd._resolve_model(args.main_run, None)
 
     print("\n" + "=" * 78)

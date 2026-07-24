@@ -75,8 +75,11 @@ def main():
     if lt_run is not None:
         cs += ["--lt-run", lt_run]
     _step(cs, "compute_scores -> SCORES + PROFILES")
-    _step([SCRIPTS / "scalar_ci.py", "--main-run", main_run,
-           "--channels", "projection", "--json", ci], "scalar_ci -> SCALAR_CI")
+    sci = [SCRIPTS / "scalar_ci.py", "--main-run", main_run,
+           "--channels", "projection", "--json", ci]
+    if lt_run is not None:
+        sci += ["--lt-run", lt_run]
+    _step(sci, "scalar_ci -> SCALAR_CI")
     _step([SCRIPTS / "onset_offset_word.py", "--models", model],
           "onset_offset_word -> ONSET_OFFSET_WORD")
     _step([SCRIPTS / "explore.py", "--run-dir", main_run], "explore -> per-model figures")
