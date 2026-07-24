@@ -1,0 +1,10 @@
+model_id: "Qwen/Qwen3-Coder-480B-A35B-Instruct"  # revision 9d90cf8fca1bf7b7acca42d3fc9ae694a2194069 verified 2026-07-23
+torch_dtype: "bfloat16"              # MoE 480B total / ~35B active, 160 experts; 960.3 GB at bf16 (safetensors index)
+device_map: "auto"                   # 8x B200 (~63% weights); 6x fits the weights but not the ~30 GB fused-expert conversion transient
+quantization: null
+# NOTE: doc-only, like the other configs/models/*.yaml — nothing loads this file.
+# The real HF id comes from MODEL_NAME_MAP (src/models/registry.py); dtype/
+# quantization/enable_thinking are read from the experiment YAML's model: block.
+# Non-thinking BY DESIGN: the chat template has no think handling at all
+# (verified render 2026-07-23), so the model transcribes directly with no
+# reasoning turn. Same Qwen3MoeForCausalLM class as qwen3_235b_a22b_2507.

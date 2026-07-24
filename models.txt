@@ -16,7 +16,7 @@
 #    scripts. builder.py:40 falls back to bare "User:/Assistant:" without one.
 
 # =============================================================================
-# RUN (battery complete: 22 models in the cross-model comparison, +1 excluded)
+# RUN (battery complete: 25 models in the cross-model comparison, +1 excluded)
 # =============================================================================
 
 # --------------------------------------------------------------- small (4-40B)
@@ -44,7 +44,10 @@
 # Qwen/Qwen3.5-122B-A10B                      # 122B total / 10B active  short names: qwen35_122b_a10b [TESTED 2026-07-14] / qwen35_122b_a10b_thinking (thinking variant NOT run)
 
 # --------------------------------------------------------------- large (>150B)
+# meta-llama/Llama-4-Maverick-17B-128E-Instruct # 400B total / 17B active  short name: llama4_maverick  [TESTED 2026-07-23]  (GATED repo -- Meta license acceptance on HF required, 403 otherwise; multimodal like Scout; smoke on 6x B200, production on 8x at batch 24)
 # Qwen/Qwen3-235B-A22B-Instruct-2507          # 235B total / 22B active  short name: qwen3_235b_a22b_2507  [TESTED 2026-07-23]  (non-thinking only by design)
+# Qwen/Qwen3-Coder-480B-A35B-Instruct         # 480B total / 35B active  short name: qwen3_coder_480b  [TESTED 2026-07-23]  (coding specialist, same Qwen3MoeForCausalLM as the 235B; non-thinking by design; 83.5% aggregate compliance, failures are elaboration-after-transcription)
+# zai-org/GLM-5.2-FP8                         # ~745B total / ~39B active  short name: glm52  [TESTED 2026-07-23]  (HYBRID: off by default, pinned false in its YAML; OFFICIAL FP8 used -- the bf16 repo is 1.51 TB, unfittable on one 8-GPU node)
 # Qwen/Qwen3.5-397B-A17B                      # 397B total / 17B active  short name: qwen35_397b_a17b  [TESTED 2026-07-23]  (HYBRID: off by default, enable_thinking pinned false in its YAML; ran on 6x B200 via a staged shard-streaming loader -- job disk (~500 GiB) < the 807 GB bf16 checkpoint; smoke 99.88%, main 99.94%, LT 100% compliance)
 
 # ------------------------------------- tested but EXCLUDED from the comparison
@@ -60,6 +63,5 @@ moonshotai/Kimi-Linear-48B-A3B-Instruct       # 48B total / 3B active  short nam
 # --------------------------------------------------------------- large (>150B)
 deepseek-ai/DeepSeek-V4-Flash                 # 284B total / 13B active  short name: deepseek_v4_flash  (ABANDONED 2026-07-23 after 3 failed smoke gates: pipeline ran but 0.0% compliance, root cause undetermined -- see DEEPSEEK_2xB200_NOTES.md. Integration code since reverted; HYBRID: no Jinja template -- see header)
 deepseek-ai/DeepSeek-V3.2                     # 685B total / ~37B active  short name: deepseek_v32  (HYBRID: no Jinja template -- see header)
-zai-org/GLM-5.2                               # ~744B total / ~39B active  short name: glm52  (HYBRID: off by default)
 moonshotai/Kimi-K2.6                          # 1.06T total / 32B active  short name: kimi_k26  (HYBRID: toggle is `thinking`, NOT enable_thinking -- MUST pass thinking=false; builder default does NOT cover it)
 mistralai/Mistral-Large-3-675B-Instruct-2512  # 675B total / 41B active  short name: mistral_large_3  (BLOCKED 2026-07-23: official FP8/BF16/NVFP4 repos ship params.json + tekken.json only, no config.json -- not transformers-loadable, vLLM-only; same integration-blocker class as DeepSeek V3.2 / Kimi K2.6. A third-party BF16 re-serialization exists but is unverified and lacks tokenizer/template files; not attempted)
