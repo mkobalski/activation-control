@@ -25,8 +25,9 @@ SERIES = [
                       "olmo31_32b_sft", "olmo31_32b_dpo", "olmo31_32b"]),
 ]
 _EPS = 1e-6
-_DREF = {"engage": 8.0, "suppress": 3.0, "dial_resolution": 3.0,
-         "temporal_control": 5.0, "coverage": 1.5, "layer_targeting": 5.0}
+# MUST match aggregate_scalar.D_REF (engage/coverage recalibrated 2026-07-24).
+_DREF = {"engage": 16.4, "suppress": 3.0, "dial_resolution": 3.0,
+         "temporal_control": 5.0, "coverage": 4.11, "layer_targeting": 5.0}
 _KEPT = ["engage", "suppress", "dial_rank", "dial_resolution",
          "temporal_control", "coverage", "layer_targeting"]
 

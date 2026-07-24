@@ -118,10 +118,16 @@ CHANNEL_SETS = {"projection": ("proj",),
 # and preserves the informative ordering. layer_targeting shares temporal's
 # standardized-contrast scale (5.0); since every model scores ~0 there, its p ~ 0.5
 # for all -> a uniform drag that does not reorder models.
+# engage 8.0->16.4 and coverage 1.5->4.11 on 2026-07-24: on the 25-model roster both
+# axes were saturating (median p = 1.00; coverage clipped to full credit for 57% of
+# models, engage 54%), so they inflated S without discriminating. Each D_REF is now set
+# just above that axis's ROSTER-MAX d' (engage 16.06, coverage 4.03; x1.02 margin), so
+# the strongest model lands at p~0.99 instead of pinned at 1.0 and the axis stays
+# discriminating across its full observed range. This de-compresses the mid-pack.
 # These are the metric's calibration constants ("the whole ballgame") -- REVISIT and
 # re-run all models if the panel grows or the notion of "perfect" per axis changes.
-D_REF = {"engage": 8.0, "suppress": 3.0, "dial_resolution": 3.0,
-         "temporal_control": 5.0, "coverage": 1.5, "layer_targeting": 5.0}
+D_REF = {"engage": 16.4, "suppress": 3.0, "dial_resolution": 3.0,
+         "temporal_control": 5.0, "coverage": 4.11, "layer_targeting": 5.0}
 LINKS = ("linear", "phi")
 
 
