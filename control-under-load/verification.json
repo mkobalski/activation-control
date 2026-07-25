@@ -8,7 +8,14 @@
     "compileall": "pass",
     "clean_checkout": "pass",
     "plots_regenerated": 4,
-    "plot_source_tables_byte_identical": true
+    "plot_source_tables_byte_identical": true,
+    "readout_file": {
+      "path": "control-under-load/data/final/readouts.parquet",
+      "bytes": 68985274,
+      "sha256": "21fb5bf145bd42319e0df8e6e5d901e097a8cd174103ef395872af27d7398464",
+      "git_tracked": true,
+      "github_pr_file_listed": true
+    }
   },
   "saved_artifact_reproduction": {
     "status": "pass",

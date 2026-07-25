@@ -62,6 +62,8 @@ Install the repository dependencies, then run the bounded integrity gate and reg
 
 ```bash
 pip install -r requirements.txt
+pytest -q tests/control_under_load
+ruff check src/control_under_load scripts/control_under_load.py tests/control_under_load
 python scripts/control_under_load.py verify
 python scripts/control_under_load.py plots
 ```
