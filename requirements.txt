@@ -3,7 +3,12 @@ torch>=2.6.0
 transformers>=4.55.0
 accelerate>=1.4.0        # needed by transformers for device_map="auto" loading
 numpy>=1.26.0
+pandas>=2.2.0            # control-under-load Parquet analysis
+pyarrow>=15.0.0          # control-under-load tables + metadata validation
+sympy>=1.13.0            # exact factorized-polynomial grading
 matplotlib>=3.5.0        # figures: scripts/*_a3i.py (paper) + scripts/explore.py (per-run)
+plotly>=6.0.0,<6.9       # control-under-load publication figures
+kaleido>=0.2.1,<1        # self-contained SVG/PNG rendering (bundled renderer)
 tqdm>=4.60.0
 pyyaml>=6.0
 python-dotenv>=1.0.0     # loads .env (HF_TOKEN / optional WANDB_API_KEY)

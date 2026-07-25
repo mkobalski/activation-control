@@ -1,0 +1,9 @@
+{
+  "ci_half_width": 0.02684290393358025,
+  "ci_high": 0.010929420665996361,
+  "ci_low": -0.04275638720116414,
+  "includes_zero": true,
+  "precision_target": 0.025,
+  "slope": -0.025452910826112937,
+  "verdict": "zero_included_but_precision_target_missed"
+}
