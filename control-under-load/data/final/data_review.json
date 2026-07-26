@@ -1,0 +1,59 @@
+{
+  "bin_by_cohort_counts": {
+    "bin0:v31_new": 80,
+    "bin0:v3_legacy": 80,
+    "bin1:v31_new": 80,
+    "bin1:v3_legacy": 80,
+    "bin2:v31_new": 80,
+    "bin2:v3_legacy": 80,
+    "bin3:v31_new": 80,
+    "bin3:v3_legacy": 80,
+    "bin4:v31_new": 80,
+    "bin4:v3_legacy": 80
+  },
+  "cohort_counts": {
+    "v31_new": 400,
+    "v3_legacy": 400
+  },
+  "difficulty_bin_counts": {
+    "0": 160,
+    "1": 160,
+    "2": 160,
+    "3": 160,
+    "4": 160
+  },
+  "examples": [
+    {
+      "difficulty_bin": 0,
+      "expected_answer": "x**3 + 9*x**2 - 49*x - 441",
+      "item_id": "poly-007727acc6d247d60198",
+      "precision_cohort": "v31_new",
+      "task_text": "Find the fully factored form of the 5th derivative of the polynomial\n$P(x) = \\frac{x^{8}}{6720} + \\frac{x^{7}}{280} - \\frac{49 x^{6}}{720} - \\frac{147 x^{5}}{40}$."
+    },
+    {
+      "difficulty_bin": 0,
+      "expected_answer": "x**3 - 15*x**2 + 63*x - 81",
+      "item_id": "poly-086bf996c1905dd89d9d",
+      "precision_cohort": "v31_new",
+      "task_text": "Find the fully factored form of the 5th derivative of the polynomial\n$P(x) = \\frac{x^{8}}{6720} - \\frac{x^{7}}{168} + \\frac{7 x^{6}}{80} - \\frac{27 x^{5}}{40}$."
+    },
+    {
+      "difficulty_bin": 4,
+      "expected_answer": "x**5 - 11*x**4 - 64*x**3 + 296*x**2 + 240*x - 1008",
+      "item_id": "poly-f7d5440b7d777224db70",
+      "precision_cohort": "v3_legacy",
+      "task_text": "Find the fully factored form of the 5th derivative of the polynomial\n$P(x) = \\frac{x^{10}}{30240} - \\frac{11 x^{9}}{15120} - \\frac{x^{8}}{105} + \\frac{37 x^{7}}{315} + \\frac{x^{6}}{3} - \\frac{42 x^{5}}{5}$."
+    },
+    {
+      "difficulty_bin": 4,
+      "expected_answer": "x**5 - 7*x**4 - 195*x**3 + 1575*x**2 + 1674*x - 13608",
+      "item_id": "poly-fe73e9c2761c779c363d",
+      "precision_cohort": "v3_legacy",
+      "task_text": "Find the fully factored form of the 5th derivative of the polynomial\n$P(x) = \\frac{x^{10}}{30240} - \\frac{x^{9}}{2160} - \\frac{13 x^{8}}{448} + \\frac{5 x^{7}}{8} + \\frac{93 x^{6}}{40} - \\frac{567 x^{5}}{5}$."
+    }
+  ],
+  "n_items": 800,
+  "unique_content_hashes": 800,
+  "unique_group_ids": 800,
+  "unique_item_ids": 800
+}

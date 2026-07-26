@@ -1,0 +1,102 @@
+[
+  {
+    "run": "final v3.1",
+    "recipe": "m=3, k=5, R=10",
+    "failure_rate": 0.03749999999999998,
+    "failure_ci_low": 0.011173184357541888,
+    "failure_ci_high": 0.069620253164557,
+    "gap_dprime": 0.2927220704336478,
+    "gap_ci_low": 0.11768319164965585,
+    "gap_ci_high": 0.49297438131794935
+  },
+  {
+    "run": "final v3.1",
+    "recipe": "m=4, k=4, R=12",
+    "failure_rate": 0.15000000000000002,
+    "failure_ci_low": 0.0980357877416701,
+    "failure_ci_high": 0.20779874487928174,
+    "gap_dprime": 0.2421263072470843,
+    "gap_ci_low": 0.10685749065895984,
+    "gap_ci_high": 0.37363994655737315
+  },
+  {
+    "run": "final v3.1",
+    "recipe": "m=5, k=3, R=10",
+    "failure_rate": 0.44375,
+    "failure_ci_low": 0.3688510056970119,
+    "failure_ci_high": 0.523187573042462,
+    "gap_dprime": 0.13735640099475332,
+    "gap_ci_low": 0.05565717093366138,
+    "gap_ci_high": 0.22923479035375344
+  },
+  {
+    "run": "final v3.1",
+    "recipe": "m=5, k=4, R=12",
+    "failure_rate": 0.65625,
+    "failure_ci_low": 0.5838029865125242,
+    "failure_ci_high": 0.7272871116225547,
+    "gap_dprime": 0.1587776356534,
+    "gap_ci_low": 0.05624508028882615,
+    "gap_ci_high": 0.27645212815523273
+  },
+  {
+    "run": "final v3.1",
+    "recipe": "m=5, k=5, R=16",
+    "failure_rate": 0.89375,
+    "failure_ci_low": 0.8421052631578947,
+    "failure_ci_high": 0.9390243902439024,
+    "gap_dprime": 0.12271306883253902,
+    "gap_ci_low": -0.029108437894444252,
+    "gap_ci_high": 0.29339291779716226
+  },
+  {
+    "run": "earlier v3",
+    "recipe": "m=3, k=5, R=10",
+    "failure_rate": 0.0625,
+    "failure_ci_low": 0.013333333333333308,
+    "failure_ci_high": 0.12328767123287676,
+    "gap_dprime": 0.28786259034330286,
+    "gap_ci_low": 0.08428001017183966,
+    "gap_ci_high": 0.596489437047845
+  },
+  {
+    "run": "earlier v3",
+    "recipe": "m=4, k=4, R=12",
+    "failure_rate": 0.08750000000000002,
+    "failure_ci_low": 0.03123798076923079,
+    "failure_ci_high": 0.15627633426966292,
+    "gap_dprime": 0.24761304713015092,
+    "gap_ci_low": 0.05997573877125599,
+    "gap_ci_high": 0.557885521547648
+  },
+  {
+    "run": "earlier v3",
+    "recipe": "m=5, k=3, R=10",
+    "failure_rate": 0.4625,
+    "failure_ci_low": 0.3513175675675677,
+    "failure_ci_high": 0.573367816091954,
+    "gap_dprime": 0.2555689974045346,
+    "gap_ci_low": 0.02641839721430083,
+    "gap_ci_high": 0.5141968986617647
+  },
+  {
+    "run": "earlier v3",
+    "recipe": "m=5, k=4, R=12",
+    "failure_rate": 0.625,
+    "failure_ci_low": 0.5161290322580645,
+    "failure_ci_high": 0.7285924369747899,
+    "gap_dprime": 0.19741792843817,
+    "gap_ci_low": 0.05294011104265975,
+    "gap_ci_high": 0.4980674413026485
+  },
+  {
+    "run": "earlier v3",
+    "recipe": "m=5, k=5, R=16",
+    "failure_rate": 0.9375,
+    "failure_ci_low": 0.8795180722891567,
+    "failure_ci_high": 0.987012987012987,
+    "gap_dprime": 0.19534116751882502,
+    "gap_ci_low": 0.010127023433727534,
+    "gap_ci_high": 0.5853414756678728
+  }
+]

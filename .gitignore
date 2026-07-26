@@ -34,3 +34,6 @@ __pycache__/
 .vscode/
 .claude/settings.local.json
 .DS_Store
+
+# large data blob (66MB) - kept out of git, present locally only
+control-under-load/data/final/readouts.parquet

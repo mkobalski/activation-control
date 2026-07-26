@@ -47,6 +47,22 @@ delete that line to "run everything". The scoring reads only the
 cheap stored artifacts (`results.json` + the small `no_instruction_cache.pkl` + concept
 vectors) — never the large `results.pkl` of raw activations.
 
+### Control under task load
+
+`control-under-load/` is a self-contained, analysis-ready release of the final
+Gemma-3-27B polynomial-load study: 800 problems, 25,600 generated answers, 768,000
+layerwise concept projections, the earlier v3 comparison, and four reproducible plots.
+The final slope is −0.02545 d′ per ordered difficulty bin with a 95% interval of
+[−0.04276, +0.01093]; the interval includes zero and narrowly misses the registered
+precision target. See `control-under-load/README.md` for the score definition, table
+schemas, provenance, and limitations.
+
+```bash
+python scripts/control_under_load.py verify   # checks SHA-256, schemas, counts, and frozen values
+python scripts/control_under_load.py plots    # remakes all four SVG/PNG figure bundles
+python scripts/control_under_load.py all      # also reruns the 2,000-draw CPU analysis
+```
+
 ## Layout
 
 | path | what |
@@ -58,6 +74,9 @@ vectors) — never the large `results.pkl` of raw activations.
 | `scripts/onset_offset_word.py` | word-based onset/offset supersession (`ONSET_OFFSET_WORD_<model>.json`); run manually, not part of `postprocess` |
 | `scripts/{explore,superplot,figstyle,model_family_colors}.py` | figures (`model_family_colors` = the shared model-family palette, a verbatim copy of the paper repo's) |
 | `scripts/{run.sh,postprocess.py}` | the orchestrator |
+| `src/control_under_load/` | Parquet loading, exact polynomial grading, frozen d′/bootstrap analysis, and figure construction |
+| `control-under-load/` | shipped final/comparison data, SHA-256 manifest, documentation, and four figure bundles |
+| `scripts/control_under_load.py` | verify, deterministic CPU reanalysis, frozen-output comparison, and plot regeneration |
 | `results/raw/<run>/` | one run's recordings (gitignored) |
 | `results/*.json` | the derived SCORES / PROFILES / SCALAR / CI artifacts (gitignored) |
 

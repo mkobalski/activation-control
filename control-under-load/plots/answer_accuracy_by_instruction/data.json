@@ -1,0 +1,107 @@
+[
+  {
+    "condition": "No instruction",
+    "recipe": "m=3, k=5, R=10",
+    "accuracy": 0.9625,
+    "ci_low": 0.930379746835443,
+    "ci_high": 0.9888268156424581
+  },
+  {
+    "condition": "No instruction",
+    "recipe": "m=4, k=4, R=12",
+    "accuracy": 0.85,
+    "ci_low": 0.7922012551207183,
+    "ci_high": 0.9019642122583299
+  },
+  {
+    "condition": "No instruction",
+    "recipe": "m=5, k=3, R=10",
+    "accuracy": 0.55625,
+    "ci_low": 0.47681242695753795,
+    "ci_high": 0.6311489943029881
+  },
+  {
+    "condition": "No instruction",
+    "recipe": "m=5, k=4, R=12",
+    "accuracy": 0.34375,
+    "ci_low": 0.27271288837744534,
+    "ci_high": 0.41619701348747584
+  },
+  {
+    "condition": "No instruction",
+    "recipe": "m=5, k=5, R=16",
+    "accuracy": 0.10625,
+    "ci_low": 0.06097560975609756,
+    "ci_high": 0.15789473684210525
+  },
+  {
+    "condition": "Think about X",
+    "recipe": "m=3, k=5, R=10",
+    "accuracy": 0.9572916666666667,
+    "ci_low": 0.9262829044661343,
+    "ci_high": 0.9838107217729859
+  },
+  {
+    "condition": "Think about X",
+    "recipe": "m=4, k=4, R=12",
+    "accuracy": 0.8427083333333333,
+    "ci_low": 0.7900412037761435,
+    "ci_high": 0.8888080431177446
+  },
+  {
+    "condition": "Think about X",
+    "recipe": "m=5, k=3, R=10",
+    "accuracy": 0.558125,
+    "ci_low": 0.4904698412698412,
+    "ci_high": 0.6289500443557329
+  },
+  {
+    "condition": "Think about X",
+    "recipe": "m=5, k=4, R=12",
+    "accuracy": 0.383125,
+    "ci_low": 0.3158816595072335,
+    "ci_high": 0.451428585850428
+  },
+  {
+    "condition": "Think about X",
+    "recipe": "m=5, k=5, R=16",
+    "accuracy": 0.13291666666666666,
+    "ci_low": 0.09474350649350649,
+    "ci_high": 0.1746660958904109
+  },
+  {
+    "condition": "Think intensely",
+    "recipe": "m=3, k=5, R=10",
+    "accuracy": 0.9625,
+    "ci_low": 0.9294836956521739,
+    "ci_high": 0.9882370141038872
+  },
+  {
+    "condition": "Think intensely",
+    "recipe": "m=4, k=4, R=12",
+    "accuracy": 0.83125,
+    "ci_low": 0.7696969696969697,
+    "ci_high": 0.8870056497175142
+  },
+  {
+    "condition": "Think intensely",
+    "recipe": "m=5, k=3, R=10",
+    "accuracy": 0.575,
+    "ci_low": 0.5,
+    "ci_high": 0.6503162030422724
+  },
+  {
+    "condition": "Think intensely",
+    "recipe": "m=5, k=4, R=12",
+    "accuracy": 0.38125,
+    "ci_low": 0.30538436114783424,
+    "ci_high": 0.4604456860043879
+  },
+  {
+    "condition": "Think intensely",
+    "recipe": "m=5, k=5, R=16",
+    "accuracy": 0.10625,
+    "ci_low": 0.06059693318729464,
+    "ci_high": 0.15823556653288048
+  }
+]
