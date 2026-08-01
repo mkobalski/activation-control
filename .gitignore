@@ -28,7 +28,7 @@ __pycache__/
 # Ignore all markdown EXCEPT the README (the repo's front page).
 *.md
 !README.md
-!METRICS_2026-07-16.md
+!METRICS_2026-08-01.md
 
 # ---- Editor / OS / tooling ----
 .vscode/

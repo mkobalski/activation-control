@@ -27,7 +27,7 @@ representation, and a single conjunctive scalar **S ∈ [0, 1]** summarises them
   rescuing a model that fails elsewhere.
 - **Reported but excluded from S** (diagnostics only): Onset/offset error, Token group.
 - **The maths and every calibration constant** (links, `D_REF`, exclusions, CIs) live
-  in **`METRICS_2026-07-16.md`** — read that for anything about *what a number means*.
+  in **`METRICS_2026-08-01.md`** — read that for anything about *what a number means*.
 
 ## Pipeline
 
