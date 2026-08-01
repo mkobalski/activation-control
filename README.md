@@ -14,14 +14,18 @@ representation, and a single conjunctive scalar **S ∈ [0, 1]** summarises them
   stream onto the (unit-normalised) concept vector, `⟨r, ĉ⟩ = ‖r‖·cos`. `cos` and
   `relnorm` are still emitted for the appendix but the paper uses `proj`.
 - **The scalar S** is a measure-equal, **conjunctive** (geometric-mean) composite of
-  **five** capability measures — Engage, Dial Rank, Dial Resolution, Temporal
-  control, Coverage — each mapped to `[0, 1]` by a **linear-clip link** against a
-  per-measure ceiling `D_REF` (the score meaning "essentially perfect control"), then
+  **seven** measures — Engage, Suppress, Dial Rank, Dial Resolution, Temporal control,
+  Coverage, Layer targeting — each mapped to `[0, 1]` by a **linear-clip link** against
+  a per-measure ceiling `D_REF` (the score meaning "essentially perfect control"), then
   `S = clip(2G − 1, 0, 1)`. It is *absolute* (a model's S doesn't depend on the panel)
   and rewards broad competence over any single strong axis.
-- **Reported but excluded from S** (diagnostics, not capabilities): Suppress (a
-  white-bear rebound, not a suppression ability), Layer targeting (a designed null),
-  Onset/offset error, Token group.
+- **Suppress and Layer targeting are *in* S** (folded back in 2026-07-23): they measure
+  axes on which models mostly *fail*, so they belong in a control score rather than being
+  hidden. Suppress reads as a white-bear *rebound* (score below baseline → p < 0.5 →
+  penalized; `D_REF = 3` keeps the outlier off the ceiling), and Layer targeting is a
+  designed null (≈ 0 for every model). The geometric mean stops a lone strong axis from
+  rescuing a model that fails elsewhere.
+- **Reported but excluded from S** (diagnostics only): Onset/offset error, Token group.
 - **The maths and every calibration constant** (links, `D_REF`, exclusions, CIs) live
   in **`METRICS_2026-07-16.md`** — read that for anything about *what a number means*.
 
