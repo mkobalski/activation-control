@@ -39,6 +39,7 @@ import matplotlib.transforms as mtransforms                             # noqa: 
 # independent, so it is duplicated rather than imported across them); `diff` the two
 # to check they are in sync. A .tex twin defines the same colors for in-text use.
 from model_family_colors import family_color, family_shades              # noqa: E402
+import aggregate_scalar as agg                                            # noqa: E402  (point-estimate S fallback)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -74,6 +75,17 @@ DETAIL = {"gemma2_9b": "Gemma 2 9B", "gemma4_12b": "Gemma 4 12B", "gemma3_27b": 
           "glm47_flash": "GLM 4.7 Flash 31B", "glm46v": "GLM 4.6V 106B",
           "glm52": "GLM 5.2 745B (FP8)"}
 
+# Model release dates (YYYY-MM) for within-family ordering. Same-month ties break by size.
+RELEASE = {"gemma2_9b": "2024-06", "gemma3_27b": "2025-03", "gemma4_31b": "2026-03", "gemma4_12b": "2026-06",
+           "qwen_72b": "2024-09", "qwen3_235b_a22b_2507": "2025-07", "qwen3_coder_480b": "2025-07",
+           "qwen35_122b_a10b": "2026-02", "qwen35_397b_a17b": "2026-02", "qwen35_4b": "2026-03",
+           "qwen35_9b": "2026-03", "qwen36_27b": "2026-04",
+           "llama_8b": "2024-07", "llama33_70b": "2024-12", "llama4_scout": "2025-04", "llama4_maverick": "2025-04",
+           "gptoss_20b_low": "2025-08", "gptoss_120b_low": "2025-08",
+           "olmo3_7b": "2025-11", "olmo31_32b": "2025-12",
+           "mistral_small_31_24b": "2025-03", "mistral_small_4": "2026-03",
+           "glm47_flash": "2026-01", "glm46v": "2025-12", "glm52": "2026-06"}
+
 # (SCORES key, row label). Three figures, kept apart on purpose:
 #  - MAIN_ROWS: every measure that FEEDS the scalar S (as of 2026-07-23 this includes
 #    suppress and layer_targeting, folded back in); the S row is appended when
@@ -84,13 +96,13 @@ DETAIL = {"gemma2_9b": "Gemma 2 9B", "gemma4_12b": "Gemma 4 12B", "gemma3_27b": 
 #    -> null_measures_model_comparison.png
 #  - DEGENERATE_ROWS: the word-based onset/offset error (combined aggregate + the
 #    separate signed onset & offset edges) -> degenerate_measures_model_comparison.png
-MAIN_ROWS = [("engage", "Engage  $d'$"),
-             ("suppress", "Suppress  $d'$"),
-             ("dial_rank", r"Dial rank  $\rho$"),
-             ("dial_resolution", "Dial resolution  $d'$"),
+MAIN_ROWS = [("engage", "Engage"),
+             ("suppress", "Suppress"),
+             ("dial_rank", "Dial rank"),
+             ("dial_resolution", "Dial resolution"),
              ("temporal_control", "Temporal control"),
-             ("coverage", "Coverage  $d'$"),
-             ("layer_targeting", r"Layer targeting  ($\approx$0)")]
+             ("coverage", "Coverage"),
+             ("layer_targeting", "Layer targeting")]
 NULL_ROWS = [("token_group", r"Token group  ($\approx$0)")]
 # DEGENERATE_ROWS -> its own figure (degenerate_measures_model_comparison.png): the
 # word-based onset/offset error. Row 1 = combined aggregate (↓-is-better, no CI);
@@ -124,8 +136,13 @@ def load_bars(data_root, channel="proj"):
         row = {"fam": fam, "size": size}
         for key, _ in MAIN_ROWS + NULL_ROWS:
             ch = (meas.get(key, {}).get("channels", {}) or {}).get(channel)
-            row[key] = ((ch.get("score"), ch.get("lo"), ch.get("hi"))
-                        if ch and ch.get("score") is not None else None)
+            if ch and ch.get("score") is not None:
+                lo, hi = ch.get("lo"), ch.get("hi")
+                if lo is not None and hi is not None and (abs(lo) > 1e3 or abs(hi) > 1e3):
+                    lo = hi = None   # degenerate bootstrap CI (near-0 baseline sigma) -> point estimate
+                row[key] = (ch.get("score"), lo, hi)
+            else:
+                row[key] = None
         # Onset/offset error: source the WORD-based supersession
         # (ONSET_OFFSET_WORD_<model>.json), not the frozen 4th-TOKEN value in SCORES.
         # The onset gate is scored against the actual 4th-WORD boundary; offset gate
@@ -146,8 +163,12 @@ def load_bars(data_root, channel="proj"):
         if cp is not None:
             d = json.load(open(cp))
             row["scalar"] = (d.get("scalar"), d.get("ci_lo"), d.get("ci_hi"))
+            row["point"] = bool(d.get("point_estimate")) or d.get("ci_lo") is None or d.get("ci_hi") is None
         else:
-            row["scalar"] = None
+            # No bootstrap CI (MoE panel models, no raw runs): point-estimate S from SCORES.
+            S, _, _ = agg.model_scalar(meas)  # projection channel, linear link, 7-measure S
+            row["scalar"] = (S, None, None) if S is not None else None
+            row["point"] = True
         bars[name] = row
     return bars
 
@@ -158,7 +179,8 @@ def _layout(bars):
     pos, colors, labels, order, fam_pos = [], [], [], [], {}
     x = 0.0
     for fam in FAMILY_ORDER:
-        mem = sorted([m for m in bars if bars[m]["fam"] == fam], key=lambda m: bars[m]["size"])
+        mem = sorted([m for m in bars if bars[m]["fam"] == fam],
+                     key=lambda m: (RELEASE.get(m, "9999-99"), bars[m]["size"]))
         if not mem:
             continue
         # single-model families take the full-strength color; family_shades(fam, 1)
@@ -173,7 +195,7 @@ def _layout(bars):
     return pos, colors, labels, order, fam_pos
 
 
-def _bar_row(ax, bars, order, pos, colors, getter, ylab):
+def _bar_row(ax, bars, order, pos, colors, getter, ylab, mark_point=False):
     for xp, m, col in zip(pos, order, colors):
         t = getter(bars[m])
         if t is None or t[0] is None:
@@ -183,8 +205,16 @@ def _bar_row(ax, bars, order, pos, colors, getter, ylab):
         if lo is not None and hi is not None:                # onset/offset has no aggregate CI
             ax.errorbar(xp, sc, yerr=[[max(sc - lo, 0)], [max(hi - sc, 0)]], fmt="none",
                         ecolor="#222", elinewidth=0.8, capsize=2, zorder=3)
+        elif mark_point and bars[m].get("point"):
+            # point-estimate model (panel-only, no raw run -> no JOINT bootstrap CI for S):
+            # open marker on the bar top so it never reads as a tight CI. Matches the paper's
+            # scalar figure. Per-measure rows keep their real marginal CIs.
+            ax.plot(xp, sc, marker="o", mfc="white", mec="#222", mew=0.9, ms=4.0, zorder=4)
     ax.axhline(0, color="#888", lw=0.6)
-    ax.set_ylabel(ylab, fontsize=9)
+    # Horizontal row-header label (rotation=0): vertical labels would overflow the short
+    # one-page rows and collide with neighbours; horizontal decouples label length from row
+    # height. Right-aligned just left of the y-tick numbers.
+    ax.set_ylabel(ylab, fontsize=9, rotation=0, ha="right", va="center", labelpad=6)
     ax.tick_params(labelsize=7)
     ax.margins(x=0.015)
     ax.spines[["top", "right"]].set_visible(False)
@@ -195,18 +225,27 @@ def render(bars, rows, out, channel, title):
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     pos, colors, labels, order, fam_pos = _layout(bars)
     n = len(rows)
-    fig, axes = plt.subplots(n, 1, figsize=(7.4, 1.35 * n), sharex=True, squeeze=False)
+    # Compact per-row height so the full grid + caption fits ONE AAAI page (US Letter, ~9"
+    # text height). Width = AAAI text width (7.0") so \includegraphics[width=\textwidth] adds
+    # no rescaling and in-figure font sizes are preserved. When `title` is empty the suptitle
+    # is dropped (title lives in the caption) and the top margin shrinks accordingly.
+    ROW_H, BOT_IN = 0.78, 0.95
+    TOP_IN = 0.45 if title else 0.12
+    figh = ROW_H * n + TOP_IN + BOT_IN
+    fig, axes = plt.subplots(n, 1, figsize=(7.0, figh), sharex=True, squeeze=False)
     axes = axes[:, 0]
-    plt.subplots_adjust(left=0.13, right=0.98, top=1 - 0.35 / (1.35 * n), bottom=0.11, hspace=0.22)
+    plt.subplots_adjust(left=0.20, right=0.985, top=1 - TOP_IN / figh, bottom=BOT_IN / figh, hspace=0.22)
     for ax, (key, ylab) in zip(axes, rows):
-        _bar_row(ax, bars, order, pos, colors, lambda r, k=key: r.get(k), ylab)
-    trans = mtransforms.blended_transform_factory(axes[0].transData, axes[0].transAxes)
-    for fam, xps in fam_pos.items():
-        axes[0].text(float(np.mean(xps)), 1.06, fam, transform=trans, ha="center", va="bottom",
-                     fontsize=10, fontweight="bold", color=family_color(fam))
+        _bar_row(ax, bars, order, pos, colors, lambda r, k=key: r.get(k), ylab,
+                 mark_point=(key == "scalar"))
     axes[-1].set_xticks(pos)
     axes[-1].set_xticklabels(labels, rotation=30, ha="right", fontsize=8)
-    fig.suptitle(f"{title}  (channel: {channel})", fontsize=11, fontweight="bold", y=0.998)
+    # Family is read off the x-label COLOR (as in Figure 1) rather than colored family
+    # headers across the top: tint each model label with its family color.
+    for lab, m in zip(axes[-1].get_xticklabels(), order):
+        lab.set_color(family_color(bars[m]["fam"]))
+    if title:
+        fig.suptitle(f"{title}  (channel: {channel})", fontsize=11, fontweight="bold", y=0.998)
     fig.savefig(out, bbox_inches="tight")
     print(f"wrote {out}")
     plt.close(fig)

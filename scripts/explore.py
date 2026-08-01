@@ -13,6 +13,7 @@ Figures (main runs only; LT runs get none):
   engage_suppress      engage & suppress d' vs depth
   intensity_gain       endpoint-gain d' vs depth (lexical vs numeric)
   intensity_rank       signed Spearman rho vs depth (lexical vs numeric)
+  intensity_resolution adjacent-pair resolution (AUROC->d') vs depth (lexical vs ramp)
   pos_coverage         engage & suppress d' by POS category
   temporal_control concept concentration at sentence beginning / mid / end
   temporal_precision first-half / after-4th-word / throughout vs generic think
@@ -372,6 +373,52 @@ def intensity_rank(run_dir, out):
 
 
 # ======================================================================================
+# 4b. intensity_resolution — adjacent-pair resolution (AUROC -> d') vs depth
+# ======================================================================================
+
+def intensity_resolution(run_dir, out):
+    # The battery's ACTUAL Dial Resolution as a DEPTH PROFILE: per-unit adjacent-pair
+    # win rate -> AUROC A -> resolution d' = sqrt(2)*Phi^-1(A) (compute_scores,
+    # dial_resolution), per layer. Ramp = ONE curve averaging the three adjacent pairs
+    # (1v2, 2v3, 3v4), exactly as the score does; lexical = its single pair (think vs
+    # intensely). NB: A saturates toward 1 in the deep half, where Phi^-1 blows up, so
+    # the curve can spike -- that saturation is precisely why the published depth figures
+    # plot the endpoint GAIN (intensity_gain) instead. A is clamped to [1e-6, 1-1e-6] as
+    # the battery does. Bands reuse the two-way cluster bootstrap on the win rate; the
+    # monotone Phi^-1 maps its percentiles straight through.
+    from scipy.stats import norm
+    conds = [POS, LEX_HI] + RAMP
+    tab, layers, sids, cids = _unit_table(run_dir, conds)
+    pcts = fs.depth_pcts(layers, sd.run_n_layers(run_dir))
+    to_res = lambda a: np.sqrt(2) * norm.ppf(np.clip(a, 1e-6, 1 - 1e-6))
+
+    def win(hi_c, lo_c):                                  # per-unit x layer win indicator
+        h, l = tab[hi_c], tab[lo_c]
+        fin = np.isfinite(h) & np.isfinite(l)
+        return np.where(fin, (h > l).astype(float) + 0.5 * (h == l), np.nan)
+
+    fig, ax = plt.subplots(figsize=(7, 4.4))
+    for pairs, color, lab in (
+            ([(LEX_HI, POS)], fs.LEX_C, "think → intensely (1 pair)"),
+            ([(RAMP[1], RAMP[0]), (RAMP[2], RAMP[1]), (RAMP[3], RAMP[2])], fs.NUM_C,
+             "intensity ramp (avg 1v2, 2v3, 3v4)")):
+        with np.errstate(invalid="ignore"):
+            W = np.nanmean(np.stack([win(hi, lo) for hi, lo in pairs]), axis=0)  # (n_u, n_L)
+            A = np.nanmean(W, axis=0)
+        Alo, Ahi = _cluster_band(W, sids, cids)          # monotone Phi^-1 -> percentiles pass through
+        ax.plot(pcts, to_res(A), color=color, marker="o", ms=3, lw=1.6, label=lab)
+        ax.fill_between(pcts, to_res(Alo), to_res(Ahi), color=color, alpha=0.15)
+    ax.axhline(0, color="#888", lw=0.7)
+    ax.set_xlabel("depth (%)")
+    ax.set_ylabel(r"resolution $d'$ = $\sqrt{2}\,\Phi^{-1}$(adjacent-pair AUROC)")
+    ax.set_title("intensity_resolution — adjacent-pair separability vs depth")
+    ax.legend(frameon=False)
+    fig.tight_layout()
+    fs.note(fig)
+    return fs.save(fig, out)
+
+
+# ======================================================================================
 # 5. pos_coverage — engage & suppress d' by POS category
 # ======================================================================================
 
@@ -685,6 +732,7 @@ RENDERERS = {
     "engage_suppress": engage_suppress,
     "intensity_gain": intensity_gain,
     "intensity_rank": intensity_rank,
+    "intensity_resolution": intensity_resolution,
     "pos_coverage": pos_coverage,
     "temporal_control": temporal_control,
     "temporal_precision": temporal_precision,
