@@ -238,7 +238,7 @@ def joint_bootstrap(run, *, channels, n_boot=2000, seed=0, lt_run=None):
     def note(sents, concs):
         S_all.update(sents); C_all.update(concs)
 
-    # engage always; suppress only if it's a kept measure (excluded from S 2026-07-17).
+    # engage always; suppress only if it's a kept measure (folded back into S 2026-07-23).
     es_conds = [(POS, +1.0)] + ([(NEG, -1.0)] if "suppress" in agg.KEPT_MEASURES else [])
     es_inputs = {}      # (cond, ch) -> (blocks, all_sents, kept, sign)
     for ch in channels:

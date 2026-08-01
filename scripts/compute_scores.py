@@ -400,8 +400,8 @@ def row_10(main_run, channels=COVERAGE_CHANNELS):
     return out
 
 
-# ---- onset/offset error (computed, but EXCLUDED from the scalar, like layer
-#      targeting) -- ported from the retired battery 2026-07-17, now on all three
+# ---- onset/offset error (computed, but EXCLUDED from the scalar as a coarse
+#      timing diagnostic) -- ported from the retired battery 2026-07-17, now on all three
 #      channels. Told to START thinking about X after the 4th token (an onset gate)
 #      or STOP after the first half (an offset gate), how far off is X's actual
 #      on/off edge? Lower = better; per-edge CI only (no aggregate CI). ---------------
@@ -750,7 +750,8 @@ def main():
     print("Temporal control / Token group = located−generic in/out contrast (↑).")
     print("CIs: 95% two-way cluster bootstrap (sentences × concepts); peak/min-inside-replicate")
     print("for Engage/Suppress/Coverage (mildly optimistic/pessimistic).")
-    print("Onset/offset error (↓) & Layer targeting are computed but EXCLUDED from the scalar.")
+    print("Onset/offset error (↓) is computed but EXCLUDED from the scalar (timing diagnostic);")
+    print("Suppress & Layer targeting ARE in S (7 measures) since 2026-07-23.")
     print("(Retired: Temporal control (CoM), Token group (CoM) -- no longer computed.)")
 
     if args.json:
