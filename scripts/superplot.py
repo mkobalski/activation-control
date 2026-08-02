@@ -32,14 +32,12 @@ import matplotlib
 matplotlib.use("Agg")
 matplotlib.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42, "savefig.dpi": 200})
 import matplotlib.pyplot as plt                                          # noqa: E402
-import matplotlib.transforms as mtransforms                             # noqa: E402
 
 # Canonical model-family palette. This file is a VERBATIM copy of the paper repo's
 # activation-controllability/figure_scripts/model_family_colors.py (the two repos are
 # independent, so it is duplicated rather than imported across them); `diff` the two
 # to check they are in sync. A .tex twin defines the same colors for in-text use.
 from model_family_colors import family_color, family_shades              # noqa: E402
-import aggregate_scalar as agg                                            # noqa: E402  (point-estimate S fallback)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -91,9 +89,10 @@ RELEASE = {"gemma2_9b": "2024-06", "gemma3_27b": "2025-03", "gemma4_31b": "2026-
 #    suppress and layer_targeting, folded back in); the S row is appended when
 #    rendering -> model_comparison.png. suppress is shown at its raw signed d' (a
 #    below-baseline outlier and rebounders read directly); layer_targeting ≈ 0.
-#  - NULL_ROWS: token_group -- the one measure still EXCLUDED from S (near-universal
-#    failure: models cannot steer the concept onto a target token type)
-#    -> null_measures_model_comparison.png
+#  - NULL_ROWS: token_group -- the one NULL measure excluded from S (near-universal
+#    failure: models cannot steer the concept onto a target token type). The other
+#    measure excluded from S, onset/offset error, is a timing diagnostic and gets
+#    its own figure below -> null_measures_model_comparison.png
 #  - DEGENERATE_ROWS: the word-based onset/offset error (combined aggregate + the
 #    separate signed onset & offset edges) -> degenerate_measures_model_comparison.png
 MAIN_ROWS = [("engage", "Engage"),
@@ -114,23 +113,16 @@ DEGENERATE_ROWS = [("onset_offset_error", "Onset/offset  ($\\downarrow$)"),
 SCALAR_ROW = ("scalar", r"Controllability  $S$")
 
 
-def _panel_file(root, name, fname):
-    """Locate a per-model JSON either flat in `root` (the results/ layout) or in
-    `root/<name>/` (the tracked results-panel/ layout, one directory per model).
-    Returns the first existing path, else None."""
-    for cand in (root / fname, root / name / fname):
-        if cand.exists():
-            return cand
-    return None
-
-
 def load_bars(data_root, channel="proj"):
-    """{model: {metric: (score,lo,hi) or None, 'scalar': (S,lo,hi), fam, size}}."""
+    """{model: {metric: (score,lo,hi) or None, 'scalar': (S,lo,hi), fam, size}}.
+
+    Reads the flat `results/` layout written by compute_scores.py / scalar_ci.py:
+    SCORES_<model>.json, ONSET_OFFSET_WORD_<model>.json, SCALAR_CI_<model>.json."""
     root = Path(data_root)
     bars = {}
     for name, fam, size in MODELS:
-        sp = _panel_file(root, name, f"SCORES_{name}.json")
-        if sp is None:
+        sp = root / f"SCORES_{name}.json"
+        if not sp.exists():
             continue
         meas = json.load(open(sp))["measures"]
         row = {"fam": fam, "size": size}
@@ -147,8 +139,8 @@ def load_bars(data_root, channel="proj"):
         # (ONSET_OFFSET_WORD_<model>.json), not the frozen 4th-TOKEN value in SCORES.
         # The onset gate is scored against the actual 4th-WORD boundary; offset gate
         # unchanged. See README / METRICS (2026-07-22). Falls back to SCORES if absent.
-        wp = _panel_file(root, name, f"ONSET_OFFSET_WORD_{name}.json")
-        if wp is not None:
+        wp = root / f"ONSET_OFFSET_WORD_{name}.json"
+        if wp.exists():
             wc = (json.load(open(wp)).get("channels", {}) or {}).get(channel)
             if wc and wc.get("score") is not None:
                 row["onset_offset_error"] = (wc.get("score"), wc.get("lo"), wc.get("hi"))
@@ -159,24 +151,23 @@ def load_bars(data_root, channel="proj"):
                                 if e and e.get("mean") is not None else None)
             else:
                 row["onset_offset_error"] = row["oo_onset"] = row["oo_offset"] = None
-        cp = _panel_file(root, name, f"SCALAR_CI_{name}.json")
-        if cp is not None:
+        cp = root / f"SCALAR_CI_{name}.json"
+        row["scalar"], row["point"] = None, False
+        if cp.exists():
             d = json.load(open(cp))
             row["scalar"] = (d.get("scalar"), d.get("ci_lo"), d.get("ci_hi"))
-            row["point"] = bool(d.get("point_estimate")) or d.get("ci_lo") is None or d.get("ci_hi") is None
-        else:
-            # No bootstrap CI (MoE panel models, no raw runs): point-estimate S from SCORES.
-            S, _, _ = agg.model_scalar(meas)  # projection channel, linear link, 7-measure S
-            row["scalar"] = (S, None, None) if S is not None else None
-            row["point"] = True
+            # Models scored from externally supplied recordings that were not retained:
+            # S is a point estimate, the joint bootstrap cannot be re-run. Marked in the
+            # figure so a bar with no error bar never reads as a tight CI.
+            row["point"] = bool(d.get("point_estimate"))
         bars[name] = row
     return bars
 
 
 def _layout(bars):
-    """x positions grouped by family then size; colors shade with size; family
-    label anchors. Returns (pos, colors, labels, order, fam_pos)."""
-    pos, colors, labels, order, fam_pos = [], [], [], [], {}
+    """x positions grouped by family then release date (size breaks ties); colors
+    shade with size. Returns (pos, colors, labels, order)."""
+    pos, colors, labels, order = [], [], [], []
     x = 0.0
     for fam in FAMILY_ORDER:
         mem = sorted([m for m in bars if bars[m]["fam"] == fam],
@@ -187,12 +178,11 @@ def _layout(bars):
         # returns the lightest tint, which would read as washed-out beside the
         # largest member of a multi-model family.
         shades = family_shades(fam, len(mem)) if len(mem) > 1 else [family_color(fam)]
-        fam_pos[fam] = []
         for m, sh in zip(mem, shades):
             pos.append(x); colors.append(sh)
-            labels.append(DETAIL.get(m, m)); order.append(m); fam_pos[fam].append(x); x += 1
+            labels.append(DETAIL.get(m, m)); order.append(m); x += 1
         x += 0.9
-    return pos, colors, labels, order, fam_pos
+    return pos, colors, labels, order
 
 
 def _bar_row(ax, bars, order, pos, colors, getter, ylab, mark_point=False):
@@ -206,9 +196,8 @@ def _bar_row(ax, bars, order, pos, colors, getter, ylab, mark_point=False):
             ax.errorbar(xp, sc, yerr=[[max(sc - lo, 0)], [max(hi - sc, 0)]], fmt="none",
                         ecolor="#222", elinewidth=0.8, capsize=2, zorder=3)
         elif mark_point and bars[m].get("point"):
-            # point-estimate model (panel-only, no raw run -> no JOINT bootstrap CI for S):
-            # open marker on the bar top so it never reads as a tight CI. Matches the paper's
-            # scalar figure. Per-measure rows keep their real marginal CIs.
+            # point-estimate S (raw not retained -> no joint bootstrap): open marker on the
+            # bar top so a missing error bar never reads as a tight CI.
             ax.plot(xp, sc, marker="o", mfc="white", mec="#222", mew=0.9, ms=4.0, zorder=4)
     ax.axhline(0, color="#888", lw=0.6)
     # Horizontal row-header label (rotation=0): vertical labels would overflow the short
@@ -223,7 +212,7 @@ def _bar_row(ax, bars, order, pos, colors, getter, ylab, mark_point=False):
 def render(bars, rows, out, channel, title):
     """Render one stacked bar-grid (one row per (key, label) in `rows`) to `out`."""
     Path(out).parent.mkdir(parents=True, exist_ok=True)
-    pos, colors, labels, order, fam_pos = _layout(bars)
+    pos, colors, labels, order = _layout(bars)
     n = len(rows)
     # Compact per-row height so the full grid + caption fits ONE AAAI page (US Letter, ~9"
     # text height). Width = AAAI text width (7.0") so \includegraphics[width=\textwidth] adds

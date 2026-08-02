@@ -27,17 +27,12 @@ From the repository root after installing `requirements.txt`:
 # Deterministic scalar reduction for one model (S, full precision via --json):
 python scripts/aggregate_scalar.py \
   --scores results-panel/qwen35_397b_a17b/SCORES_qwen35_397b_a17b.json
-
-# Cross-model comparison over every model present in the panel:
-python scripts/superplot.py --data-root results-panel
 ```
 
-The first command deterministically reproduces the scalar in the model's
-`SCALAR_CI_*.json` (S = 0.7010 for the example above). The second writes
-`model_comparison.png`, `null_measures_model_comparison.png`, and
-`degenerate_measures_model_comparison.png` under the gitignored `results/`
-directory; `superplot.py` discovers both flat `SCORES_*.json` files (the
-`results/` layout) and the per-model directories used here.
+This reduces the stored per-measure scores to S under the repository's current
+scalar definition. It will **not** match the `S` recorded in this directory's
+`SCALAR_CI_*.json`: those files were produced separately, under an earlier
+scalar definition, and are quoted as-is by the per-model sections below.
 
 ## Qwen3-235B-A22B-Instruct-2507 (`qwen3_235b_a22b_2507`)
 
