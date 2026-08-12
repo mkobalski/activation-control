@@ -85,20 +85,21 @@ RELEASE = {"gemma2_9b": "2024-06", "gemma3_27b": "2025-03", "gemma4_31b": "2026-
            "glm47_flash": "2026-01", "glm46v": "2025-12", "glm52": "2026-06"}
 
 # (SCORES key, row label). Three figures, kept apart on purpose:
-#  - MAIN_ROWS: every measure that FEEDS the scalar S (as of 2026-07-23 this includes
-#    suppress and layer_targeting, folded back in); the S row is appended when
-#    rendering -> model_comparison.png. suppress is shown at its raw signed d' (a
-#    below-baseline outlier and rebounders read directly); layer_targeting ≈ 0.
+#  - MAIN_ROWS: every measure that FEEDS the scalar S (suppress and layer_targeting
+#    folded back in 2026-07-23; dial_resolution REMOVED 2026-08-08 -- still computed
+#    and present in SCORES, but no longer part of S, so it is no longer plotted here);
+#    the S row is appended when rendering -> model_comparison.png. suppress is shown
+#    at its raw signed d' (a below-baseline outlier and rebounders read directly);
+#    layer_targeting ≈ 0.
 #  - NULL_ROWS: token_group -- the one NULL measure excluded from S (near-universal
 #    failure: models cannot steer the concept onto a target token type). The other
-#    measure excluded from S, onset/offset error, is a timing diagnostic and gets
-#    its own figure below -> null_measures_model_comparison.png
+#    measures excluded from S, onset/offset error and dial_resolution, are diagnostics;
+#    onset/offset gets its own figure below -> null_measures_model_comparison.png
 #  - DEGENERATE_ROWS: the word-based onset/offset error (combined aggregate + the
 #    separate signed onset & offset edges) -> degenerate_measures_model_comparison.png
 MAIN_ROWS = [("engage", "Engage"),
              ("suppress", "Suppress"),
              ("dial_rank", "Dial rank"),
-             ("dial_resolution", "Dial resolution"),
              ("temporal_control", "Temporal control"),
              ("coverage", "Coverage"),
              ("layer_targeting", "Layer targeting")]
@@ -166,10 +167,22 @@ def load_bars(data_root, channel="proj"):
 
 def _layout(bars):
     """x positions grouped by family then release date (size breaks ties); colors
-    shade with size. Returns (pos, colors, labels, order)."""
+    shade with size. Returns (pos, colors, labels, order).
+
+    Families are ordered by their TOP performer on the scalar S, descending -- the
+    same rule the paper's scalar figure (figure_scripts/scalar_a3i.py) uses, keyed on
+    the same S, so the two figures share one x-ordering. ONE order is computed here
+    and every measure row is drawn against it, so the rows inherit the ordering set
+    by the S row rather than each sorting itself. A family with no S falls last."""
+    def fam_top(fam):
+        vs = [bars[m]["scalar"][0] for m in bars
+              if bars[m]["fam"] == fam and bars[m].get("scalar") and bars[m]["scalar"][0] is not None]
+        return max(vs) if vs else float("-inf")
+
+    present = [f for f in FAMILY_ORDER if any(bars[m]["fam"] == f for m in bars)]
     pos, colors, labels, order = [], [], [], []
     x = 0.0
-    for fam in FAMILY_ORDER:
+    for fam in sorted(present, key=fam_top, reverse=True):
         mem = sorted([m for m in bars if bars[m]["fam"] == fam],
                      key=lambda m: (RELEASE.get(m, "9999-99"), bars[m]["size"]))
         if not mem:

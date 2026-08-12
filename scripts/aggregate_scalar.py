@@ -3,9 +3,11 @@
 
 Method (agreed 2026-07-14; full rationale in results/paper/SCALAR.md):
 
-  1. Keep seven measures (drop Token group = near-universal failure, and
-     onset/offset = coarse ↓-error): engage, suppress, dial_rank,
-     dial_resolution, temporal_control, coverage, layer_targeting. Both readout
+  1. Keep six measures (drop Token group = near-universal failure,
+     onset/offset = coarse ↓-error, and dial_resolution = a sign test with an
+     unpaired conversion, redundant with dial_rank; removed 2026-08-08):
+     engage, suppress, dial_rank,
+     temporal_control, coverage, layer_targeting. Both readout
      channels (cos, relnorm) are kept as SEPARATE components (coverage is
      cos-only). suppress and layer_targeting were folded back in on 2026-07-23
      (mentor sign-off): the point of the score is to show control is IMPERFECT,
@@ -74,16 +76,25 @@ _PHI = NormalDist().cdf
 _SQRT2 = math.sqrt(2.0)
 _EPS = 1e-6
 
-# The SEVEN kept measures, in report order. suppress measures
+# The SIX kept measures, in report order. suppress measures
 # `dont_think_about − no_instruction`: no_instruction is already the concept's
 # resting floor, so success is bounded and most models sit near chance -- which is
 # exactly why it belongs in S (it shows models cannot suppress on command) rather
 # than being hidden as a diagnostic; the white-bear rebound (wrong-way) reads as
 # p < 0.5 and penalizes. layer_targeting is a designed null (~0 for every model),
-# folded in as a near-uniform drag. Excluded from S by design and reported as
-# diagnostics only: onset_offset_error (coarse ↓-error) and token_group
+# folded in as a near-uniform drag.
+#
+# dial_resolution was REMOVED from S on 2026-08-08. It is a per-unit sign test
+# (win = 1 / 0.5 / 0 over the three adjacent level pairs) converted with the
+# UNPAIRED two-sample constant sqrt(2)*PhiInv -- a conversion that only applies to
+# independent samples, whereas the pairs are within-unit. It therefore never
+# measured magnitude separation, and it ranked models at Spearman 0.99 with
+# dial_rank, giving the dial 2/7 of a measure-equal composite. It is still
+# COMPUTED and reported in SCORES_<model>.json as a diagnostic; it just no longer
+# enters S. Excluded from S by design and reported as diagnostics only:
+# dial_resolution, onset_offset_error (coarse ↓-error) and token_group
 # (near-universal failure).
-KEPT_MEASURES = ["engage", "suppress", "dial_rank", "dial_resolution",
+KEPT_MEASURES = ["engage", "suppress", "dial_rank",
                  "temporal_control", "coverage", "layer_targeting"]
 SHORT = {"engage": "enga", "suppress": "supp", "dial_rank": "rank",
          "dial_resolution": "res", "temporal_control": "temp", "coverage": "cove",
@@ -115,19 +126,53 @@ CHANNEL_SETS = {"projection": ("proj",),
 # suppress raised 1.0->3.0 on 2026-07-23: at 1.0 any suppress d' >= 1 saturated to
 # full credit, so the lone below-baseline outlier (Gemma 4 31B, d'~1.45, wide CI)
 # earned MORE credit than the honest ~0.5 suppressors; 3.0 keeps it off the ceiling
-# and preserves the informative ordering. layer_targeting shares temporal's
-# standardized-contrast scale (5.0); since every model scores ~0 there, its p ~ 0.5
-# for all -> a uniform drag that does not reorder models.
+# and preserves the informative ordering. layer_targeting is anchored a priori at
+# 5.0 on the STANDARDIZED-CONTRAST scale (the Delta/sigma construction it shares with
+# temporal control) -- deliberately NOT derived from its roster max, which is ~0.05:
+# calibrating a designed null to its own maximum would spread p across [0.18, 0.99]
+# and turn noise around zero into an apparent capability. At 5.0 every model sits at
+# p ~ 0.5 -> a uniform drag that does not reorder models. (This anchor is independent
+# of temporal control's constant; the two no longer share a value.)
 # engage 8.0->16.4 and coverage 1.5->4.11 on 2026-07-24: on the 25-model roster both
 # axes were saturating (median p = 1.00; coverage clipped to full credit for 57% of
 # models, engage 54%), so they inflated S without discriminating. Each D_REF is now set
 # just above that axis's ROSTER-MAX d' (engage 16.06, coverage 4.03; x1.02 margin), so
 # the strongest model lands at p~0.99 instead of pinned at 1.0 and the axis stays
 # discriminating across its full observed range. This de-compresses the mid-pack.
+# temporal_control 5.0->6.90 on 2026-08-08: it was the last axis still saturating
+# (roster max 6.7696 > 5.0 pinned olmo31_32b and gemma2_9b at p = 1.0). Set by the
+# same rule as engage/coverage -- roster-max x1.02 -- so all three capability axes
+# now follow one rule. No axis is pinned afterwards. dial_resolution's entry is kept
+# for the diagnostic, which is still computed and reported outside S.
 # These are the metric's calibration constants ("the whole ballgame") -- REVISIT and
 # re-run all models if the panel grows or the notion of "perfect" per axis changes.
 D_REF = {"engage": 16.4, "suppress": 3.0, "dial_resolution": 3.0,
-         "temporal_control": 5.0, "coverage": 4.11, "layer_targeting": 5.0}
+         "temporal_control": 6.90, "coverage": 4.11, "layer_targeting": 5.0}
+
+# ---- OPEN ITEMS on this calibration (flagged 2026-08-10, deferred) ---------------
+# 1. layer_targeting's ceiling is very high relative to what is observed: D_REF 5.0
+#    against a roster max of 0.0535, i.e. ~93x. Its p therefore spans only
+#    [0.497, 0.505] across all 25 models -- a range of 0.009, against engage's 0.467.
+#    It contributes a near-constant ~0.5^(1/6) factor to G: it deflates every S by the
+#    same amount without separating any two models (dropping it moves the ranking by
+#    Spearman 0.999). That is defensible AS A DELIBERATE STATEMENT -- S should show
+#    that no model achieves layer-addressable control -- but it is a statement, not a
+#    measurement, so "six measures" spans five DISCRIMINATING axes. Decide whether to
+#    keep it in S or report it alongside as a standalone null result.
+# 2. CONSIDERED AND DECLINED 2026-08-10. Each empirical ceiling is set by a SINGLE
+#    model (engage 16.4 and coverage 4.11 by GLM 4.6V, temporal_control 6.90 by
+#    Olmo 3.1 32B), so dropping that model would move the ceiling. Trimmed statistics
+#    were evaluated as a fix and rejected: any rule that puts the ceiling BELOW the
+#    roster max necessarily saturates the top model, which is the exact pathology the
+#    2026-07-24 and 2026-08-08 recalibrations removed. Measured on this roster --
+#    p95 x1.02 pins 1/2/1 models on engage/coverage/temporal; top-2-mean x1.02 pins
+#    1/1/1; the current max x1.02 pins 0/0/0. "Robust to one observation" and "nothing
+#    pins" cannot both hold for a single constant. If this is ever revisited, the
+#    version worth trying is WINSORIZING (clip scores at the 95th percentile, then
+#    calibrate to the clipped max x1.02): the ceiling stops depending on the single
+#    largest value and nothing pins, at the cost of no longer separating the top one
+#    or two models on that axis.
+# ---------------------------------------------------------------------------------
 LINKS = ("linear", "phi")
 
 
@@ -147,7 +192,13 @@ def _to_prob(measure, cell, link="linear"):
             p = _PHI(score / _SQRT2)
     else:                                            # phi: d' or SD-unit contrast
         p = _PHI(score / _SQRT2)
-    return min(max(float(p), _EPS), 1.0 - _EPS)
+    # Bound p to [_EPS, 1]. The LOWER bound protects the logarithm in the geometric
+    # mean: log(0) diverges to -inf and would wipe out that model's G. There is no
+    # matching need at the top -- log(1) = 0 -- so the upper end is left at exactly 1
+    # (the inset to 1-_EPS was dropped 2026-08-10). This lets a measure that genuinely
+    # reaches its ceiling read as 1: on the current roster that is Llama 3.1 8B, whose
+    # dial rank is exactly rho = 1. Effect on its S is +2.6e-07; no other model moves.
+    return min(max(float(p), _EPS), 1.0)
 
 
 def model_scalar(measures, channels=CHANNEL_SETS["projection"], link="linear"):

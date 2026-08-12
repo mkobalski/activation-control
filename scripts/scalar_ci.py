@@ -66,20 +66,24 @@ TEMP_CONDS = sd.TARGET_GROUPS["temporal_control"]   # loc_beginning, persist_onc
 LINK = "linear"
 
 
+# p is bounded to [_EPS, 1] throughout, matching aggregate_scalar._to_prob. Only the
+# LOWER bound is needed: log(0) diverges to -inf in the geometric mean. log(1) = 0, so
+# the top is left at exactly 1 (the 1-_EPS inset was dropped 2026-08-10) and a measure
+# that genuinely reaches its ceiling reads as 1.
 def _p_phi(reps):
     return np.clip(np.array([_PHI(x / _SQRT2) if np.isfinite(x) else np.nan for x in reps]),
-                   _EPS, 1 - _EPS)
+                   _EPS, 1.0)
 
 
 def _p_rank(reps):
-    return np.clip((np.asarray(reps, float) + 1.0) / 2.0, _EPS, 1 - _EPS)
+    return np.clip((np.asarray(reps, float) + 1.0) / 2.0, _EPS, 1.0)
 
 
 def _p_score(measure, reps):
     """Link for a d'/contrast measure's replicate array, per the active LINK:
     'linear' = clip(0.5 + score/(2*D_REF[measure])); 'phi' = Phi(score/sqrt2)."""
     if LINK == "linear":
-        return np.clip(0.5 + np.asarray(reps, float) / (2.0 * agg.D_REF[measure]), _EPS, 1 - _EPS)
+        return np.clip(0.5 + np.asarray(reps, float) / (2.0 * agg.D_REF[measure]), _EPS, 1.0)
     return _p_phi(reps)
 
 
@@ -301,20 +305,26 @@ def joint_bootstrap(run, *, channels, n_boot=2000, seed=0, lt_run=None):
         comp[f"coverage|{ch}"] = dict(obs=float(np.nanmin(st["dp"])), reps=cov_reps,
                                       p=_p_score("coverage", cov_reps))
 
-    # dial rank / resolution (twoway kernel) -- BOTH-PEAK: both read at the same
+    # dial rank / resolution (twoway kernel) -- BOTH-PEAK: read at the same
     # peak-dial layer L* (argmax mean-unit rank), matching compute_scores.rows_3_4.
+    # dial_resolution is gated on KEPT_MEASURES like suppress and layer_targeting:
+    # S is assembled from `comp` (names = list(comp) below), so a component left in
+    # here would enter the composite even when KEPT_MEASURES excludes it, and the
+    # bootstrapped S would silently disagree with aggregate_scalar's point estimate.
+    _keep_res = "dial_resolution" in agg.KEPT_MEASURES
     for ch in channels:
         UR, WIN, sid, cid = dial[ch]
         sents_ax, concs_ax = cs.twoway_axes([(UR, sid, cid)])
         Ws, Wc = projW(sents_ax), projM(concs_ax)
         li = int(np.nanargmax(np.nanmean(UR, axis=0)))
         URstar = UR[:, li:li + 1]
-        UWstar = WIN[:, :, li]
         obs_r, reps_r = cs.twoway([(URstar, sid, cid)], stat=_rank_stat, Ws=Ws, Wc=Wc, return_reps=True)
-        obs_s, reps_s = cs.twoway([(UWstar, sid, cid)], stat=_res_stat, Ws=Ws, Wc=Wc, return_reps=True)
         comp[f"dial_rank|{ch}"] = dict(obs=obs_r, reps=reps_r, p=_p_rank(reps_r))
-        comp[f"dial_resolution|{ch}"] = dict(obs=obs_s, reps=reps_s,
-                                             p=_p_score("dial_resolution", reps_s))
+        if _keep_res:
+            UWstar = WIN[:, :, li]
+            obs_s, reps_s = cs.twoway([(UWstar, sid, cid)], stat=_res_stat, Ws=Ws, Wc=Wc, return_reps=True)
+            comp[f"dial_resolution|{ch}"] = dict(obs=obs_s, reps=reps_s,
+                                                 p=_p_score("dial_resolution", reps_s))
 
     # temporal control (twoway kernel over the three temporal conds)
     for ch in channels:
@@ -371,7 +381,7 @@ def joint_bootstrap(run, *, channels, n_boot=2000, seed=0, lt_run=None):
             p_obs[n] = 0.5 + s / (2.0 * agg.D_REF[m])
         else:
             p_obs[n] = _PHI(s / _SQRT2)
-        p_obs[n] = min(max(p_obs[n], _EPS), 1 - _EPS)
+        p_obs[n] = min(max(p_obs[n], _EPS), 1.0)
     logG_obs = sum(comp[n]["weight"] * math.log(p_obs[n]) for n in names)
     S_obs = min(max(2.0 * math.exp(logG_obs) - 1.0, 0.0), 1.0)
 

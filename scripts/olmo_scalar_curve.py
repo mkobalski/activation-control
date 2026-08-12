@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Single-panel Experiment C figure: Controllability S across training, 7B vs 3.1-32B.
 
-Just the canonical 7-component S (point estimates), two Olmo curves aligned by
+Just the canonical S (point estimates; six measures as of 2026-08-08), two Olmo curves aligned by
 stage. S reconstructed from stored per-measure scores in SCORES_<model>.json
 (validated to reproduce the shared-file S). No error bars — snapshots' raw is
 pruned, so no joint bootstrap CI. Output: results/olmo_scalar_curve_7b_32b.{png,pdf}
@@ -15,6 +15,7 @@ matplotlib.use("Agg")
 matplotlib.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42, "savefig.dpi": 200})
 import matplotlib.pyplot as plt                                          # noqa: E402
 from model_family_colors import family_shades                            # noqa: E402
+import aggregate_scalar as agg                                           # noqa: E402  (canonical KEPT_MEASURES / D_REF)
 
 ROOT = Path(__file__).resolve().parent.parent / "results"
 STAGES = ["Stage 1\nearly", "Stage 1\nfinal", "Base\n(mid-train)", "SFT", "DPO", "Instruct"]
@@ -25,11 +26,11 @@ SERIES = [
                       "olmo31_32b_sft", "olmo31_32b_dpo", "olmo31_32b"]),
 ]
 _EPS = 1e-6
-# MUST match aggregate_scalar.D_REF (engage/coverage recalibrated 2026-07-24).
-_DREF = {"engage": 16.4, "suppress": 3.0, "dial_resolution": 3.0,
-         "temporal_control": 5.0, "coverage": 4.11, "layer_targeting": 5.0}
-_KEPT = ["engage", "suppress", "dial_rank", "dial_resolution",
-         "temporal_control", "coverage", "layer_targeting"]
+# Read the kept-measure set and D_REF from aggregate_scalar rather than copying
+# them: local copies drifted out of sync twice before (the 2026-07-24 D_REF
+# recalibration, and the 2026-08-08 removal of dial_resolution from S).
+_DREF = agg.D_REF
+_KEPT = agg.KEPT_MEASURES
 
 
 def new_scalar(model, channel="proj"):

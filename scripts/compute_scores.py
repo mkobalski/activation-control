@@ -751,7 +751,9 @@ def main():
     print("CIs: 95% two-way cluster bootstrap (sentences × concepts); peak/min-inside-replicate")
     print("for Engage/Suppress/Coverage (mildly optimistic/pessimistic).")
     print("Onset/offset error (↓) is computed but EXCLUDED from the scalar (timing diagnostic);")
-    print("Suppress & Layer targeting ARE in S (7 measures) since 2026-07-23.")
+    print("Suppress & Layer targeting ARE in S since 2026-07-23. Dial resolution is computed")
+    print("but EXCLUDED from S since 2026-08-08 (sign test w/ unpaired link; see aggregate_scalar).")
+    print("S is a SIX-measure composite.")
     print("(Retired: Temporal control (CoM), Token group (CoM) -- no longer computed.)")
 
     if args.json:
