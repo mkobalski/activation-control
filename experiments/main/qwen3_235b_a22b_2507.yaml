@@ -1,0 +1,10 @@
+# MAIN experiment on Qwen3-235B-A22B-Instruct-2507 (Qwen). MoE 235B total /
+# 22B active. NON-THINKING ONLY by design (the -2507 Instruct split has no
+# <think> turn), so the builder default is a no-op and it transcribes directly.
+# System role, no quirk sets. Inherits everything from config.yaml. ~3x B200
+# (bf16 ~544 GB footprint).
+extends: config.yaml
+
+model:
+  name: "qwen3_235b_a22b_2507"
+  quantization: null

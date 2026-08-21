@@ -1,0 +1,15 @@
+# MAIN experiment on Qwen3.5-397B-A17B (Qwen). MoE 397B total / ~17B active.
+# HYBRID thinking, pinned OFF exactly like qwen35_122b_a10b.yaml: the checkpoint's
+# chat_template.jinja emits a closed '<think>\n\n</think>' block when
+# enable_thinking=false (verified 2026-07-23 at revision 84726181), so the model
+# transcribes the sentence directly and this short name is NOT in REASONING_MODELS.
+# VLM checkpoint (image-text-to-text): the wrapper auto-probes
+# AutoModelForImageTextToText and reaches decoder layers via
+# language_model.layers (60 text layers; the 20-fraction sweep resolves to 20
+# distinct depths). bf16 ~807 GB -> 6x B200. Inherits everything from config.yaml.
+extends: config.yaml
+
+model:
+  name: "qwen35_397b_a17b"
+  quantization: null
+  enable_thinking: false

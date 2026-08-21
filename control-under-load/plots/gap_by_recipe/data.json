@@ -1,0 +1,102 @@
+[
+  {
+    "run": "final v3.1",
+    "recipe": "m=3, k=5, R=10",
+    "gap_dprime": 0.2927220704336478,
+    "gap_ci_low": 0.11768319164965585,
+    "gap_ci_high": 0.49297438131794935,
+    "baseline_accuracy": 0.9625,
+    "accuracy_ci_low": 0.930379746835443,
+    "accuracy_ci_high": 0.9888268156424581
+  },
+  {
+    "run": "final v3.1",
+    "recipe": "m=4, k=4, R=12",
+    "gap_dprime": 0.2421263072470843,
+    "gap_ci_low": 0.10685749065895984,
+    "gap_ci_high": 0.37363994655737315,
+    "baseline_accuracy": 0.85,
+    "accuracy_ci_low": 0.7922012551207183,
+    "accuracy_ci_high": 0.9019642122583299
+  },
+  {
+    "run": "final v3.1",
+    "recipe": "m=5, k=3, R=10",
+    "gap_dprime": 0.13735640099475332,
+    "gap_ci_low": 0.05565717093366138,
+    "gap_ci_high": 0.22923479035375344,
+    "baseline_accuracy": 0.55625,
+    "accuracy_ci_low": 0.47681242695753795,
+    "accuracy_ci_high": 0.6311489943029881
+  },
+  {
+    "run": "final v3.1",
+    "recipe": "m=5, k=4, R=12",
+    "gap_dprime": 0.1587776356534,
+    "gap_ci_low": 0.05624508028882615,
+    "gap_ci_high": 0.27645212815523273,
+    "baseline_accuracy": 0.34375,
+    "accuracy_ci_low": 0.27271288837744534,
+    "accuracy_ci_high": 0.41619701348747584
+  },
+  {
+    "run": "final v3.1",
+    "recipe": "m=5, k=5, R=16",
+    "gap_dprime": 0.12271306883253902,
+    "gap_ci_low": -0.029108437894444252,
+    "gap_ci_high": 0.29339291779716226,
+    "baseline_accuracy": 0.10625,
+    "accuracy_ci_low": 0.06097560975609756,
+    "accuracy_ci_high": 0.15789473684210525
+  },
+  {
+    "run": "earlier v3",
+    "recipe": "m=3, k=5, R=10",
+    "gap_dprime": 0.28786259034330286,
+    "gap_ci_low": 0.08428001017183966,
+    "gap_ci_high": 0.596489437047845,
+    "baseline_accuracy": 0.9375,
+    "accuracy_ci_low": 0.8767123287671232,
+    "accuracy_ci_high": 0.9866666666666667
+  },
+  {
+    "run": "earlier v3",
+    "recipe": "m=4, k=4, R=12",
+    "gap_dprime": 0.24761304713015092,
+    "gap_ci_low": 0.05997573877125599,
+    "gap_ci_high": 0.557885521547648,
+    "baseline_accuracy": 0.9125,
+    "accuracy_ci_low": 0.8437236657303371,
+    "accuracy_ci_high": 0.9687620192307692
+  },
+  {
+    "run": "earlier v3",
+    "recipe": "m=5, k=3, R=10",
+    "gap_dprime": 0.2555689974045346,
+    "gap_ci_low": 0.02641839721430083,
+    "gap_ci_high": 0.5141968986617647,
+    "baseline_accuracy": 0.5375,
+    "accuracy_ci_low": 0.426632183908046,
+    "accuracy_ci_high": 0.6486824324324323
+  },
+  {
+    "run": "earlier v3",
+    "recipe": "m=5, k=4, R=12",
+    "gap_dprime": 0.19741792843817,
+    "gap_ci_low": 0.05294011104265975,
+    "gap_ci_high": 0.4980674413026485,
+    "baseline_accuracy": 0.375,
+    "accuracy_ci_low": 0.2714075630252101,
+    "accuracy_ci_high": 0.4838709677419355
+  },
+  {
+    "run": "earlier v3",
+    "recipe": "m=5, k=5, R=16",
+    "gap_dprime": 0.19534116751882502,
+    "gap_ci_low": 0.010127023433727534,
+    "gap_ci_high": 0.5853414756678728,
+    "baseline_accuracy": 0.0625,
+    "accuracy_ci_low": 0.012987012987012988,
+    "accuracy_ci_high": 0.12048192771084337
+  }
+]

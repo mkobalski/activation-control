@@ -1,0 +1,10 @@
+# MAIN experiment on Llama-3.1-8B-Instruct (Meta; dense, standard
+# LlamaForCausalLM, has a system role, no thinking toggle -> no quirk sets).
+# Inherits everything from config.yaml; only the model changes, so it runs the
+# SAME standardized protocol as the rest of the panel, with the depth fractions
+# resolved to Llama's 32 layers.
+extends: config.yaml
+
+model:
+  name: "llama_8b"
+  quantization: null

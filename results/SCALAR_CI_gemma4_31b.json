@@ -1,0 +1,63 @@
+{
+  "model": "gemma4_31b",
+  "main_run": "/workspace/activation-control/results/raw/20260711_040832_gemma4_31b_activation_control",
+  "channel_set": "projection",
+  "channels": [
+    "proj"
+  ],
+  "link": "linear",
+  "d_ref": {
+    "engage": 16.4,
+    "suppress": 3.0,
+    "dial_resolution": 3.0,
+    "temporal_control": 6.9,
+    "coverage": 4.11,
+    "layer_targeting": 5.0
+  },
+  "scalar": 0.2486599174213746,
+  "ci_lo": 0.1958526666488224,
+  "ci_hi": 0.32501674575386397,
+  "n_boot": 2000,
+  "seed": 0,
+  "n_sentences": 50,
+  "n_concepts": 10,
+  "dropped_replicates": 0,
+  "components": {
+    "engage|proj": {
+      "obs": 1.3849694163644979,
+      "p_obs": 0.5422246773281859,
+      "lo": 1.1466288168655467,
+      "hi": 5.093945278577214
+    },
+    "suppress|proj": {
+      "obs": 1.4485273376691734,
+      "p_obs": 0.7414212229448622,
+      "lo": 0.2673586044956305,
+      "hi": 3.3813909793536
+    },
+    "coverage|proj": {
+      "obs": 0.16305128880088765,
+      "p_obs": 0.5198359232117868,
+      "lo": 0.0542310947185743,
+      "hi": 0.23339504201307776
+    },
+    "dial_rank|proj": {
+      "obs": 0.7008,
+      "p_obs": 0.8504,
+      "lo": 0.6148000000000003,
+      "hi": 0.78521
+    },
+    "temporal_control|proj": {
+      "obs": 2.32005025577104,
+      "p_obs": 0.6681195837515246,
+      "lo": 1.6154094507065078,
+      "hi": 3.100332326760517
+    },
+    "layer_targeting|proj": {
+      "obs": -0.012337970483433228,
+      "p_obs": 0.4987662029516567,
+      "lo": -0.02571279024919234,
+      "hi": -0.0009949424714835694
+    }
+  }
+}

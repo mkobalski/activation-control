@@ -1,0 +1,95 @@
+{
+  "model": "llama33_70b",
+  "measure": "onset_offset_error_word",
+  "supersedes": {
+    "file": "SCORES_llama33_70b.json",
+    "measure": "onset_offset_error",
+    "reason": "onset gate requested position uses the 4th-WORD boundary (the prompt wording) instead of the 4th TOKEN"
+  },
+  "method": "onset req = mean fractional position of the 5th-word-start token; offset req = 0.5; error = detected - req (half-max crossings); per-edge 95% bootstrap CI (B=2000, seed=0); score = mean(|onset|,|offset|). A constant shift of the onset edge from scripts/compute_scores.py::_persistence_edges (offset unchanged).",
+  "n_boot": 2000,
+  "seed": 0,
+  "channels": {
+    "cos": {
+      "score": 0.16262955935212034,
+      "lo": null,
+      "hi": null,
+      "n_units": 492,
+      "edges": [
+        {
+          "edge": "onset",
+          "gate": "After 4th word",
+          "mean": -0.2752591187042407,
+          "lo": -0.2752591187042407,
+          "hi": -0.2752591187042407,
+          "req_word": 0.4252591187042407,
+          "req_token": 0.37188798103432247,
+          "detected": 0.15
+        },
+        {
+          "edge": "offset",
+          "gate": "First half",
+          "mean": -0.04999999999999999,
+          "lo": -0.15000000000000002,
+          "hi": -0.04999999999999999,
+          "req": 0.5,
+          "detected": 0.45
+        }
+      ]
+    },
+    "relnorm": {
+      "score": 0.4126295593521203,
+      "lo": null,
+      "hi": null,
+      "n_units": 492,
+      "edges": [
+        {
+          "edge": "onset",
+          "gate": "After 4th word",
+          "mean": -0.3752591187042407,
+          "lo": -0.3752591187042407,
+          "hi": 0.42474088129575926,
+          "req_word": 0.4252591187042407,
+          "req_token": 0.37188798103432247,
+          "detected": 0.05
+        },
+        {
+          "edge": "offset",
+          "gate": "First half",
+          "mean": 0.44999999999999996,
+          "lo": 0.44999999999999996,
+          "hi": 0.44999999999999996,
+          "req": 0.5,
+          "detected": 0.95
+        }
+      ]
+    },
+    "proj": {
+      "score": 0.31262955935212033,
+      "lo": null,
+      "hi": null,
+      "n_units": 492,
+      "edges": [
+        {
+          "edge": "onset",
+          "gate": "After 4th word",
+          "mean": -0.2752591187042407,
+          "lo": -0.2752591187042407,
+          "hi": -0.2752591187042407,
+          "req_word": 0.4252591187042407,
+          "req_token": 0.37188798103432247,
+          "detected": 0.15
+        },
+        {
+          "edge": "offset",
+          "gate": "First half",
+          "mean": -0.35,
+          "lo": -0.35,
+          "hi": -0.35,
+          "req": 0.5,
+          "detected": 0.15
+        }
+      ]
+    }
+  }
+}

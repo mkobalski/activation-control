@@ -1,0 +1,54 @@
+# Baseline sentence set (neutral; avoids the concept words). Sourced by the
+# experiment configs via `sentences_file: sentences.txt`.
+# Register-rich probes live in exaggerated_phrases.txt.
+# Additional (optional) sentences in extra_sentences.txt.
+s0: The old photograph brought back forgotten memories.
+s1: A bright kite drifted slowly across the empty park.
+s2: The library closed early because of the heavy snowfall.
+s3: She arranged the glass bottles along the windowsill carefully.
+s4: The train arrived at the station just before midnight.
+s5: The elevator doors slid shut just as he reached the lobby.
+s6: She stacked the folders, labeled each tab, and shut the drawer.
+s7: A faint hum came from the refrigerator down the hall.
+s8: The bus pulled away before the last passenger sat down.
+s9: He wiped the table, refilled the mugs, and dimmed the lights.
+s10: Rain streaked the windows while the meeting dragged on.
+s11: The clerk stamped each form, then slid them under the glass.
+s12: The meeting started late, so everyone rushed through the agenda.
+s13: After the rain stopped, the streets looked clean and quiet.
+s14: She locked the door, checked the mail, and hurried to the bus.
+s15: The clock on the wall was ten minutes fast.
+s16: He poured a cup of tea and sat by the window.
+s17: When the phone rang, nobody bothered to answer it.
+s18: The children played outside until it grew dark.
+s19: My neighbor waved, smiled, and walked toward the corner shop.
+s20: The printer jammed again, and the report was already late.
+s21: A cold wind swept across the empty parking lot.
+s22: She wrote a short note, folded it, and left it on the desk.
+s23: The bus was crowded, but I found a seat near the back.
+s24: He forgot his keys, so he waited on the steps for an hour.
+s25: The kitchen smelled of coffee and warm cinnamon.
+s26: They painted the fence white and cleaned the old gate.
+s27: Before the movie began, we grabbed snacks and found our seats.
+s28: The librarian stamped the book and handed it back with a smile.
+s29: A thin layer of frost covered the car this morning.
+s30: She tied her shoes, stretched, and started her morning run.
+s31: The lamp flickered twice; then the room went dark.
+s32: We took the early train and reached the city by noon.
+s33: The dog barked at the mailman, then rolled over lazily.
+s34: He fixed the leaky faucet, but the sink still dripped.
+s35: The store was closed, so we walked to the corner instead.
+s36: Rain tapped against the window all through the night.
+s37: She sorted the laundry, folded the towels, and swept the floor.
+s38: The teacher wrote three questions on the board.
+s39: A quiet street lined with old lamps led to the square.
+s40: He checked his watch, sighed, and joined the long line.
+s41: The elevator was broken, so we climbed the stairs.
+s42: They chatted for hours, laughing about old memories.
+s43: The road curved sharply, then dropped toward the river.
+s44: She opened the box, unwrapped the gift, and gasped.
+s45: Warm light spilled from the cafe onto the wet pavement.
+s46: The kettle whistled; steam filled the small room.
+s47: He parked the car, grabbed his bag, and ran for the gate.
+s48: A gentle breeze moved the curtains near the open window.
+s49: The waiter brought the menus and filled our glasses with water.

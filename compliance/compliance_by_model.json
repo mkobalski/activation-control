@@ -1,0 +1,675 @@
+{
+  "generated": "2026-07-31",
+  "definition": "compliance_rate = share of trials whose transcription reaches Ratcliff-Obershelp similarity >= 0.85 to the target sentence (results.json -> metrics.compliance_rate). Base checkpoints are scored on the first |target| characters; reasoning models on the final channel only. See the paper's Supplementary Material, 'Trial compliance'.",
+  "trial_counts": {
+    "main": 8600,
+    "layer_targeting": 8800
+  },
+  "models": {
+    "gemma2_9b": {
+      "main_run": "20260715_155552_gemma2_9b_activation_control",
+      "lt_run": "20260715_161238_gemma2_9b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.865,
+        "n_trials": 8600,
+        "n_compliant": 7439
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "gemma3_27b": {
+      "main_run": "20260715_030627_gemma3_27b_activation_control",
+      "lt_run": "20260715_152927_gemma3_27b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9333720930232559,
+        "n_trials": 8600,
+        "n_compliant": 8027
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "gemma4_12b": {
+      "main_run": "20260722_010419_gemma4_12b_activation_control",
+      "lt_run": "20260722_011710_gemma4_12b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9998837209302326,
+        "n_trials": 8600,
+        "n_compliant": 8599
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "gemma4_31b": {
+      "main_run": "20260711_040832_gemma4_31b_activation_control",
+      "lt_run": "20260711_042936_gemma4_31b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 1.0,
+        "n_trials": 8600,
+        "n_compliant": 8600
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "glm46v": {
+      "main_run": "20260722_220417_glm46v_activation_control",
+      "lt_run": "20260722_230732_glm46v_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9605813953488372,
+        "n_trials": 8600,
+        "n_compliant": 8261
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "glm47_flash": {
+      "main_run": "20260722_024102_glm47_flash_activation_control",
+      "lt_run": "20260722_030626_glm47_flash_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9597674418604651,
+        "n_trials": 8600,
+        "n_compliant": 8254
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "glm52": {
+      "main_run": "20260724_015723_glm52_activation_control",
+      "lt_run": "20260724_015813_glm52_activation_control_lt",
+      "provenance": "documented",
+      "source": "results-panel/README.md",
+      "main": {
+        "rate": 0.9991,
+        "n_trials": 8600,
+        "note": "verified with zero think tags (enable_thinking=false pinned)"
+      },
+      "lt": null
+    },
+    "gptoss_120b_low": {
+      "main_run": "20260714_021252_gptoss_120b_low_activation_control",
+      "lt_run": "20260714_033508_gptoss_120b_low_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9977906976744186,
+        "n_trials": 8600,
+        "n_compliant": 8581
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "gptoss_20b_low": {
+      "main_run": "20260723_232738_gptoss_20b_low_activation_control",
+      "lt_run": "20260723_234754_gptoss_20b_low_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9998837209302326,
+        "n_trials": 8600,
+        "n_compliant": 8599
+      },
+      "lt": {
+        "rate": 0.9975,
+        "n_trials": 8800,
+        "n_compliant": 8778
+      }
+    },
+    "llama33_70b": {
+      "main_run": "20260712_041546_llama33_70b_activation_control",
+      "lt_run": "20260712_044248_llama33_70b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.94,
+        "n_trials": 8600,
+        "n_compliant": 8084
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "llama4_maverick": {
+      "main_run": "20260724_002143_llama4_maverick_activation_control",
+      "lt_run": "20260724_002241_llama4_maverick_activation_control_lt",
+      "provenance": "documented",
+      "source": "results-panel/README.md",
+      "main": {
+        "rate": 0.9559,
+        "n_trials": 8600
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800
+      }
+    },
+    "llama4_scout": {
+      "main_run": "20260722_204344_llama4_scout_activation_control",
+      "lt_run": "20260722_210516_llama4_scout_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9096511627906977,
+        "n_trials": 8600,
+        "n_compliant": 7823
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "llama_8b": {
+      "main_run": "20260722_003238_llama_8b_activation_control",
+      "lt_run": "20260722_005503_llama_8b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.8817441860465116,
+        "n_trials": 8600,
+        "n_compliant": 7583
+      },
+      "lt": {
+        "rate": 0.9971590909090909,
+        "n_trials": 8800,
+        "n_compliant": 8775
+      }
+    },
+    "mistral_small_31_24b": {
+      "main_run": "20260718_223900_mistral_small_31_24b_activation_control",
+      "lt_run": "20260718_230318_mistral_small_31_24b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.8955813953488372,
+        "n_trials": 8600,
+        "n_compliant": 7702
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "mistral_small_4": {
+      "main_run": "20260722_195352_mistral_small_4_activation_control",
+      "lt_run": "20260722_200946_mistral_small_4_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9259302325581396,
+        "n_trials": 8600,
+        "n_compliant": 7963
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "olmo31_32b": {
+      "main_run": "20260718_200202_olmo31_32b_activation_control",
+      "lt_run": "20260718_204900_olmo31_32b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9445348837209302,
+        "n_trials": 8600,
+        "n_compliant": 8123
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "olmo31_32b_base": {
+      "main_run": "20260723_175932_olmo31_32b_base_activation_control",
+      "lt_run": "20260723_184242_olmo31_32b_base_activation_control_lt",
+      "provenance": "wandb",
+      "source": "W&B mkobalski-none/activation-control (raw pruned by olmo_snapshot_lane.sh)",
+      "main": {
+        "rate": 0.9609302325581396,
+        "n_trials": 8600,
+        "n_compliant": 8264,
+        "wandb_run": "activation_control_175942",
+        "wandb_init_lag_s": 13,
+        "active_sets": [
+          "intensity",
+          "token_location",
+          "persistence"
+        ]
+      },
+      "lt": {
+        "rate": 1,
+        "n_trials": 8800,
+        "n_compliant": 8800,
+        "wandb_run": "activation_control_184253",
+        "wandb_init_lag_s": 13,
+        "active_sets": [
+          "layer_location"
+        ]
+      }
+    },
+    "olmo31_32b_dpo": {
+      "main_run": "20260723_170533_olmo31_32b_dpo_activation_control",
+      "lt_run": "20260723_173349_olmo31_32b_dpo_activation_control_lt",
+      "provenance": "wandb",
+      "source": "W&B mkobalski-none/activation-control (raw pruned by olmo_snapshot_lane.sh)",
+      "main": {
+        "rate": 0.9037209302325582,
+        "n_trials": 8600,
+        "n_compliant": 7772,
+        "wandb_run": "activation_control_170549",
+        "wandb_init_lag_s": 19,
+        "active_sets": [
+          "intensity",
+          "token_location",
+          "persistence"
+        ]
+      },
+      "lt": {
+        "rate": 1,
+        "n_trials": 8800,
+        "n_compliant": 8800,
+        "wandb_run": "activation_control_173432",
+        "wandb_init_lag_s": 47,
+        "active_sets": [
+          "layer_location"
+        ]
+      }
+    },
+    "olmo31_32b_s1_328k": {
+      "main_run": "20260723_212050_olmo31_32b_s1_328k_activation_control",
+      "lt_run": "20260723_222038_olmo31_32b_s1_328k_activation_control_lt",
+      "provenance": "wandb",
+      "source": "W&B mkobalski-none/activation-control (raw pruned by olmo_snapshot_lane.sh)",
+      "main": {
+        "rate": 0.6956976744186046,
+        "n_trials": 8600,
+        "n_compliant": 5983,
+        "wandb_run": "activation_control_212100",
+        "wandb_init_lag_s": 13,
+        "active_sets": [
+          "intensity",
+          "token_location",
+          "persistence"
+        ]
+      },
+      "lt": {
+        "rate": 0.8505681818181818,
+        "n_trials": 8800,
+        "n_compliant": 7485,
+        "wandb_run": "activation_control_222049",
+        "wandb_init_lag_s": 16,
+        "active_sets": [
+          "layer_location"
+        ]
+      }
+    },
+    "olmo31_32b_s1_final": {
+      "main_run": "20260723_190706_olmo31_32b_s1_final_activation_control",
+      "lt_run": "20260723_200935_olmo31_32b_s1_final_activation_control_lt",
+      "provenance": "wandb",
+      "source": "W&B mkobalski-none/activation-control (raw pruned by olmo_snapshot_lane.sh)",
+      "main": {
+        "rate": 0.7783720930232558,
+        "n_trials": 8600,
+        "n_compliant": 6694,
+        "wandb_run": "activation_control_190715",
+        "wandb_init_lag_s": 12,
+        "active_sets": [
+          "intensity",
+          "token_location",
+          "persistence"
+        ]
+      },
+      "lt": {
+        "rate": 0.9579545454545456,
+        "n_trials": 8800,
+        "n_compliant": 8430,
+        "wandb_run": "activation_control_200948",
+        "wandb_init_lag_s": 16,
+        "active_sets": [
+          "layer_location"
+        ]
+      }
+    },
+    "olmo31_32b_sft": {
+      "main_run": "20260723_161714_olmo31_32b_sft_activation_control",
+      "lt_run": "20260723_163925_olmo31_32b_sft_activation_control_lt",
+      "provenance": "wandb",
+      "source": "W&B mkobalski-none/activation-control (raw pruned by olmo_snapshot_lane.sh)",
+      "main": {
+        "rate": 0.9797674418604652,
+        "n_trials": 8600,
+        "n_compliant": 8426,
+        "wandb_run": "activation_control_161730",
+        "wandb_init_lag_s": 18,
+        "active_sets": [
+          "intensity",
+          "token_location",
+          "persistence"
+        ]
+      },
+      "lt": {
+        "rate": 1,
+        "n_trials": 8800,
+        "n_compliant": 8800,
+        "wandb_run": "activation_control_164042",
+        "wandb_init_lag_s": 81,
+        "active_sets": [
+          "layer_location"
+        ]
+      }
+    },
+    "olmo3_7b": {
+      "main_run": "20260722_000046_olmo3_7b_activation_control",
+      "lt_run": "20260722_002054_olmo3_7b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.6843023255813954,
+        "n_trials": 8600,
+        "n_compliant": 5885
+      },
+      "lt": {
+        "rate": 0.9923863636363637,
+        "n_trials": 8800,
+        "n_compliant": 8733
+      }
+    },
+    "olmo3_7b_base": {
+      "main_run": "20260723_084742_olmo3_7b_base_activation_control",
+      "lt_run": "20260723_090249_olmo3_7b_base_activation_control_lt",
+      "provenance": "wandb",
+      "source": "W&B mkobalski-none/activation-control (raw pruned by olmo_snapshot_lane.sh)",
+      "main": {
+        "rate": 0.9953488372093025,
+        "n_trials": 8600,
+        "n_compliant": 8560,
+        "wandb_run": "activation_control_084748",
+        "wandb_init_lag_s": 9,
+        "active_sets": [
+          "intensity",
+          "token_location",
+          "persistence"
+        ]
+      },
+      "lt": {
+        "rate": 1,
+        "n_trials": 8800,
+        "n_compliant": 8800,
+        "wandb_run": "activation_control_090253",
+        "wandb_init_lag_s": 8,
+        "active_sets": [
+          "layer_location"
+        ]
+      }
+    },
+    "olmo3_7b_dpo": {
+      "main_run": "20260723_074907_olmo3_7b_dpo_activation_control",
+      "lt_run": "20260723_081746_olmo3_7b_dpo_activation_control_lt",
+      "provenance": "wandb",
+      "source": "W&B mkobalski-none/activation-control (raw pruned by olmo_snapshot_lane.sh)",
+      "main": {
+        "rate": 0.4122093023255814,
+        "n_trials": 8600,
+        "n_compliant": 3545,
+        "wandb_run": "activation_control_074911",
+        "wandb_init_lag_s": 8,
+        "active_sets": [
+          "intensity",
+          "token_location",
+          "persistence"
+        ]
+      },
+      "lt": {
+        "rate": 0.5264772727272727,
+        "n_trials": 8800,
+        "n_compliant": 4633,
+        "wandb_run": "activation_control_081749",
+        "wandb_init_lag_s": 6,
+        "active_sets": [
+          "layer_location"
+        ]
+      }
+    },
+    "olmo3_7b_s1_700k": {
+      "main_run": "20260723_102336_olmo3_7b_s1_700k_activation_control",
+      "lt_run": "20260723_105527_olmo3_7b_s1_700k_activation_control_lt",
+      "provenance": "wandb",
+      "source": "W&B mkobalski-none/activation-control (raw pruned by olmo_snapshot_lane.sh)",
+      "main": {
+        "rate": 0.7467441860465116,
+        "n_trials": 8600,
+        "n_compliant": 6422,
+        "wandb_run": "activation_control_102341",
+        "wandb_init_lag_s": 8,
+        "active_sets": [
+          "intensity",
+          "token_location",
+          "persistence"
+        ]
+      },
+      "lt": {
+        "rate": 0.8032954545454546,
+        "n_trials": 8800,
+        "n_compliant": 7069,
+        "wandb_run": "activation_control_105530",
+        "wandb_init_lag_s": 7,
+        "active_sets": [
+          "layer_location"
+        ]
+      }
+    },
+    "olmo3_7b_s1_final": {
+      "main_run": "20260723_091653_olmo3_7b_s1_final_activation_control",
+      "lt_run": "20260723_094805_olmo3_7b_s1_final_activation_control_lt",
+      "provenance": "wandb",
+      "source": "W&B mkobalski-none/activation-control (raw pruned by olmo_snapshot_lane.sh)",
+      "main": {
+        "rate": 0.8262790697674418,
+        "n_trials": 8600,
+        "n_compliant": 7106,
+        "wandb_run": "activation_control_091658",
+        "wandb_init_lag_s": 9,
+        "active_sets": [
+          "intensity",
+          "token_location",
+          "persistence"
+        ]
+      },
+      "lt": {
+        "rate": 0.9042045454545454,
+        "n_trials": 8800,
+        "n_compliant": 7957,
+        "wandb_run": "activation_control_094809",
+        "wandb_init_lag_s": 7,
+        "active_sets": [
+          "layer_location"
+        ]
+      }
+    },
+    "olmo3_7b_sft": {
+      "main_run": "20260723_071452_olmo3_7b_sft_activation_control",
+      "lt_run": "20260723_073513_olmo3_7b_sft_activation_control_lt",
+      "provenance": "wandb",
+      "source": "W&B mkobalski-none/activation-control (raw pruned by olmo_snapshot_lane.sh)",
+      "main": {
+        "rate": 0.8997674418604651,
+        "n_trials": 8600,
+        "n_compliant": 7738,
+        "wandb_run": "activation_control_071456",
+        "wandb_init_lag_s": 7,
+        "active_sets": [
+          "intensity",
+          "token_location",
+          "persistence"
+        ]
+      },
+      "lt": {
+        "rate": 1,
+        "n_trials": 8800,
+        "n_compliant": 8800,
+        "wandb_run": "activation_control_073517",
+        "wandb_init_lag_s": 7,
+        "active_sets": [
+          "layer_location"
+        ]
+      }
+    },
+    "qwen35_122b_a10b": {
+      "main_run": "20260714_204801_qwen35_122b_a10b_activation_control",
+      "lt_run": "20260714_210650_qwen35_122b_a10b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9995348837209302,
+        "n_trials": 8600,
+        "n_compliant": 8596
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "qwen35_397b_a17b": {
+      "main_run": "20260723_151812_qwen35_397b_a17b_activation_control",
+      "lt_run": "20260723_152801_qwen35_397b_a17b_activation_control_lt",
+      "provenance": "documented",
+      "source": "results-panel/README.md; models.txt",
+      "main": {
+        "rate": 0.9994,
+        "n_trials": 8600,
+        "n_compliant": 8595
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "qwen35_4b": {
+      "main_run": "20260722_000046_qwen35_4b_activation_control",
+      "lt_run": "20260722_001112_qwen35_4b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9988372093023256,
+        "n_trials": 8600,
+        "n_compliant": 8590
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "qwen35_9b": {
+      "main_run": "20260722_003238_qwen35_9b_activation_control",
+      "lt_run": "20260722_004757_qwen35_9b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9984883720930232,
+        "n_trials": 8600,
+        "n_compliant": 8587
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "qwen36_27b": {
+      "main_run": "20260711_190502_qwen36_27b_activation_control",
+      "lt_run": "20260711_193048_qwen36_27b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.996860465116279,
+        "n_trials": 8600,
+        "n_compliant": 8573
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    },
+    "qwen3_235b_a22b_2507": {
+      "main_run": "20260723_115400_qwen3_235b_a22b_2507_activation_control",
+      "lt_run": "20260723_115414_qwen3_235b_a22b_2507_activation_control_lt",
+      "provenance": "documented",
+      "source": "not recorded; only loc_end is documented (441/500 = 88.2% fuzzy-compliant, 45/500 = 9.0% exact-normalized)",
+      "main": null,
+      "lt": null
+    },
+    "qwen3_coder_480b": {
+      "main_run": "20260723_225436_qwen3_coder_480b_activation_control",
+      "lt_run": "20260723_225527_qwen3_coder_480b_activation_control_lt",
+      "provenance": "documented",
+      "source": "results-panel/README.md; models.txt",
+      "main": {
+        "rate": 0.835,
+        "n_trials": 8600,
+        "note": "aggregate; four conditions below the 70% gate (persist_after_fourth 43.0%, think_intensely 52.8%, think_about 59.4%, loc_end 67.6%, each n=500)"
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800
+      }
+    },
+    "qwen_72b": {
+      "main_run": "20260712_025112_qwen_72b_activation_control",
+      "lt_run": "20260712_031319_qwen_72b_activation_control_lt",
+      "provenance": "measured",
+      "source": "results/raw/<run>/results.json (metrics.compliance_rate)",
+      "main": {
+        "rate": 0.9832558139534884,
+        "n_trials": 8600,
+        "n_compliant": 8456
+      },
+      "lt": {
+        "rate": 1.0,
+        "n_trials": 8800,
+        "n_compliant": 8800
+      }
+    }
+  }
+}

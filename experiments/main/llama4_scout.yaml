@@ -1,0 +1,9 @@
+# MAIN experiment on Llama-4-Scout-17B-16E-Instruct (Meta). MoE 109B total /
+# 17B active, 16 experts, natively MULTIMODAL (loaded via
+# AutoModelForImageTextToText; decoder via language_model.layers). System role,
+# non-reasoning -> no quirk sets. Inherits everything from config.yaml. ~2x B200.
+extends: config.yaml
+
+model:
+  name: "llama4_scout"
+  quantization: null

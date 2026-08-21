@@ -1,0 +1,13 @@
+# MAIN experiment on Llama-4-Maverick-17B-128E-Instruct (Meta). MoE 400B total /
+# ~17B active, 128 experts (vs Scout's 16), natively MULTIMODAL with the same
+# handling as llama4_scout (loaded via AutoModelForImageTextToText; decoder via
+# language_model.layers, 48 text layers; the 20-fraction sweep resolves to 20
+# distinct depths). GATED repo: accept the Meta license on HF before the run
+# (403 otherwise). System role, non-reasoning -> no quirk sets. bf16 ~803 GB ->
+# 8x B200 (the 6x balanced map fits the weights but leaves one device at 0.8%
+# free at batch-24 peaks). Inherits everything from config.yaml.
+extends: config.yaml
+
+model:
+  name: "llama4_maverick"
+  quantization: null

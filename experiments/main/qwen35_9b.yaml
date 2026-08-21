@@ -1,0 +1,8 @@
+# MAIN experiment on Qwen3.5-9B (dense). HYBRID (thinking ON upstream) but off by
+# default here via builder.py's enable_thinking=False when unset (builder.py:29),
+# so it is non-thinking and NOT in REASONING_MODELS. Inherits from config.yaml.
+extends: config.yaml
+
+model:
+  name: "qwen35_9b"
+  quantization: null

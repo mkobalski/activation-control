@@ -1,0 +1,53 @@
+# Cross-model runs for the controllability battery
+#
+# DOCUMENTATION ONLY -- nothing parses this file. The runnable list is
+# src/models/registry.py (short name -> HF id) plus one experiments/main/<short>.yaml
+# per model; this file records the per-model caveats behind those entries.
+#
+# Grouped by ArtificialAnalysis open-weights size bands (artificialanalysis.ai/
+# models/open-source, verified 2026-07-16).
+# Trailing comment gives TOTAL params (and active, for MoE).
+#
+# Non-reasoning / instruct checkpoints only, except gpt-oss (low effort).
+#
+# HYBRID = ships thinking ON upstream; we want non-thinking. Usually automatic:
+# builder._chat_wrap and extraction.format_extraction_prompt pass
+# enable_thinking=False when unset, so the
+# Gemma 4, Qwen3.5 and GLM-5.2 hybrids are already off and stay out of
+# REASONING_MODELS.
+
+# =============================================================================
+# The 25 models of the cross-model comparison
+# =============================================================================
+
+# --------------------------------------------------------------- small (4-40B)
+# google/gemma-2-9b-it                        # 9.24B  short name: gemma2_9b  [TESTED 2026-07-15]
+# google/gemma-3-27b-it                       # 27.4B  short name: gemma3_27b  [TESTED 2026-07-15]
+# google/gemma-4-12B-it                       # 11.96B short name: gemma4_12b  [TESTED 2026-07-22]  (HYBRID: off by default)
+# google/gemma-4-31B-it                       # 31B    short name: gemma4_31b  [TESTED 2026-07-11]
+# zai-org/GLM-4.7-Flash                       # 31.2B total / ~3B active  short name: glm47_flash  [TESTED 2026-07-22]  (HYBRID: enable_thinking=False verified to close the think block -> transcribes directly; smoke 93%)
+# meta-llama/Llama-3.1-8B-Instruct            # 8.03B  short name: llama_8b  [TESTED 2026-07-22]
+# mistralai/Mistral-Small-3.1-24B-Instruct-2503 # 24.0B  short name: mistral_small_31_24b  [TESTED 2026-07-18]
+# allenai/Olmo-3-7B-Instruct                  # 7.30B  short name: olmo3_7b  [TESTED 2026-07-22]
+# allenai/Olmo-3.1-32B-Instruct               # 32.2B  short name: olmo31_32b  [TESTED 2026-07-18]
+# openai/gpt-oss-20b                          # 21.5B total / 3.6B active  short name: gptoss_20b_low  [TESTED 2026-07-22]  (REASONING; low effort)
+# Qwen/Qwen3.5-4B                             # 4.66B  short name: qwen35_4b  [TESTED 2026-07-22]  (HYBRID: off by default; dense despite MoE blurb)
+# Qwen/Qwen3.5-9B                             # 9.65B  short name: qwen35_9b  [TESTED 2026-07-22]  (HYBRID: off by default; dense)
+# Qwen/Qwen3.6-27B                            # 27B    short name: qwen36_27b  [TESTED 2026-07-11]
+
+# ------------------------------------------------------------ medium (40-150B)
+# zai-org/GLM-4.6V                            # 106B total / ~12B active  short name: glm46v  [TESTED 2026-07-22]  (HYBRID: enable_thinking=False verified but stray CoT suspected -> routed through THINK_TAG_MODELS, max_new_tokens 512)
+# meta-llama/Llama-3.3-70B-Instruct           # 70B    short name: llama33_70b  [TESTED 2026-07-12]
+# meta-llama/Llama-4-Scout-17B-16E-Instruct   # 109B total / 17B active  short name: llama4_scout  [TESTED 2026-07-22]
+# mistralai/Mistral-Small-4-119B-2603         # 119B total / 6.5B active  short name: mistral_small_4  [TESTED 2026-07-22]  (HYBRID: reasoning_effort "none" in its YAML; FP8 tensor-mode -> dequant + leftover-scale fixup in wrapper.py)
+# openai/gpt-oss-120b                         # 117B total / 5.1B active  short name: gptoss_120b_low  [TESTED 2026-07-14]  (REASONING; low effort)
+# Qwen/Qwen2.5-72B-Instruct                   # 72B    short name: qwen_72b  [TESTED 2026-07-12]
+# Qwen/Qwen3.5-122B-A10B                      # 122B total / 10B active  short name: qwen35_122b_a10b  [TESTED 2026-07-14]
+
+# --------------------------------------------------------------- large (>150B)
+# meta-llama/Llama-4-Maverick-17B-128E-Instruct # 400B total / 17B active  short name: llama4_maverick  [TESTED 2026-07-23]  (GATED repo -- Meta license acceptance on HF required, 403 otherwise; multimodal like Scout; smoke on 6x B200, production on 8x at batch 24)
+# Qwen/Qwen3-235B-A22B-Instruct-2507          # 235B total / 22B active  short name: qwen3_235b_a22b_2507  [TESTED 2026-07-23]  (non-thinking only by design)
+# Qwen/Qwen3-Coder-480B-A35B-Instruct         # 480B total / 35B active  short name: qwen3_coder_480b  [TESTED 2026-07-23]  (coding specialist, same Qwen3MoeForCausalLM as the 235B; non-thinking by design; 83.5% aggregate compliance, failures are elaboration-after-transcription)
+# zai-org/GLM-5.2-FP8                         # ~744B total / ~39B active  short name: glm52  [TESTED 2026-07-23]  (HYBRID: off by default, pinned false in its YAML; OFFICIAL FP8 used -- the bf16 repo is 1.51 TB, unfittable on one 8-GPU node)
+# Qwen/Qwen3.5-397B-A17B                      # 397B total / 17B active  short name: qwen35_397b_a17b  [TESTED 2026-07-23]  (HYBRID: off by default, enable_thinking pinned false in its YAML; ran on 6x B200 via a staged shard-streaming loader -- job disk (~500 GiB) < the 807 GB bf16 checkpoint; smoke 99.88%, main 99.94%, LT 100% compliance)
+

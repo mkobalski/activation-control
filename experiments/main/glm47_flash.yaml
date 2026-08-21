@@ -1,0 +1,17 @@
+# MAIN experiment on GLM-4.7-Flash (Z.ai; the small/fast "Flash" tier of GLM-4.7,
+# 31.2B total / ~3B active). A HYBRID reasoning checkpoint, but its chat template
+# reads `enable_thinking`, and the builder passes enable_thinking=False whenever
+# model.enable_thinking is unset (builder.py:29). With it False the generation
+# prompt ends "<|assistant|></think>" -- the think block is closed immediately,
+# so the model transcribes directly. Verified against the shipped chat template
+# 2026-07-22; hence NOT in REASONING_MODELS and it runs the standard non-thinking
+# protocol. Has a system role -> no quirk sets. Inherits everything from
+# config.yaml (incl. max_new_tokens=64: as a non-thinking run there is no CoT to
+# leave room for, keeping it comparable with the rest of the panel). If a run's
+# compliance comes back low, the toggle failed and it must move to
+# THINK_TAG_MODELS with the reasoning parser + a larger max_new_tokens.
+extends: config.yaml
+
+model:
+  name: "glm47_flash"
+  quantization: null

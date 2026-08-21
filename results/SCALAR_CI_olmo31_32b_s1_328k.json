@@ -1,0 +1,47 @@
+{
+  "model": "olmo31_32b_s1_328k",
+  "main_run": "(point estimate: snapshot raw pruned; S recomputed from SCORES under the six-measure definition, dial_resolution removed 2026-08-08, temporal_control D_REF 6.90)",
+  "channel_set": "projection",
+  "channels": [
+    "proj"
+  ],
+  "link": "linear",
+  "d_ref": {
+    "engage": 16.4,
+    "suppress": 3.0,
+    "temporal_control": 6.9,
+    "coverage": 4.11,
+    "layer_targeting": 5.0
+  },
+  "scalar": 0.08786405923389529,
+  "ci_lo": null,
+  "ci_hi": null,
+  "point_estimate": true,
+  "n_boot": 0,
+  "components": {
+    "engage|proj": {
+      "p": 0.576589663346264,
+      "weight": 0.16666666666666666
+    },
+    "suppress|proj": {
+      "p": 0.511341481903004,
+      "weight": 0.16666666666666666
+    },
+    "dial_rank|proj": {
+      "p": 0.6191666666666666,
+      "weight": 0.16666666666666666
+    },
+    "temporal_control|proj": {
+      "p": 0.5214879538506462,
+      "weight": 0.16666666666666666
+    },
+    "coverage|proj": {
+      "p": 0.5443109422010903,
+      "weight": 0.16666666666666666
+    },
+    "layer_targeting|proj": {
+      "p": 0.4997939643562718,
+      "weight": 0.16666666666666666
+    }
+  }
+}

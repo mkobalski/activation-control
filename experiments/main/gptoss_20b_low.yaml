@@ -1,0 +1,23 @@
+# MAIN experiment on gpt-oss-20b at reasoning_effort=LOW (OpenAI open-weight MoE,
+# harmony chat format, native MXFP4). The small sibling of gptoss_120b_low: same
+# harmony reasoning path (-> HARMONY_MODELS), same low-effort pin. Inherits
+# everything from config.yaml.
+#
+# NOTES:
+#  - MXFP4 is the native weight format (~13 GB); leave quantization null and do
+#    NOT add bitsandbytes 8bit/4bit on top (that path is NF4 and wrong here).
+#  - reasoning_effort "low": harmony still emits an `analysis` (CoT) channel
+#    before the `final` channel. The recorder locates the target sentence in the
+#    FINAL channel and records over that span (see src/utils/harmony.py).
+extends: config.yaml
+
+model:
+  name: "gptoss_20b_low"
+  quantization: null
+  reasoning_effort: "low"
+
+experiment:
+  # Reasoning models need room for the CoT (analysis channel) AND the final
+  # sentence; the default 64 would truncate before the final channel. Matches the
+  # gptoss_120b_low headroom.
+  max_new_tokens: 512

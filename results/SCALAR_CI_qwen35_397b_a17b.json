@@ -1,0 +1,47 @@
+{
+  "model": "qwen35_397b_a17b",
+  "main_run": "(point estimate: no raw run retained; S recomputed from SCORES under the six-measure definition, dial_resolution removed 2026-08-08)",
+  "channel_set": "projection",
+  "channels": [
+    "proj"
+  ],
+  "link": "linear",
+  "d_ref": {
+    "engage": 16.4,
+    "suppress": 3.0,
+    "temporal_control": 6.9,
+    "coverage": 4.11,
+    "layer_targeting": 5.0
+  },
+  "scalar": 0.3568612549621839,
+  "ci_lo": null,
+  "ci_hi": null,
+  "point_estimate": true,
+  "n_boot": 0,
+  "components": {
+    "engage|proj": {
+      "p": 0.843881938271752,
+      "weight": 0.16666666666666666
+    },
+    "suppress|proj": {
+      "p": 0.5715398144106503,
+      "weight": 0.16666666666666666
+    },
+    "dial_rank|proj": {
+      "p": 0.8846,
+      "weight": 0.16666666666666666
+    },
+    "temporal_control|proj": {
+      "p": 0.7402766391849837,
+      "weight": 0.16666666666666666
+    },
+    "coverage|proj": {
+      "p": 0.6108979231951824,
+      "weight": 0.16666666666666666
+    },
+    "layer_targeting|proj": {
+      "p": 0.5053530194413621,
+      "weight": 0.16666666666666666
+    }
+  }
+}

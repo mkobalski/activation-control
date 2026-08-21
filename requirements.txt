@@ -1,0 +1,28 @@
+# ---- Core: required to run experiments + analysis ----
+torch>=2.6.0
+transformers>=4.55.0
+accelerate>=1.4.0        # needed by transformers for device_map="auto" loading
+numpy>=1.26.0
+pandas>=2.2.0            # control-under-load Parquet analysis
+pyarrow>=15.0.0          # control-under-load tables + metadata validation
+sympy>=1.13.0            # exact factorized-polynomial grading
+matplotlib>=3.5.0        # figures: figure_scripts/ (paper) + scripts/explore.py (per-run)
+plotly>=6.0.0,<6.9       # control-under-load publication figures
+kaleido>=0.2.1,<1        # self-contained SVG/PNG rendering (bundled renderer)
+tqdm>=4.60.0
+pyyaml>=6.0
+python-dotenv>=1.0.0     # loads .env (HF_TOKEN / optional WANDB_API_KEY)
+
+# ---- Optional ----
+wandb>=0.19.0            # experiment logging; src/utils/wandb_utils.py is fail-open
+                         # (runs continue if wandb is absent). Pass --no-wandb to skip.
+bitsandbytes>=0.46.0     # ONLY for 8-bit/4-bit quantization. The provided configs
+                         # set quantization: null, so this is not needed for them.
+
+# ---- Development / bounded export verification ----
+pytest>=8.3.0            # control-under-load and repository test suite
+ruff>=0.9.0              # lint command documented in control-under-load verification
+
+# NOTE: scipy is intentionally NOT a dependency. The rank statistics used by the
+# controllability analysis (rankdata / AUROC / Spearman / BH-FDR) are implemented
+# in-repo so the CPU-only analysis has no scipy/sklearn requirement.

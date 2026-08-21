@@ -1,0 +1,212 @@
+[
+  {
+    "concept": "Trains",
+    "slope": -0.0940283403228057,
+    "ci_low": -0.13268070149972241,
+    "ci_high": -0.05806142571256554,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Butter",
+    "slope": -0.08644159878346375,
+    "ci_low": -0.12214250964979609,
+    "ci_high": -0.0536801991267663,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Thunder",
+    "slope": -0.07577950694973853,
+    "ci_low": -0.11729744354381255,
+    "ci_high": -0.03426666878001466,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Camels",
+    "slope": -0.07546395282279407,
+    "ci_low": -0.11627143779394528,
+    "ci_high": -0.0374917228094907,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Boots",
+    "slope": -0.0667883831789566,
+    "ci_low": -0.10818069376830701,
+    "ci_high": -0.024255405676143912,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Olives",
+    "slope": -0.06595888305189017,
+    "ci_low": -0.09838923543853878,
+    "ci_high": -0.03436459039907594,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Bread",
+    "slope": -0.06563490121347099,
+    "ci_low": -0.10300988347836168,
+    "ci_high": -0.029280012351479173,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Islands",
+    "slope": -0.06302109470382965,
+    "ci_low": -0.10197233907258715,
+    "ci_high": -0.024393066023291398,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Pepper",
+    "slope": -0.06052835529958092,
+    "ci_low": -0.10090701475646749,
+    "ci_high": -0.024190235172760564,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Paintings",
+    "slope": -0.05779158552722843,
+    "ci_low": -0.09310595559248727,
+    "ci_high": -0.021709593255732705,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Milk",
+    "slope": -0.052703780439558576,
+    "ci_low": -0.08903769523374229,
+    "ci_high": -0.019621708651288778,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Vegetables",
+    "slope": -0.05024142899644714,
+    "ci_low": -0.08836231607351942,
+    "ci_high": -0.009077309545937235,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Dynasties",
+    "slope": -0.04739797575170897,
+    "ci_low": -0.08595241014758237,
+    "ci_high": -0.012438273034203053,
+    "ci_category": "below zero"
+  },
+  {
+    "concept": "Chocolate",
+    "slope": -0.037767327506527365,
+    "ci_low": -0.0776513469111712,
+    "ci_high": 0.0005218722075005026,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Horses",
+    "slope": -0.03324434446450392,
+    "ci_low": -0.07270600454833889,
+    "ci_high": 0.003405338168897962,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Photographs",
+    "slope": -0.030875458397646313,
+    "ci_low": -0.06918738166895053,
+    "ci_high": 0.005638035669528947,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Lightning",
+    "slope": -0.02031823843516735,
+    "ci_low": -0.05505418489733226,
+    "ci_high": 0.016655775019151872,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Plates",
+    "slope": -0.014993100546909355,
+    "ci_low": -0.052544265720327894,
+    "ci_high": 0.02187172228101176,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Denim",
+    "slope": -0.012310595550440229,
+    "ci_low": -0.049601282080630554,
+    "ci_high": 0.026317925618043712,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Trees",
+    "slope": -0.011715157019063518,
+    "ci_low": -0.04764048190470473,
+    "ci_high": 0.02274078763933218,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Reefs",
+    "slope": 0.005309013891079291,
+    "ci_low": -0.03164959802312851,
+    "ci_high": 0.043942877093761455,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Envelopes",
+    "slope": 0.007310599754925545,
+    "ci_low": -0.02812538082596963,
+    "ci_high": 0.043492043054259806,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Dams",
+    "slope": 0.009239106981134703,
+    "ci_low": -0.027209445853515143,
+    "ci_high": 0.04647379944309053,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Volcanoes",
+    "slope": 0.024484503027455487,
+    "ci_low": -0.016916702355946,
+    "ci_high": 0.06653726245933506,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Windows",
+    "slope": 0.02540967560181819,
+    "ci_low": -0.014395069834170403,
+    "ci_high": 0.06685791631365058,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Canoes",
+    "slope": 0.025682581818787957,
+    "ci_low": -0.008549551200877144,
+    "ci_high": 0.0617626344872089,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Harbors",
+    "slope": 0.026255913373436055,
+    "ci_low": -0.0038682708534884197,
+    "ci_high": 0.05941788638424837,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Deserts",
+    "slope": 0.02694185124828592,
+    "ci_low": -0.004998869879702622,
+    "ci_high": 0.0612011571628424,
+    "ci_category": "crosses zero"
+  },
+  {
+    "concept": "Cameras",
+    "slope": 0.05339778554196377,
+    "ci_low": 0.01765298026894269,
+    "ci_high": 0.09353275126428919,
+    "ci_category": "above zero"
+  },
+  {
+    "concept": "Turbines",
+    "slope": 0.055385652939456485,
+    "ci_low": 0.020703276841375684,
+    "ci_high": 0.09407026439466573,
+    "ci_category": "above zero"
+  }
+]

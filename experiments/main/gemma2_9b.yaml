@@ -1,0 +1,8 @@
+# MAIN experiment on Gemma-2-9B-it. Inherits everything from config.yaml; only
+# the model changes, so it runs the SAME standardized protocol as the cross-model
+# battery (50 sentences, 10 concepts, 19 conditions, depth fractions resolved to
+# gemma2-9b's 42 layers).
+extends: config.yaml
+
+model:
+  name: "gemma2_9b"

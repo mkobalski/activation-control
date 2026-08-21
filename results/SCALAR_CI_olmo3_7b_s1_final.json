@@ -1,0 +1,47 @@
+{
+  "model": "olmo3_7b_s1_final",
+  "main_run": "(point estimate: snapshot raw pruned; S recomputed from SCORES under the six-measure definition, dial_resolution removed 2026-08-08, temporal_control D_REF 6.90)",
+  "channel_set": "projection",
+  "channels": [
+    "proj"
+  ],
+  "link": "linear",
+  "d_ref": {
+    "engage": 16.4,
+    "suppress": 3.0,
+    "temporal_control": 6.9,
+    "coverage": 4.11,
+    "layer_targeting": 5.0
+  },
+  "scalar": 0.15359829434978467,
+  "ci_lo": null,
+  "ci_hi": null,
+  "point_estimate": true,
+  "n_boot": 0,
+  "components": {
+    "engage|proj": {
+      "p": 0.6608869950969903,
+      "weight": 0.16666666666666666
+    },
+    "suppress|proj": {
+      "p": 0.4315378525305068,
+      "weight": 0.16666666666666666
+    },
+    "dial_rank|proj": {
+      "p": 0.6085365853658536,
+      "weight": 0.16666666666666666
+    },
+    "temporal_control|proj": {
+      "p": 0.5521243498806291,
+      "weight": 0.16666666666666666
+    },
+    "coverage|proj": {
+      "p": 0.7676077942194013,
+      "weight": 0.16666666666666666
+    },
+    "layer_targeting|proj": {
+      "p": 0.5006550319923526,
+      "weight": 0.16666666666666666
+    }
+  }
+}

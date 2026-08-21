@@ -1,0 +1,8 @@
+# MAIN experiment on Qwen3.6-27B (dense, Apache 2.0; newest open-weight Qwen
+# as of 2026-04). Inherits everything from config.yaml; only the model changes.
+# The prompt builder passes enable_thinking=false to the chat template so the
+# model transcribes directly instead of opening a <think> turn.
+extends: config.yaml
+
+model:
+  name: "qwen36_27b"

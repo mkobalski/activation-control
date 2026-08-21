@@ -1,0 +1,11 @@
+# MAIN experiment on the Olmo-3-7B 'base' training snapshot (Experiment C — when
+# during training does controllability appear). Loaded from the LOCAL dir
+# /ckpts/olmo3_7b_base (see MODEL_NAME_MAP for the repo/revision it must contain;
+# scripts/olmo_snapshot_lane.sh downloads it and wipes it after the run).
+# Raw activations for snapshot runs are PRUNED after postprocess — JSONs only.
+# Inherits everything from config.yaml.
+extends: config.yaml
+
+model:
+  name: "olmo3_7b_base"
+  quantization: null

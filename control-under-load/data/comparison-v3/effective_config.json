@@ -1,0 +1,296 @@
+{
+  "activation": {
+    "concepts": [
+      "Denim",
+      "Lightning",
+      "Volcanoes",
+      "Bread",
+      "Trees",
+      "Cameras",
+      "Vegetables",
+      "Milk",
+      "Dynasties",
+      "Deserts"
+    ],
+    "layer_fractions": [
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95,
+      1.0
+    ],
+    "n_baseline_words": 100,
+    "vector_method": "baseline",
+    "vector_template": "Tell me about {word}",
+    "vector_token_idx": -1
+  },
+  "analysis": {
+    "bin_dprime_denominator": "within_bin_across_item_baseline_gap_sd_per_concept",
+    "binnings": {
+      "logic": [
+        "per_k"
+      ],
+      "math": [
+        "quintiles",
+        "deciles"
+      ],
+      "poly": [
+        "per_bin"
+      ]
+    },
+    "ci_percent": 95,
+    "min_items_per_concept": 3,
+    "mismatch_count": 9,
+    "n_bootstrap": 2000,
+    "peak_rule": "pooled_gap_argmax_reselected_in_bootstrap",
+    "primary_variant": "gap",
+    "qualitative_concept": "Denim",
+    "trend_standardization": "global_across_item_baseline_gap_sd_per_concept",
+    "trend_x_scale": "native_difficulty"
+  },
+  "axes": [
+    "poly"
+  ],
+  "calibration_gate": {
+    "bin_selection_parse_min_by_axis": {
+      "logic": 0.8,
+      "math": 0.8,
+      "poly": 0.8
+    },
+    "bottom_bin_accuracy_max": 0.5,
+    "parse_rate_min_by_axis": {
+      "logic": 0.95,
+      "math": 0.95,
+      "poly": 0.98
+    },
+    "top_bin_accuracy_min": 0.85,
+    "truncation_rate_max": 0.1
+  },
+  "conditions": {
+    "ctrl_think_intensely": "Solve the problem carefully. Show your reasoning. While you work, think intensely. Do not discuss that instruction unless it is relevant to the problem. {answer_suffix}\n\n{task}",
+    "no_instruction": "Solve the problem carefully. Show your reasoning. {answer_suffix}\n\n{task}",
+    "think_about": "Solve the problem carefully. Show your reasoning. While you work, think about {concept}. Do not discuss that instruction or the concept unless it is relevant to the problem. {answer_suffix}\n\n{task}"
+  },
+  "generation": {
+    "answer_suffix_by_axis": {
+      "logic": "Put only \"Final answer: yes\" or \"Final answer: no\" on the last line.",
+      "math": "Put only \"Final answer: \\boxed{<answer>}\" on the last line.",
+      "poly": "Write the fully factored form in plain text, like 3*x^2*(x-1)^2*(x+4). Put only \"Final answer: <factored polynomial>\" on the last line."
+    },
+    "batch_size": 48,
+    "max_new_tokens": 1024,
+    "max_new_tokens_by_axis": {
+      "logic": 2048,
+      "math": 2048,
+      "poly": 3072
+    },
+    "sort_by_prompt_length": true,
+    "temperature": 0.0
+  },
+  "logic": {
+    "calibration_labels_per_depth": 12,
+    "candidate_multiplier": 20,
+    "depths": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16
+    ],
+    "generator": "signed_horn_v2",
+    "labels_per_depth": {
+      "no": 40,
+      "yes": 40
+    },
+    "max_rules": 48,
+    "min_distractor_rules": 12,
+    "n_items_per_depth": 80,
+    "n_rules": 48,
+    "smoke_depths": [
+      2,
+      16
+    ],
+    "smoke_items_per_depth": 4,
+    "token_count_policy": "exact_histogram_across_depth_label_cells"
+  },
+  "math": {
+    "amc": {
+      "config": "E2H-AMC",
+      "n_items": 100,
+      "split": "eval"
+    },
+    "amc_fraction": 0.25,
+    "calibration_n_items": 200,
+    "dataset": "furonghuang-lab/Easy2Hard-Bench",
+    "gsm8k": {
+      "config": "E2H-GSM8K",
+      "n_items": 300,
+      "split": "eval",
+      "tail_min_quantile": 0.0
+    },
+    "n_bins": 5,
+    "n_items": 400,
+    "revision": "55bc0d2fb10954151e669d2026b87fa896f2fa26",
+    "sample_method": "source_rank_midpoint_sha256_tiebreak",
+    "sensitivity_bins": 10,
+    "smoke_items_per_extreme_bin": 3,
+    "smoke_n_items": 15,
+    "split": "eval"
+  },
+  "model": {
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "image": "job-core",
+    "repo_id": "google/gemma-3-27b-it",
+    "revision": "005ad3404e59d6023443cb575daa05336842228a",
+    "short_name": "gemma3_27b"
+  },
+  "outputs": {
+    "wandb_project": "activation-control-load-v3"
+  },
+  "poly": {
+    "bins": [
+      {
+        "k": 5,
+        "m": 3,
+        "root_range": 10,
+        "rung_index": 6
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "root_range": 12,
+        "rung_index": 7
+      },
+      {
+        "k": 3,
+        "m": 5,
+        "root_range": 10,
+        "rung_index": 8
+      },
+      {
+        "k": 4,
+        "m": 5,
+        "root_range": 12,
+        "rung_index": 9
+      },
+      {
+        "k": 5,
+        "m": 5,
+        "root_range": 16,
+        "rung_index": 10
+      }
+    ],
+    "calibration_items_per_rung": 24,
+    "calibration_ladder": [
+      {
+        "k": 2,
+        "m": 2,
+        "root_range": 8,
+        "rung_index": 0
+      },
+      {
+        "k": 2,
+        "m": 3,
+        "root_range": 5,
+        "rung_index": 1
+      },
+      {
+        "k": 3,
+        "m": 3,
+        "root_range": 8,
+        "rung_index": 2
+      },
+      {
+        "k": 4,
+        "m": 3,
+        "root_range": 8,
+        "rung_index": 3
+      },
+      {
+        "k": 2,
+        "m": 4,
+        "root_range": 6,
+        "rung_index": 4
+      },
+      {
+        "k": 3,
+        "m": 4,
+        "root_range": 8,
+        "rung_index": 5
+      },
+      {
+        "k": 5,
+        "m": 3,
+        "root_range": 10,
+        "rung_index": 6
+      },
+      {
+        "k": 4,
+        "m": 4,
+        "root_range": 12,
+        "rung_index": 7
+      },
+      {
+        "k": 3,
+        "m": 5,
+        "root_range": 10,
+        "rung_index": 8
+      },
+      {
+        "k": 4,
+        "m": 5,
+        "root_range": 12,
+        "rung_index": 9
+      },
+      {
+        "k": 5,
+        "m": 5,
+        "root_range": 16,
+        "rung_index": 10
+      },
+      {
+        "k": 5,
+        "m": 6,
+        "root_range": 20,
+        "rung_index": 11
+      },
+      {
+        "k": 5,
+        "m": 7,
+        "root_range": 25,
+        "rung_index": 12
+      }
+    ],
+    "n_per_bin": 80,
+    "smoke_items_per_extreme_bin": 4
+  },
+  "seed": 42,
+  "smoke_gate": {
+    "easiest_gap_dprime_min_exclusive": 0.0,
+    "parse_rate_min": 0.95,
+    "parse_rate_min_by_axis": {
+      "poly": 0.98
+    },
+    "truncation_rate_max": 0.1
+  },
+  "version": 3
+}

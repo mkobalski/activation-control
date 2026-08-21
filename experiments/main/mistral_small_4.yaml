@@ -1,0 +1,11 @@
+# MAIN experiment on Mistral-Small-4-119B-2603 (Mistral). MoE 119B total /
+# 6.5B active (NOT a 24B dense model). HYBRID reasoning: reasoning_effort is
+# passed to the chat template ONLY when set (builder.py:34), so we MUST pin it to
+# "none" here to suppress the CoT and transcribe directly -- this is the required
+# switch from the models.txt header. Has a system role. ~2x B200.
+extends: config.yaml
+
+model:
+  name: "mistral_small_4"
+  quantization: null
+  reasoning_effort: "none"

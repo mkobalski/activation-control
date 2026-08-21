@@ -1,0 +1,193 @@
+"""Model registry: short config-friendly names -> HuggingFace ids + capability sets.
+
+Throughout the codebase and the YAML configs, models are referred to by terse
+short names (e.g. ``gemma3_27b``) instead of full HuggingFace repo ids. This
+module is the single source of truth that maps those short names to the actual
+ids to load, plus a few sets that record per-model quirks (which families lack a
+system role, which checkpoints are base rather than instruct-tuned). To add a
+model, add its short name here and to any capability set that applies.
+"""
+
+import os
+
+
+def _ckpt(name: str) -> str:
+    """Local path of a downloaded checkpoint: $AC_CKPT_DIR/<name> (default /ckpts)."""
+    return os.path.join(os.environ.get("AC_CKPT_DIR", "/ckpts"), name)
+
+
+# Short name -> HuggingFace repo id passed to the loader.
+MODEL_NAME_MAP = {
+    # Gemma
+    "gemma2_9b": "google/gemma-2-9b-it",
+    "gemma3_27b": "google/gemma-3-27b-it",
+    "gemma4_12b": "google/gemma-4-12B-it",
+    "gemma4_31b": "google/gemma-4-31B-it",
+    "qwen_72b": "Qwen/Qwen2.5-72B-Instruct",
+    "qwen36_27b": "Qwen/Qwen3.6-27B",
+    # Qwen3.5-122B-A10B (MoE: 122B total, ~10B active). A single unified
+    # checkpoint that toggles chain-of-thought via the chat template's
+    # `enable_thinking` flag; its experiment YAML pins model.enable_thinking
+    # false, so it transcribes directly and is NOT in REASONING_MODELS.
+    "qwen35_122b_a10b": "Qwen/Qwen3.5-122B-A10B",
+    # Qwen3.5 dense hybrids (thinking OFF by default via the builder's
+    # enable_thinking=False when unset -- see models.txt header; not in
+    # REASONING_MODELS, they transcribe directly).
+    "qwen35_4b": "Qwen/Qwen3.5-4B",
+    "qwen35_9b": "Qwen/Qwen3.5-9B",
+    # Qwen3.5-397B-A17B (MoE: 397B total, ~17B active). HYBRID thinking like the
+    # other Qwen3.5 entries: chat_template.jinja closes the think block
+    # ('<think>\n\n</think>') when enable_thinking=false, and the experiment YAML
+    # pins model.enable_thinking: false explicitly (same as qwen35_122b_a10b), so
+    # it transcribes directly and joins NO reasoning set. VLM checkpoint
+    # (image-text-to-text, Qwen3_5MoeForConditionalGeneration) -> ModelWrapper's
+    # auto-class probe loads AutoModelForImageTextToText; decoder layers via
+    # language_model.layers (60 text layers). bf16 ~807 GB. Verified 2026-07-23
+    # at revision 8472618112abcbd45acbcdc58436aff4233c23f7.
+    "qwen35_397b_a17b": "Qwen/Qwen3.5-397B-A17B",
+    # Qwen3-235B-A22B-2507: MoE 235B total / 22B active. Non-thinking ONLY by
+    # design (the -2507 Instruct split; there is no <think> turn to suppress), so
+    # the builder default is a no-op and it joins no reasoning set.
+    "qwen3_235b_a22b_2507": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    # Qwen3-Coder-480B: MoE 480B total / 35B active, 160 experts, 62 text layers
+    # -- the coding-specialist sibling of qwen3_235b_a22b_2507 (same
+    # Qwen3MoeForCausalLM class). Non-thinking BY DESIGN: the chat template has
+    # no think handling at all (verified render 2026-07-23), so the builder
+    # default is a no-op and it joins no reasoning set. bf16 ~960 GB. Verified
+    # 2026-07-23 at revision 9d90cf8fca1bf7b7acca42d3fc9ae694a2194069.
+    "qwen3_coder_480b": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+    # Llama
+    "llama_8b": "meta-llama/Llama-3.1-8B-Instruct",
+    "llama33_70b": "meta-llama/Llama-3.3-70B-Instruct",
+    # Llama-4-Scout: MoE 109B total / 17B active, 16 experts, natively MULTIMODAL
+    # (registered only under image-text-to-text -> ModelWrapper's auto-class probe
+    # loads it with AutoModelForImageTextToText; decoder layers via
+    # language_model.layers). Has a system role, non-reasoning -> no quirk sets.
+    "llama4_scout": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+    # Llama-4-Maverick: MoE 400B total / 17B active, 128 experts (vs Scout's 16),
+    # natively MULTIMODAL with the same handling as Scout (registered only under
+    # image-text-to-text -> ModelWrapper's auto-class probe loads
+    # AutoModelForImageTextToText; decoder layers via language_model.layers,
+    # 48 text layers). GATED repo: the Meta license must be accepted on HF before
+    # the checkpoint downloads (403 otherwise). Has a system role, non-reasoning
+    # -> no quirk sets. bf16 ~803 GB. Verified 2026-07-23 at revision
+    # 73d14711bcc77c16df3470856949c3764056b617.
+    "llama4_maverick": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+    # Olmo (AI2, Apache-2.0, fully open). Dense, standard Olmo3ForCausalLM with a
+    # system role and no thinking toggle -- the plain -Instruct checkpoint, NOT
+    # the -Think sibling -- so it joins none of the quirk sets below.
+    "olmo3_7b": "allenai/Olmo-3-7B-Instruct",
+    # GLM (Z.ai). GLM-4.7-Flash is a reasoning/hybrid whose chat template reads
+    # `enable_thinking`: with it False (the builder default when unset) the
+    # generation prompt ends "<|assistant|></think>" -- the think block is closed
+    # immediately, so the model transcribes directly. Verified 2026-07-22. Hence
+    # NOT in REASONING_MODELS (same treatment as the Gemma4/Qwen3.5 hybrids); has
+    # a system role, so no quirk sets.
+    "glm47_flash": "zai-org/GLM-4.7-Flash",
+    # GLM-4.6V: MoE 106B total / ~12B active, natively MULTIMODAL (vision). HYBRID:
+    # the builder default (enable_thinking=False) is applied and renders a closed
+    # <think></think>, but the smoke run still came back 57.6% compliant, so stray
+    # CoT is suspected and it is routed through THINK_TAG_MODELS (below); final
+    # compliance 96.06%. Has a system role. Loaded via AutoModelForImageTextToText
+    # (auto-class probe).
+    "glm46v": "zai-org/GLM-4.6V",
+    # GLM-5.2, OFFICIAL FP8 repo: MoE ~745B total / ~39B active with MLA + DSA
+    # sparse attention (GlmMoeDsaForCausalLM; 78 text layers -- index 78 is the
+    # MTP head, skipped at load like stock does). HYBRID: with
+    # enable_thinking=false the template renders '<|assistant|><think></think>'
+    # (a closed think block, verified 2026-07-23 in render and behaviorally),
+    # pinned false in its experiment YAML -> NOT in REASONING_MODELS. The FP8
+    # checkpoint (block-wise e4m3, 755.6 GB) is used because the bf16 repo
+    # (zai-org/GLM-5.2, 1.51 TB) does not fit one 8-GPU node; mind the precision
+    # difference vs the bf16 panel. Has a system role. Verified 2026-07-23 at
+    # revision ba978f7d347eaf65d22f1a86833408afdb953541.
+    "glm52": "zai-org/GLM-5.2-FP8",
+    "olmo31_32b": "allenai/Olmo-3.1-32B-Instruct",
+    # Olmo 3 7B training snapshots (Experiment C, AblationPlan). Values are LOCAL
+    # paths, not HF ids: each snapshot is downloaded to /ckpts/<name> with
+    # `hf download <repo> [--revision <rev>] --local-dir /ckpts/<name>` and wiped
+    # after its battery run (see scripts/olmo_snapshot_lane.sh + the H100 runbook).
+    # Local paths; set AC_CKPT_DIR to relocate (see _ckpt below).
+    # name              repo                            revision
+    # s1_700k           allenai/Olmo-3-1025-7B          stage1-step700000
+    # s1_final          allenai/Olmo-3-1025-7B          stage1-step1413814
+    # base              allenai/Olmo-3-1025-7B          main (post stage2+3)
+    # sft               allenai/Olmo-3-7B-Instruct-SFT  main
+    # dpo               allenai/Olmo-3-7B-Instruct-DPO  main
+    # (final RLVR point = the existing `olmo3_7b` results; no new run.)
+    "olmo3_7b_s1_700k": _ckpt("olmo3_7b_s1_700k"),
+    "olmo3_7b_s1_final": _ckpt("olmo3_7b_s1_final"),
+    "olmo3_7b_base": _ckpt("olmo3_7b_base"),
+    "olmo3_7b_sft": _ckpt("olmo3_7b_sft"),
+    "olmo3_7b_dpo": _ckpt("olmo3_7b_dpo"),
+    # Olmo 3.1 32B training snapshots, the same lane at 32B scale: downloaded to
+    # a local dir, run, then wiped. NOTE: unlike the 7B snapshots, the upstream
+    # checkpoints these were taken from are NOT RETRIEVABLE as of 2026-08-20 --
+    # they were withdrawn from the Hub after the runs -- so olmo_snapshot_lane.sh
+    # carries no repo/revision for them and these five cannot be re-downloaded.
+    # The shipped SCORES_/PROFILES_/SCALAR_CI_ JSONs in results/ are the record.
+    # (final RLVR point = the existing `olmo31_32b` results; no new run.)
+    "olmo31_32b_s1_328k": _ckpt("olmo31_32b_s1_328k"),
+    "olmo31_32b_s1_final": _ckpt("olmo31_32b_s1_final"),
+    "olmo31_32b_base": _ckpt("olmo31_32b_base"),
+    "olmo31_32b_sft": _ckpt("olmo31_32b_sft"),
+    "olmo31_32b_dpo": _ckpt("olmo31_32b_dpo"),
+    # Mistral. Dense, non-reasoning, has a system role -> no quirk sets. NOTE the
+    # checkpoint is MULTIMODAL (Mistral3ForConditionalGeneration: a vision encoder
+    # + projector wrapped around a 24B text model), so unlike every other panel
+    # entry the decoder layers live at model.model.language_model.layers and the
+    # layer count is config.text_config.num_hidden_layers (40), not the top level.
+    # wrapper.py already falls back to both -- see ModelWrapper.n_layers/_layers.
+    "mistral_small_31_24b": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
+    # Mistral-Small-4-119B: MoE 119B total / 6.5B active (NOT a 24B dense model).
+    # HYBRID reasoning: the builder only passes reasoning_effort when set, so its
+    # YAML MUST pin model.reasoning_effort: "none" to suppress the CoT (see
+    # experiments/main/mistral_small_4.yaml and the models.txt header). Has a
+    # system role; non-thinking once effort=none -> no reasoning-set membership.
+    "mistral_small_4": "mistralai/Mistral-Small-4-119B-2603",
+    # OpenAI gpt-oss (MoE, harmony chat format, native MXFP4). The harmony
+    # `reasoning_effort` level is pinned per model in its experiment YAML; both
+    # entries run at low effort. -> HARMONY_MODELS below.
+    "gptoss_120b_low": "openai/gpt-oss-120b",
+    "gptoss_20b_low": "openai/gpt-oss-20b",
+}
+
+# Capability/quirk sets, all keyed by short name:
+#   GEMMA_MODELS            - the Gemma family.
+#   MODELS_WITHOUT_SYSTEM_ROLE - chat templates that reject a "system" message
+#                             (Gemma); callers must fold system text into the
+#                             user turn instead. Aliased to GEMMA_MODELS today.
+#   BASE_MODELS             - non-instruct checkpoints lacking a chat template,
+#                             so prompt wrapping falls back to "User:/Assistant:".
+GEMMA_MODELS = {"gemma2_9b", "gemma3_27b", "gemma4_12b", "gemma4_31b"}
+MODELS_WITHOUT_SYSTEM_ROLE = GEMMA_MODELS
+BASE_MODELS = {
+               # Olmo pretraining/base snapshots: no chat template ->
+               # User:/Assistant: fallback + base-model compliance method.
+               # (sft/dpo have chat templates and are NOT base.)
+               "olmo3_7b_s1_700k", "olmo3_7b_s1_final", "olmo3_7b_base",
+               "olmo31_32b_s1_328k", "olmo31_32b_s1_final", "olmo31_32b_base"}
+
+#   REASONING_MODELS - checkpoints that emit a chain-of-thought before the final
+#                      answer. Their generated text must be split into reasoning
+#                      vs. final answer before compliance/alignment; only the
+#                      final answer is the requested sentence. The runner treats
+#                      every REASONING_MODELS entry the same way (record all
+#                      generated steps, then slice the final span), and dispatches
+#                      to the right parser by the sub-sets below:
+#   HARMONY_MODELS   - reasoning via the harmony channel format (gpt-oss):
+#                      <|channel|>analysis...<|channel|>final... — parsed by
+#                      src/utils/harmony.py:final_channel_span.
+#   THINK_TAG_MODELS - reasoning via <think>...</think> tags before the answer
+#                      (Qwen3-style, enable_thinking=True) — parsed by
+#                      src/utils/think_tags.py:final_answer_span.
+# REASONING_MODELS is their union; add a model to exactly one sub-set.
+HARMONY_MODELS = {"gptoss_120b_low", "gptoss_20b_low"}
+THINK_TAG_MODELS = {
+                    # GLM-4.6V: template's enable_thinking=False switch verified
+                    # (renders /nothink + a closed <think></think>), but the 2xB200
+                    # smoke still came back 57.6% compliant -> stray CoT suspected.
+                    # Routed through the think-tag parser, which degrades to
+                    # "everything is final" on trials with no think block.
+                    "glm46v"}
+REASONING_MODELS = HARMONY_MODELS | THINK_TAG_MODELS

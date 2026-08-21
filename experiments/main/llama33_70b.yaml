@@ -1,0 +1,8 @@
+# MAIN experiment on Llama-3.3-70B-Instruct. Inherits everything from
+# config.yaml; only the model changes. NOTE: 70B at bf16 needs ~140 GB of
+# GPU memory — set quantization: "8bit" (or "4bit") below if the box is smaller.
+extends: config.yaml
+
+model:
+  name: "llama33_70b"
+  quantization: null

@@ -1,0 +1,86 @@
+# =============================================================================
+# Shared base config for the experiments/ (the main experiment + one-offs).
+#
+# Individual experiments inherit this via `extends: ../_base.yaml` and then
+# declare ONLY what differs -- their `prompt_conditions`, `condition_sets` and
+# an overriding experiment.name. Everything shared lives here: model, layers,
+# concepts, sentences, concept-vector extraction, compliance.
+#
+# Layers are the GRANULAR depth sweep (every 5% of depth -> 20 layers). On
+# gemma3-27b these resolve to [3,6,9,12,15,18,21,24,27,31,34,37,40,43,46,49,52,55,58,61],
+# all of which are already in the gemma3_27b vector cache, so NO concept vectors
+# are re-extracted -- the cache is reused across every experiment.
+#
+# NOTE: recording 20 layers stores a lot of activation data -- subset with
+# experiment.sentence_indices (global indices) and/or trim analysis_layers for a
+# given run if disk is tight.
+#
+# This file is not runnable on its own (no prompt_conditions); point the runner
+# at an experiment config, e.g.:
+#   python scripts/run_experiment.py --config experiments/main/config.yaml
+# =============================================================================
+
+experiment:
+  name: "activation_control_base"   # experiments override this
+  seed: 42
+  temperature: 0.0
+  max_new_tokens: 64
+  num_repetitions: 1
+  token_buffer: 10
+  batch_size: 8
+
+model:
+  name: "gemma3_27b"
+  dtype: "bfloat16"
+  quantization: null
+  device: "cuda"
+
+# Granular depth sweep: every 5% of depth, 5% -> 100% (20 layers). Model-agnostic
+# fractions; resolved to integer layer ids against the model at runtime.
+analysis_layers:
+  fractions: [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50,
+              0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00]
+  layers: []
+
+# Layer-targeted prompts off for these experiments.
+prompt_layers:
+  fractions: []
+  layers: []
+
+concept_vectors:
+  method: "baseline"
+  template: "Tell me about {word}"
+  token_idx: -1
+  normalize: false
+  n_baseline_words: 100
+  cache_dir: "results/vector_cache"
+
+concepts:
+  - "Denim"
+  - "Lightning"
+  - "Volcanoes"
+  - "Bread"
+  - "Trees"
+  - "Cameras"
+  - "Vegetables"
+  - "Milk"
+  - "Dynasties"
+  - "Deserts"
+
+# Baseline sentences (50, neutral, concept-avoiding) are sourced from the
+# project-root sentences.txt -- edit that file to change the set. The register-rich
+# "exaggerated" probes (was s5-s11) now live in exaggerated_phrases.txt.
+# (An explicit `sentences:` list here would override the file.)
+sentences_file: sentences.txt
+
+compliance:
+  method: "normalized_levenshtein"
+  threshold: 0.85
+
+wandb:
+  project: "activation-control"
+  entity: null
+  tags: ["activation-control", "gemma3"]
+
+output:
+  base_dir: "results"

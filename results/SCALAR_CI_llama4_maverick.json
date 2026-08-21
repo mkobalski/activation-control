@@ -1,0 +1,47 @@
+{
+  "model": "llama4_maverick",
+  "main_run": "(point estimate: no raw run retained; S recomputed from SCORES under the six-measure definition, dial_resolution removed 2026-08-08)",
+  "channel_set": "projection",
+  "channels": [
+    "proj"
+  ],
+  "link": "linear",
+  "d_ref": {
+    "engage": 16.4,
+    "suppress": 3.0,
+    "temporal_control": 6.9,
+    "coverage": 4.11,
+    "layer_targeting": 5.0
+  },
+  "scalar": 0.32645837364243646,
+  "ci_lo": null,
+  "ci_hi": null,
+  "point_estimate": true,
+  "n_boot": 0,
+  "components": {
+    "engage|proj": {
+      "p": 0.7159371200527589,
+      "weight": 0.16666666666666666
+    },
+    "suppress|proj": {
+      "p": 0.5193839210178388,
+      "weight": 0.16666666666666666
+    },
+    "dial_rank|proj": {
+      "p": 0.9168000000000001,
+      "weight": 0.16666666666666666
+    },
+    "temporal_control|proj": {
+      "p": 0.6996691394089432,
+      "weight": 0.16666666666666666
+    },
+    "coverage|proj": {
+      "p": 0.7117193041969516,
+      "weight": 0.16666666666666666
+    },
+    "layer_targeting|proj": {
+      "p": 0.5013515133174412,
+      "weight": 0.16666666666666666
+    }
+  }
+}
